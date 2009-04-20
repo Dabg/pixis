@@ -6,3 +6,13 @@ blib
 pm_to_blib
 Build
 _build
+core/tt2
+core/inc
+core/META.yml
+core/pixis_web_local.yaml
+core/t/TEST
+core/t/conf/apache_test_config.pm
+core/t/conf/extra.conf
+core/t/conf/httpd.conf
+core/t/htdocs/
+core/t/logs/
