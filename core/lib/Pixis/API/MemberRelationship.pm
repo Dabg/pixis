@@ -76,6 +76,13 @@ sub is_mutual {
     return ($here_to_there && $there_to_here) ? 1 : ();
 }
 
+sub is_following {
+    my ($self, $from, $to) = @_;
+
+    my $rs = Pixis::Registry->get(schema => 'master')->resultset('MemberRelationship');
+    return ($rs->find({ from_id => $from->id, to_id => $to->id })) ? 1 : ();
+}
+
 sub break_all {
     my ($self, $from) = @_;
     if (blessed $from) {

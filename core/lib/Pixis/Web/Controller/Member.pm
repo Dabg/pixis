@@ -48,13 +48,15 @@ sub follow :Chained('load_member') :Args(0) {
     my ($self, $c) = @_;
 
     $c->forward('/auth/assert_logged_in') or return;
-    $c->registry(api => 'Relationship')->follow($c->user, $c->stash->{member});
+    $c->registry(api => 'MemberRelationship')->follow($c->user, $c->stash->{member});
+    $c->res->redirect($c->uri_for($c->stash->{member}->id));
 }
 
 sub unfollow :Chained('load_member') :Args(0) {
     my ($self, $c) = @_;
     $c->forward('/auth/assert_logged_in') or return;
-    $c->registry(api => 'Relationship')->unfollow($c->user, $c->stash->{member});
+    $c->registry(api => 'MemberRelationship')->unfollow($c->user, $c->stash->{member});
+    $c->res->redirect($c->uri_for($c->stash->{member}->id));
 }
 
 sub settings :Local :Args(0) {

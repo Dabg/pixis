@@ -3,7 +3,7 @@
 [% IF c.user_exists %]
 <li id="hnav_logout"><a href="/auth/logout">[% loc("Logout") %]</a></li>
 <li id="hnav_settings"><a href="/member/settings">[% loc("Member Settings") %]</a></li>
-<li id="hnav_home"><a href="/member/home">ホーム</a></li>
+<li id="hnav_username"><a href="/member/home">[% loc("x's Home", c.user.nickname) %]</a></li>
 [% ELSE %]
 <li id="hnav_login"><a href="/auth/login">[% loc("Login") %]</a></li>
 [% END %]

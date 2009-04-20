@@ -17,6 +17,12 @@ msgstr "Pixis - Perlで書かれたSNSプラットフォーム"
 msgid "Home"
 msgstr "ホーム"
 
+msgid "x's Profile" 
+msgstr "%1さんのプロフィール"
+
+msgid "x's Home" 
+msgstr "%1さんのホーム"
+
 msgid "Member Home" 
 msgstr "ホーム"
 
