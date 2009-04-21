@@ -127,12 +127,16 @@ sub setup_pixis_plugins {
     # Core must be read-in before everything else
     # (it will be discovered by Module::Pluggable, and we wouldn't
     # load it twice anyway, so we're safe to just stick it in the front)
+
+    my $config = $self->config->{plugin_loader} || {};
+
     my $mpo = Module::Pluggable::Object->new(
         require => 1,
         search_path => [
             'Pixis::Plugin',
             'Pixis::Web::Plugin'
-        ]
+        ],
+        %$config,
     );
 
     my @plugins = $mpo->plugins;
