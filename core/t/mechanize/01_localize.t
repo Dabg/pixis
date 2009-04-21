@@ -9,5 +9,5 @@ use URI;
 
 {
     my $content = decode_utf8(GET_BODY '/', 'Accept-Language' => 'ja');
-    like($content, qr/ホーム/, encode_utf8("'ホーム' found"));
+    like($content, qr/Perlで書かれたSNSプラットフォーム/, encode_utf8("'Perlで書かれたSNSプラットフォーム' found"));
 }
