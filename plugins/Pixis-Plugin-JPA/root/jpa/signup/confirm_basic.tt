@@ -36,7 +36,7 @@
 </tr>
 <tr>
     <th>年会費</th>
-    <td>[% item_price %]</td>
+    <td>[% confirm.item_price %]円</td>
 </tr>
 [% END # IF %]
 

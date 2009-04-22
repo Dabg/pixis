@@ -77,7 +77,7 @@ sub payment_choice :Local :Args(1) :FormConfig {
             die "Could not find proper item: $membership";
         }
 
-        $c->stash->{item_price} = $item->price;
+        $c->session->{jpa_signup}->{$session}->{item_price} = $item->price;
         $c->res->redirect($c->uri_for('/jpa/signup/confirm_basic', $session));
     }
 }
