@@ -42,7 +42,13 @@ sub basic :Local :Args(0) :FormConfig {
         delete $params->{submit};
 
         $c->session->{jpa_signup}->{$hash} = $params;
-        $c->res->redirect($c->uri_for('confirm_basic', $hash));
+        # needs to know where to go next
+        my $next_uri =
+            $params->{membership} eq 'JPA-0002' ?
+                'confirm_basic' :
+                'payment_choice'
+        ;
+        $c->res->redirect($c->uri_for($next_uri, $hash));
     }
 }
 
@@ -54,7 +60,26 @@ sub confirm_basic :Local :Args(1) {
         $c->res->redirect($c->uri_for('/jpa', 'signup'));
         return;
     }
+    ;
     $c->stash->{subsession} = $session;
+}
+
+sub payment_choice :Local :Args(1) :FormConfig {
+    my ($self, $c, $session) = @_;
+
+    $c->forward('/auth/assert_logged_in') or return;
+    my $form = $c->stash->{form};
+    if ($form->submitted_and_valid) {
+        my $membership = $c->session->{jpa_signup}->{$session}->{membership} .= '-' . $form->param('payment');
+
+        my $item = $c->registry(api => 'PurchaseItem')->find($membership);
+        if (! $item) {
+            die "Could not find proper item: $membership";
+        }
+
+        $c->stash->{item_price} = $item->price;
+        $c->res->redirect($c->uri_for('/jpa/signup/confirm_basic', $session));
+    }
 }
 
 sub commit_basic :Local :Args(1) {
@@ -69,6 +94,7 @@ sub commit_basic :Local :Args(1) {
     # commit this basic information.
     $params->{member_id} = $c->user->id;
     my ($jpa_member, $order) = $c->registry(api => 'JPAMember')->create($params);
+
     $c->stash->{order} = $order;
     $c->stash->{jpa_member} = $jpa_member;
 }

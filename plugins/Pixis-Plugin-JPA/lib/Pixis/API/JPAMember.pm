@@ -13,7 +13,7 @@ sub create {
 
     my $schema = Pixis::Registry->get(schema => 'Master');
     my ($item) = $schema->resultset('PurchaseItem')->search({
-        id => $args->{membership}
+        id => $args->{membership},
     })->single;
     if (! $item) {
         confess "no such membership type: $args->{membership}";

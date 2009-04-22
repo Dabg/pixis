@@ -112,7 +112,8 @@ sub populate_initial_data {
     () = $schema->populate( 
         PurchaseItem => [
             [ qw(id store_name name price description created_on) ],
-            [ 'JPA-0001', 'JPA', 'JPA一般会員年会費', '5000', 'JPA 年会費', \'NOW()' ],
+            [ 'JPA-0001-bank', 'JPA', 'JPA一般会員年会費', '5000', 'JPA 年会費', \'NOW()' ],
+            [ 'JPA-0001-paypal', 'JPA', 'JPA一般会員年会費', '4500', 'JPA 年会費', \'NOW()' ],
             [ 'JPA-0002', 'JPA', 'JPA学生会員年会費', '0', 'JPA 年会費', \'NOW()' ],
         ]
     );

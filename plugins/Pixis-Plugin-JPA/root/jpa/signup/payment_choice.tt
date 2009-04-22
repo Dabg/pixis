@@ -1,0 +1,14 @@
+[% WRAPPER wrapper.tt %]
+<div id="title">
+<h1>お支払い方法</h1>
+</div>
+
+<div id="content">
+
+<p>Paypalでお支払いいただくと、今なら5000円の年会費が4500円で<b>500円お得！</b> (クレジットカードか、Paypalアカウントが必要となります）</p>
+<div id="signup_basic" class="form_full section">
+[% form %]
+</div>
+</div>
+
+[% END %]

@@ -36,7 +36,7 @@
 </tr>
 <tr>
     <th>年会費</th>
-    <td>5000円</td>
+    <td>[% item_price %]</td>
 </tr>
 [% END # IF %]
 
@@ -48,7 +48,7 @@
 [% END # FOREACH %]
 </table>
 </div><!-- table_container -->
-<p class="clear"><a href="[% c.uri_for("commit_basic", subsession) %]">上記で登録する</a></p>
+<p class="clear"><a href="[% c.uri_for('commit_basic', subsession) %]">上記で登録する</a></p>
 
 </div><!-- section -->
 </div><!-- content -->
