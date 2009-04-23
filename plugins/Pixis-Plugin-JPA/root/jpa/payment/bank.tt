@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1> 銀行振り込みによるお支払い </h1>
-</div>
+[% WRAPPER wrapper.tt, title = "銀行振り込みによるお支払い" %]
 
 <div id="content">
 <div class="section">

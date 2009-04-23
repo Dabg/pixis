@@ -1,6 +1,8 @@
-[% WRAPPER wrapper.tt %]
+[% WRAPPER wrapper.tt, title = "Paypalによる支払い（完了）" %]
 
-<h1>Paypalによる支払い - 完了</h1>
-
-<div>Paypalによる支払いを完了しました。</div>
+<div id="content">
+<div class="session">
+Paypalによる支払いを完了しました。
+</div><!-- session -->
+</div><!-- content -->
 [% END # WRAPPER %]
