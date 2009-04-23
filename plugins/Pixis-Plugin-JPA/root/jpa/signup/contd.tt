@@ -1,7 +1,6 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>Pixis エンジン登録が完了しました</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = "Pixisエンジン登録完了", pagetitle = {
+    content => 'Pixisエンジン登録が完了しました',
+} %]
 
 <div id="content">
 <div class="section">

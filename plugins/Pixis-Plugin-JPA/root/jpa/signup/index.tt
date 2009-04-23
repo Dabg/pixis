@@ -1,7 +1,6 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>Japan Perl Association 新規会員登録</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = '新規会員登録', pagetitle = {
+    content => 'Japan Perl Association 新規会員登録',
+} %]
 
 <div id="content">
 

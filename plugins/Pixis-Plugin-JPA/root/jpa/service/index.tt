@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>JPA サービス内容</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = 'JPA サービス内容' %]
 
 <div id="content">
 <div class="section">

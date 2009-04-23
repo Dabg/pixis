@@ -1,8 +1,8 @@
-[% WRAPPER wrapper.tt %]
-
-<div id="title">
-<h1 id="h1_jpa"><span>一般社団法人</span><br />Japan Perl Association</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, pagetitle = {
+    tag     => 'h1',
+    id      => 'h1_jpa',
+    content => '<span>一般社団法人</span><br />Japan Perl Association',
+} %]
 
 <div id="content">
 

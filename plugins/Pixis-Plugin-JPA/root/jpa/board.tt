@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1> 理事会 </h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = '理事会' %]
 
 <div id="board_content">
 
