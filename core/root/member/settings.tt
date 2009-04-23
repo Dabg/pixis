@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>ユーザー設定</h1>
-</div>
+[% WRAPPER wrapper.tt title = 'ユーザー設定' %]
 
 <div id="content">
 <div class="form_full section">

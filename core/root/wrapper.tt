@@ -34,6 +34,14 @@
 [% PROCESS $header_tt %]
 <div id="container" class="clearfix">
 <div id="main">
+[%- IF (!no_pagetitle) -%]
+<div id="title">
+<[% IF pagetitle.tag %][% pagetitle.tag %][% ELSE %]h1[% END -%]
+[%- IF pagetitle.id %] id="[% pagetitle.id %]"[% END %]>
+[%- IF pagetitle.content %][% pagetitle.content %][% ELSE %][% title %][% END -%]
+</[% IF pagetitle.tag %][% pagetitle.tag %][% ELSE %]h1[% END %]>
+</div><!-- title -->
+[%- END -%]
 [% content %]
 </div><!-- main -->
 [% PROCESS $left_tt %]

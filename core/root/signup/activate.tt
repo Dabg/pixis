@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>登録アクティベーション</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = "登録アクティベーション" %]
 
 <div id="content">
 <div class="form_full section">

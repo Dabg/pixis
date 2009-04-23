@@ -1,4 +1,4 @@
-[% WRAPPER wrapper.tt %]
+[% WRAPPER wrapper.tt, no_pagetitle = 1 %]
 [% SET owner = (c.user.id == member.id) %]
 <div id="member_title" class="clearfix">
 <p id="gravatar"><img src="[% member.gravatar_url %]" width="80" /></p>

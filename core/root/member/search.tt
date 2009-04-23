@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>メンバー検索</h1>
-</div>
+[% WRAPPER wrapper.tt, title = 'メンバー検索' %]
 
 <div id="content">
 <div class="form_full section">
