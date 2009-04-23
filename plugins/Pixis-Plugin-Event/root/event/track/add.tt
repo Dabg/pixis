@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>Track作成</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = 'Track作成' %]
 <div id="content">
 <div class="form_full section">
 [% form %]

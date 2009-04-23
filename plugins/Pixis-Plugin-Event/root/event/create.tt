@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>[% loc("Event Details") %]</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = loc("Event Details") %]
 
 <div id="content">
 <div class="section form_full">

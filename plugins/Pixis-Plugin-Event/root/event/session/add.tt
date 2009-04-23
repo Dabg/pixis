@@ -1,7 +1,4 @@
-[% WRAPPER wrapper.tt %]
-<div id="title">
-<h1>[% loc("Add new session") %]</h1>
-</div><!-- title -->
+[% WRAPPER wrapper.tt, title = loc("Add new session") %]
 
 <div id="content">
 <div class="section clearfix">

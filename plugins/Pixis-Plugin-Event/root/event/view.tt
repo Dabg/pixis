@@ -1,12 +1,12 @@
-[% WRAPPER wrapper.tt %]
+[% WRAPPER wrapper.tt, title = event.title, pagetitle = {
+    tag     => 'p',
+    content => 'イベント情報',
+} %]
 [% 
     SET can_edit = c.check_user_roles('admin');
     SET start_on = event.start_on;
     SET end_on   = event.end_on;
 %]
-<div id="title">
-<p>イベント情報</p>
-</div>
 
 <div id="content">
 <div class="section">
