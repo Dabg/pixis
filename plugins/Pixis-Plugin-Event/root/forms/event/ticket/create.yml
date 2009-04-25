@@ -18,6 +18,11 @@ elements:
         - Required
         - Integer
       default: 0
+    - type: Radiogroup
+      name: payment_type
+      options:
+        - [ 0, '前払い' ]
+        - [ 1, '現地払い' ]
     - type: Submit
       name: submit
       value_loc: Submit

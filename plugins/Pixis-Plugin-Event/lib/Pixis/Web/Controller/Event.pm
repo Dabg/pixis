@@ -93,7 +93,7 @@ sub edit :Chained('load_event') :PathPart('edit') :Args(0) :FormConfig {
 sub attendees :Chained('load_event') :Args(0) {
 }
 
-sub load_ticket :Chained('load_event') :CaptureArgs(1) :PathPart('register') {
+sub load_ticket :Chained('load_event') :CaptureArgs(1) :PathPart('ticket') {
     my ($self, $c, $ticket) = @_;
 
     $c->stash->{ticket} = $c->registry(api => 'EventTicket')->find($ticket);
@@ -105,7 +105,7 @@ sub register :Chained('load_event') :Args(0) :FormConfig {
     $c->forward('/auth/assert_logged_in') or return;
 }
 
-sub register_confirm :Chained('load_ticket') :PathPart('confirm') :Args(0) :FormConfig {
+sub register_confirm :Chained('load_ticket') :PathPart('register/confirm') :Args(0) :FormConfig {
     my ($self, $c) = @_;
 
     $c->forward('/auth/assert_logged_in') or return;
@@ -129,12 +129,12 @@ sub register_confirm :Chained('load_ticket') :PathPart('confirm') :Args(0) :Form
             ticket_id => $c->stash->{ticket}->id,
         });
 
-        $c->res->redirect($c->uri_for('/event', $event->id, 'registered', $order->id));
+        $c->res->redirect($c->uri_for('/event', $event->id, 'ticket', $c->stash->{ticket}->id, 'registered', $order->id));
         return;
     }
 }
 
-sub registered :Chained('load_event') :Args(1) {
+sub registered :Chained('load_ticket') :Args(1) {
     my ($self, $c, $order_id) = @_;
 
     $c->forward('/auth/assert_logged_in') or return;

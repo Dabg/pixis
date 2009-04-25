@@ -29,7 +29,7 @@
 <tr>
     <td>[% ticket.name %][% IF ticket.payment_type == 0 %]（前払い）[% ELSE %]（現地支払い）[% END %]</td>
     <td>[% IF (ticket.price == 0) %]無料[% ELSE %][% ticket.price %]円[% END %]</td>
-    <td><a href="[% c.uri_for("/event", event.id, "register", ticket.id, "confirm") %]">参加</a></td>
+    <td><a href="[% c.uri_for("/event", event.id, "ticket", ticket.id, "register", "confirm") %]">参加</a></td>
 </tr>
 [% END # FOREACH %]
 </table>

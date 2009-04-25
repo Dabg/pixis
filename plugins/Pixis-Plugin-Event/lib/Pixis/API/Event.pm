@@ -238,22 +238,35 @@ sub register {
         )->single;
         die "Ticket with id $args->{ticket_id} could not be found" unless $ticket;
 
+        # If the ticket should be paid onsite, then we create an order,
+        # but we mark it as such... and also, the registration is
+        # considered to be complete
+        my $pay_onsite = ($ticket->payment_type == 1);
+
         my $order_api = Pixis::Registry->get(api => 'Order');
-        my $order = $order_api->create( {
+
+        my %order_args = (
             member_id   => $args->{member_id}, # pixis member ID
             amount      => $ticket->price,
             description => sprintf('%s - %s', $event->title, $ticket->name),
             created_on  => \'NOW()',
-        });
-
-        $schema->resultset('EventRegistration')->create(
-            {
-                member_id  => $args->{member_id},
-                event_id   => $args->{event_id},
-                order_id   => $order->id,
-                created_on => \'NOW()',
-            },
         );
+        if ($pay_onsite) {
+            $order_args{status} = &Pixis::Schema::Master::Order::ST_DONE;
+        }
+
+        my $order = $order_api->create(\%order_args);
+
+        my %registration_args = (
+            member_id  => $args->{member_id},
+            event_id   => $args->{event_id},
+            order_id   => $order->id,
+            created_on => \'NOW()',
+        );
+        if ($pay_onsite) {
+            $registration_args{is_active} = 1;
+        }
+        my $registration = $schema->resultset('EventRegistration')->create(\%registration_args);
 
         return $order;
     }, $self, $args, $schema );

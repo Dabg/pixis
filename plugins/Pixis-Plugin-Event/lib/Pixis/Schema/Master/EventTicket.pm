@@ -27,6 +27,13 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 8,
     },
+    "payment_type" => {
+        data_type => "SMALLINT",
+        is_nullable => 0,
+        default_value => 0,
+        # 0 -> pre-pay (default)
+        # 1 -> pay on-site
+    },
     modified_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
