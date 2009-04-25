@@ -30,7 +30,7 @@ sub headers {
     my $headers = $self->{headers};
 
     unless ( defined $headers ) {
-        return undef;
+        return ();
     }
 
     if ( Scalar::Util::blessed $headers && $headers->isa('HTTP::Headers') ) {
