@@ -21,13 +21,13 @@
 <div class="table_container">
 <table>
 <tr>
-    <th>イベント名</th>
+    <th>&nbsp;</th>
     <th>参加費</th>
     <th>&nbsp;</th>
 </tr>
 [% FOREACH ticket IN c.registry('api', 'EventTicket').search({ event_id => event.id }) %]
 <tr>
-    <td>[% ticket.name %]</td>
+    <td>[% ticket.name %][% IF ticket.payment_type == 0 %]（前払い）[% ELSE %]（現地支払い）[% END %]</td>
     <td>[% IF (ticket.price == 0) %]無料[% ELSE %][% ticket.price %]円[% END %]</td>
     <td><a href="[% c.uri_for("/event", event.id, "register", ticket.id, "confirm") %]">参加</a></td>
 </tr>
