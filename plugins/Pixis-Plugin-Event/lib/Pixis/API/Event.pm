@@ -102,6 +102,19 @@ sub load_sessions_from_date {
         ->load_from_date({ event_id => $event->id, start_on => $date });
 }
 
+sub load_previous {
+    my ($self, $args) = @_;
+
+    my @ids = $self->resultset->search(
+        {
+            end_on => { '<=' => strftime('%Y-%m-%d', localtime) },
+            start_on => { '>=' => strftime('%Y-%m-%d', localtime(time() - 86400 * 90)) }
+        },
+        select => [ 'id' ],
+    );
+    return $self->load_multi(map { $_->id } @ids);
+}
+
 sub load_coming {
     my ($self, $args) = @_;
 

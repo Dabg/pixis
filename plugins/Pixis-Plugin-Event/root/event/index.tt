@@ -15,9 +15,16 @@
     <li><a href="[% c.uri_for("/event", event.id) %]">[% event.title | html %]</a></li>
 [% END %]
 </ul>
-[% ELSE %]
-<p>まだイベントが登録されていません。</p>
 [% END %]
+
+[% IF previous_events.size > 0 %]
+<h2>以前開催されたイベント</h2>
+<ul>
+[% FOREACH event IN previous_events %]
+    <li><a href="[% c.uri_for("/event", event.id) %]">([% event.start_on.strftime('%Y-%m-%d') %]) [% event.title | html %]</a></li>
+[% END # FOREACH %]
+</ul>
+[% END # IF %]
 </div><!-- section -->
 </div><!-- content -->
 [% END # WRAPPER %]

@@ -10,9 +10,10 @@ use DateTime::Format::Strptime;
 sub index :Index :Args(0) {
     my ($self, $c) = @_;
 
-    $c->stash->{events} = 
-        $c->registry(api => 'Event')->load_coming(
-            { max => DateTime->now(time_zone => 'local')->add(years => 1) });
+    my $event_api = $c->registry(api => 'Event');
+    $c->stash->{previous_events} = $event_api->load_previous();
+    $c->stash->{events} = $event_api->load_coming(
+        { max => DateTime->now(time_zone => 'local')->add(years => 1) });
 }
 
 sub create :Local :FormConfig :PixisPriv('admin') {
