@@ -465,10 +465,12 @@ div.section div.asset-body,
 div.section div#more {
     margin: 10px 5px;
 }
-div.entry p.entry_date {
+div.section p.entry_date {
+    font-size: 11px;
     text-align: right;
 }
 
 p.goto_top {
+    margin: 10px 5px;
     text-align: right;
 }
