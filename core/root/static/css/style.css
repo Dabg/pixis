@@ -68,6 +68,9 @@ h2 {
 	font-size: 16px;
 	height: 31px;
 }
+h2 a {
+    font-size: 16px;
+}
 
 div.table_container {
     padding: 15px;
@@ -433,4 +436,39 @@ div#following li.no_follow,
 div#followers li.no_follow {
     padding-left: 22px;
     background: none;
+}
+
+
+
+/* news */
+
+div.entry {
+    padding: 0px 5px 30px 5px;
+    background: url(../img/dotline.gif) repeat-x left bottom;
+}
+div.entry p.entry_title {
+    margin: 10px 0;
+    padding-left: 22px;
+    background: url(../img/listmark_link.gif) no-repeat 0px 3px;
+}
+div.entry p.entry_title a {
+    font-size: 14px;
+}
+div.entry p.entry_title span.entry_date {
+    margin-left: 10px;
+    font-size: 11px;
+}
+div.entry p.more {
+    margin: 10px 0 0 0;
+}
+div.section div.asset-body,
+div.section div#more {
+    margin: 10px 5px;
+}
+div.entry p.entry_date {
+    text-align: right;
+}
+
+p.goto_top {
+    text-align: right;
 }
