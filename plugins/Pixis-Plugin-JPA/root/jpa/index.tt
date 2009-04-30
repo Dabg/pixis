@@ -1,14 +1,15 @@
-[% WRAPPER wrapper.tt, pagetitle = {
-    tag     => 'h1',
-    id      => 'h1_jpa',
-    content => '<span>一般社団法人</span><br />Japan Perl Association',
-} %]
+[% WRAPPER wrapper.tt, 
+    pagetitle = {
+        tag     => 'h1',
+        id      => 'h1_jpa',
+        content => '<span>一般社団法人</span><br />Japan Perl Association',
+    },
+    feeds   => [
+       { type => 'atom', uri => 'http://japan.perlassociation.org/news/atom.xml' },
+    ]
+%]
 
 <div id="content">
-
-<div class="section">
-<p><span style="color:red"><small>4/8 18:00から21:00ごろまで会員登録に問題がございましたが、暫定処置を行いました。<br />大変ご迷惑をおかけいたしました。</small></span></p>
-</div>
 
 <div class="section">
 <h2>Japan Perl Associationについて</h2>
@@ -22,11 +23,26 @@
 
 <div id="information" class="section">
 <h2>お知らせ</h2>
-<ul>
-    <li>2009/4/13 - <a href="/event/jpa-seminar-01">第一回セミナーの参加登録受け付けを開始しました</a></li>
-    <li>2009/4/8 - 本格活動開始に関する記者発表を行いました
-</ul>
 </div><!-- section -->
+<script type="text/javascript">
+<!--    
+    $(document).ready(function() {
+        $.ajax({ 
+            url: "http://japan.perlassociation.org/news/atom.xml",
+            success: function(msg) {
+                var list = "<ul>";
+                $("entry", msg).each(function() {
+                   list += '<li>' +
+                        $("published", this).text().replace(new RegExp('T.+'), '') +
+                        ' <a href="' + $("link", this).attr("href") + '">' +
+                        $("title", this).text() + "</a></li>";
+                } );
+                $("#information").append(list);
+            } 
+        }); 
+    }); 
+-->
+</script>
 
 <div class="section">
 <h2>Perlについて</h2>
