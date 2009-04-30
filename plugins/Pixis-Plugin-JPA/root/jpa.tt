@@ -17,16 +17,25 @@ CALL site_config.navigation.push(
 
 CALL site_config.navigation.push(
     {
-        text => "JPA Wiki",
-        url  => "http://wiki.perlassociation.org"
-        id   => "wiki"
+        text => "JPA News",
+        url  => "/news/"
+        id   => "news"
     }
 );
+
 CALL site_config.navigation.push(
     {
         text => "JPA Services",
         url  => "/jpa/service"
         id   => "services"
+    }
+);
+
+CALL site_config.navigation.push(
+    {
+        text => "JPA Wiki",
+        url  => "http://wiki.perlassociation.org"
+        id   => "wiki"
     }
 );
 
