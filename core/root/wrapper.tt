@@ -8,6 +8,7 @@
     DEFAULT base_styles = [ '/static/css/import.css', '/static/js/theme/ui.all.css' ];
     DEFAULT styles = [];
     DEFAULT metas = [];
+    DEFAULT feeds = [];
     DEFAULT static_uri = '/static/img';
 -%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -28,6 +29,9 @@
 [% END %]
 [% FOREACH style IN styles %]
     <link rel="stylesheet" type="text/css" href="[% style %]">
+[% END %]
+[% FOREACH feed IN feeds %]
+    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]">
 [% END %]
 </head>
 <body>
