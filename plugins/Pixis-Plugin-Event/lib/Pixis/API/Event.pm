@@ -183,7 +183,7 @@ sub load_registered_count {
     my $schema = Pixis::Registry->get(schema => 'master');
     # XXX we need to cache this
     my $row = $schema->resultset('EventRegistration')->search(
-        undef,
+        { event_id => $args->{event_id} },
         {
             select => [ 'count(*)' ],
             as     => [ 'count' ]
