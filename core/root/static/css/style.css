@@ -228,13 +228,17 @@ ul#lnav li a {
 	line-height: 1.4;
 }
 ul#lnav li#lnav_jpa      a { background-position: 0px 0px; height: 25px; }
-ul#lnav li#lnav_wiki     a { background-position: 0px -34px; }
+ul#lnav li#lnav_news     a { background-position: 0px -34px; }
 ul#lnav li#lnav_services a { background-position: 0px -70px; }
-ul#lnav li#lnav_events   a { background-position: 0px -106px; }
+ul#lnav li#lnav_wiki     a { background-position: 0px -106px; }
+ul#lnav li#lnav_blog     a { background-position: 0px -142px; }
+ul#lnav li#lnav_events   a { background-position: 0px -178px; }
 ul#lnav li#lnav_jpa      a:hover { background-position: 230px 0px; }
-ul#lnav li#lnav_wiki     a:hover { background-position: 230px -34px; }
+ul#lnav li#lnav_news     a:hover { background-position: 230px -34px; }
 ul#lnav li#lnav_services a:hover { background-position: 230px -70px; }
-ul#lnav li#lnav_events   a:hover { background-position: 230px -106px; }
+ul#lnav li#lnav_wiki     a:hover { background-position: 230px -106px; }
+ul#lnav li#lnav_blog     a:hover { background-position: 230px -142px; }
+ul#lnav li#lnav_events   a:hover { background-position: 230px -178px; }
 
 ul#subnav {
 	padding: 20px;
