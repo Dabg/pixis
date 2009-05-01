@@ -63,7 +63,7 @@ has 'tt_preprocess' => (
 );
 
 subtype 'Pixis::Plugin::Types::APIList'
-    => as 'ArrayRef'
+    => as 'ArrayRef[Object]'
 ;
 
 coerce 'Pixis::Plugin::Types::APIList'
@@ -142,7 +142,7 @@ sub register {
 #        $c->add_navigation($_) for @{$self->navigation};
 #    }
     foreach my $api ($self->extra_api) {
-        my $pkg = blessed($api);
+        my $pkg = blessed($api) or confess "API is not blessed?!";
         $pkg =~ s/^Pixis::API:://;
         $registry->set(api => split(/::/, $pkg), $api);
     }
