@@ -43,8 +43,6 @@ around 'set' => sub {
     $next->($self, $key, $value);
 };
 
-no MooseX::Singleton;
-
 sub __to_key {
     my $self = shift;
     return join('.', map { my $x = $_; $x =~ s/\./\_/g; lc $x } @_ );
