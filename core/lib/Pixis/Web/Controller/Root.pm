@@ -10,7 +10,7 @@ __PACKAGE__->mk_accessors($_) for qw(site_index);
 sub COMPONENT {
     my ($self, $c, $config) = @_;
 
-    $self = $self->NEXT::COMPONENT($c, $config);
+    $self = $self->maybe::next::method($c, $config);
 
     my $site_index = $config->{site_index} || $c->config->{site}->{index};
     $self->site_index($site_index) if $site_index;

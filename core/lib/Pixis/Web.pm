@@ -1,26 +1,19 @@
 package Pixis::Web;
-
-use strict;
-use warnings;
+use Moose;
 
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
 
 use Pixis::Hacks;
 use Pixis::Registry;
-use Catalyst::Runtime '5.70';
-use parent qw(Catalyst);
-use Catalyst qw(
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-    Unicode
-);
+use Catalyst::Runtime '5.80';
+our $REGISTRY;
+
+BEGIN {
+    $REGISTRY = Pixis::Registry->instance;
+}
+
+extends 'Catalyst';
 use Module::Pluggable::Object;
 use Pixis::Web::Exception;
 
@@ -96,7 +89,6 @@ my %REGISTERED_PLUGINS = ();
 my %TT_ARGS            = ();
 my @PLUGINS            = ();
 
-our $REGISTRY = Pixis::Registry->instance;
 sub registry {
     shift;
     # XXX the initialization code is currently at Model::API. Should this
@@ -104,7 +96,7 @@ sub registry {
     $REGISTRY->get(@_);
 }
 
-sub setup {
+after setup_finalize => sub {
     my $self = shift;
 
     $REGISTRY->set(pixis => web => $self);
@@ -112,8 +104,7 @@ sub setup {
     # for various reasons, we /NEED/ to have Catalyst setup itself before
     # we setup our plugins.
     push @_, $ENV{CATALYST_DEBUG} ? "-log=error,debug" : "-log=error";
-    $self->SUPER::setup(@_);
-}
+};
 
 sub setup_pixis_plugins {
     my $self = shift;
@@ -221,9 +212,6 @@ sub add_formfu_path {
     }
 }
 
-__PACKAGE__->setup();
-__PACKAGE__->setup_pixis_plugins();
-
 sub finalize {
     my ( $c ) = shift;
     $c->handle_exception if @{ $c->error };
@@ -288,6 +276,20 @@ $SIG{ __DIE__ } = sub {
         Pixis::Web::Exception->throw( message => join '', @_ );
     }
 };
+
+__PACKAGE__->setup(qw/
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+    Unicode
+/);
+__PACKAGE__->setup_pixis_plugins();
+
 
 1;
 
