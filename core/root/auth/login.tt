@@ -4,6 +4,7 @@
 <div id="login" class="form_full section">
 [% form %]
 <p class="link"><a href="[% c.uri_for('/signup') %]">[% loc("No Account? Sign up now!") %]</a> </p>
+<p class="link"><a href="[% c.uri_for('/member/forgot_password') %]">[% loc("Forgot password?") %]</a> </p>
 </div><!-- login -->
 </div><!-- content -->
 [% END # WRAPPER %]

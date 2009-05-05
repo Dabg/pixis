@@ -8,15 +8,24 @@ my $user = {
     lastname => 'bar',
 };
 
-my $test = Test::FITesque::Test->new({
-    data => [
-        [ 'Test::Pixis::FITesque::Login' ],
-        [ 'setup_db' ],
-        [ 'setup_web' ],
-        [ 'signin', $user ],
-        [ 'login', $user ],
-        [ 'logout' ],
-    ]
-});
+my $user_reset = {
+    email => 'foo@example.com', 
+    password => 'kogaidan',
+};
 
-$test->run_tests;
+{
+    my $test = Test::FITesque::Test->new({
+            data => [
+                [ 'Test::Pixis::FITesque::Login' ],
+                [ 'setup_db' ],
+                [ 'setup_web' ],
+                [ 'signin', $user ],
+                [ 'login', $user ],
+                [ 'logout' ],
+                [ 'forgot_password', $user_reset ],
+                [ 'login', $user_reset ],
+            ]
+        });
+
+    $test->run_tests;
+}

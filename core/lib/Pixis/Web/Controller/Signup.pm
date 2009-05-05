@@ -124,7 +124,6 @@ sub activate :Local :Args(0) :FormConfig {
             my $member = $c->registry(api => 'Member')->load_from_email($form->param_value('email'));
             my ($auth) = $c->registry(api => 'MemberAuth')->load_auth({ email => $form->param_value('email'), 'auth_type' => 'password' });
             $c->forward('/auth/authenticate', [ $member->email, $auth->auth_data, 'members_internal' ]);
-            $c->session->{signup}->{$subsession} = $member->id;
             
             return $c->forward('next_step', [$subsession]);
         }
@@ -157,8 +156,7 @@ sub send_activate :Local :Args(1) {
 
 sub done :Local {
     my ($self, $c, $subsession) =  @_;
-    my $id = delete $c->session->{signup}->{$subsession};
-    $c->res->redirect($c->uri_for('/member', $id));
+    $c->res->redirect($c->uri_for('/member/home'));
 }
 
 sub new_subsession {
