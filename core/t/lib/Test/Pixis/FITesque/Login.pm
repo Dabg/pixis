@@ -110,12 +110,23 @@ sub forgot_password : Test :Plan(9) {
     $mech->follow_link_ok({text => 'ログアウト'});
 }
 
-sub reset_password_without_token : Test : Plan(2) {
+sub reset_password_without_token : Test : Plan(3) {
     my ( $self, $args ) = @_;
     my $mech = $self->mech;
     $mech->cookie_jar({}); #reset cookies
-    $mech->get_ok('/member/reset_password', {email => $args->{email}});
-    is $mech->uri->path, '/';
+    $mech->get_ok("/member/reset_password?email=$args->{email}");
+    $mech->submit_form_ok(
+        {
+            form_number => 1,
+            fields => {
+                email => $args->{email},
+                password => $args->{password},
+                password_check => $args->{password},
+            },
+            button => 'submit',
+        }
+    );
+    $mech->content_like(qr{form_error_message});
 }
 
 1;
