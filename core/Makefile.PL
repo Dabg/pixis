@@ -1,10 +1,12 @@
 # IMPORTANT: if you delete this file your app will not work as
 # expected.  you have been warned
 use inc::Module::Install;
-use Apache::TestMM qw(test clean);
 
-Apache::TestMM::filter_args();
-Apache::TestMM::generate_script('t/TEST');
+if (eval { require Apache::TestMM }) {
+    Apache::TestMM->import( qw(test clean) );
+    Apache::TestMM::filter_args();
+    Apache::TestMM::generate_script('t/TEST');
+}
 
 name 'Pixis-Web';
 all_from 'lib/Pixis/Web.pm';
@@ -16,6 +18,7 @@ requires 'Catalyst::Controller::HTML::FormFu';
 requires 'Catalyst::Authentication::Credential::Password';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Model::Data::Localize', '0.00003';
+requires 'Catalyst::Model::DBIC::Schema';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Authorization::Roles';
 requires 'Catalyst::Plugin::ConfigLoader';
@@ -58,6 +61,8 @@ requires 'MooseX::WithCache';
 requires 'SQL::Translator';
 requires 'Text::CSV_XS';
 requires 'Template::Provider::Encoding';
+
+recommends 'Catalyst::Engine::FastCGI';
 
 test_requires 'Test::More', '0.82';
 
