@@ -73,6 +73,9 @@ msgstr "送信"
 msgid "No Account? Sign up now!"
 msgstr "新規登録はこちら"
 
+msgid "Forgot password?"
+msgstr "パスワードを忘れたら"
+
 msgid "Create"
 msgstr "作成"
 

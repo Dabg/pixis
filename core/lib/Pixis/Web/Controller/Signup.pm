@@ -156,8 +156,7 @@ sub send_activate :Local :Args(1) {
 
 sub done :Local {
     my ($self, $c, $subsession) =  @_;
-    my $id = delete $c->session->{signup}->{$subsession};
-    $c->res->redirect($c->uri_for('/member', $id));
+    $c->res->redirect($c->uri_for('/member/home'));
 }
 
 sub new_subsession {

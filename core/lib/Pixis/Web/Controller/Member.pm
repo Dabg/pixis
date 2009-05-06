@@ -10,8 +10,11 @@ use Digest::SHA1 ();
 sub auto :Private {
     my ($self, $c) = @_;
 
-    $c->forward('/auth/assert_logged_in') or return;
-
+    if ( $c->action->reverse =~ m{^member/(?:forgot|reset)_password$} ) {
+        return 1;
+    } else {
+        $c->forward('/auth/assert_logged_in') or return;
+    }
 }
 
 sub load_member :Chained :PathPart('member') CaptureArgs(1) {
@@ -117,6 +120,70 @@ sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
             },
         );
         $c->res->redirect($c->uri_for('/member/settings'));
+    }
+}
+
+sub forgot_password :Local :Args(0) :FormConfig {
+    my ( $self, $c ) = @_;
+
+    $c->logout;
+
+    my $form = $c->stash->{form};
+    if ($form->submitted_and_valid) {
+        my $api = $c->registry(api => 'Member');
+        my $member = $api->forgot_password({email => $form->param_value('email')});
+        if ($member) {
+            $c->stash->{member} = $member; 
+            my $body = $c->view('TT')->render($c, 'member/forgot_password_email.tt');
+            $c->controller('Email')->send($c, {
+                    header => {
+                        To => $member->email,
+                        From => 'no-reply@pixis.local',
+                        Subject => 'パスワード再設定メール',
+                    },
+                    body => $body,
+                }
+            );
+            $c->stash->{message} = 'email sent';
+        } else {
+            $form->form_error_message("your mail address not found.");
+            $form->force_error_message(1);
+        }
+    }
+}
+
+sub reset_password :Local :Args(0) :FormConfig {
+    my ( $self, $c ) = @_;
+
+    $c->logout;
+
+    my $form = $c->stash->{form};
+    if ($form->submitted_and_valid) {
+        my $api = $c->registry(api => 'Member');
+        my $member = $api->reset_password(
+            {
+                email => $form->param_value('email'),
+                token => $form->param_value('token'),
+            }
+        );
+        unless ($member) {
+            $form->form_error_message_xml(
+                sprintf('your reset password url is invalid. <a href="%s">try again</a>', $c->uri_for('forgot_password'))
+            );
+            $form->force_error_message(1);
+            return;
+        }
+        my $auth_api = $c->registry(api => 'MemberAuth');
+        $auth_api->update_auth(
+            {
+                member_id => $member->id,
+                auth_type => 'password',
+                password  => $form->param('password')
+            },
+        );
+        my ($auth) = $auth_api->load_auth({ email => $form->param_value('email'), 'auth_type' => 'password' });
+        $c->forward('/auth/authenticate', [ $member->email, $auth->auth_data, 'members_internal' ]);
+        $c->res->redirect($c->uri_for('home'));
     }
 }
 
