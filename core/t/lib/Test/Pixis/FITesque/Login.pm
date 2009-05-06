@@ -77,6 +77,7 @@ sub logout : Test : Plan(2) {
 sub forgot_password : Test :Plan(9) {
     my ($self, $args) = @_;
     my $mech = $self->mech;
+    $mech->cookie_jar({}); #reset cookies
     $mech->get_ok('/');
     $mech->follow_link_ok({text => 'ログイン'});
     $mech->follow_link_ok({text_regex => qr{忘}});
@@ -107,6 +108,14 @@ sub forgot_password : Test :Plan(9) {
         }
     );
     $mech->follow_link_ok({text => 'ログアウト'});
+}
+
+sub reset_password_without_token : Test : Plan(2) {
+    my ( $self, $args ) = @_;
+    my $mech = $self->mech;
+    $mech->cookie_jar({}); #reset cookies
+    $mech->get_ok('/member/reset_password', {email => $args->{email}});
+    is $mech->uri->path, '/';
 }
 
 1;

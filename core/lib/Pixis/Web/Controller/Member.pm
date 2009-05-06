@@ -126,14 +126,13 @@ sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
 sub forgot_password :Local :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
 
+    $c->logout;
+
     my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
         my $api = $c->registry(api => 'Member');
-        my $member = $api->load_from_email($form->param_value('email'));
+        my $member = $api->forgot_password({email => $form->param_value('email')});
         if ($member) {
-            # XXX should do so in Pixis::API::Member !!
-            $member->activation_token($c->generate_session_id);
-            $member->update;
             $c->stash->{member} = $member; 
             my $body = $c->view('TT')->render($c, 'member/forgot_password_email.tt');
             $c->controller('Email')->send($c, {
@@ -156,14 +155,24 @@ sub forgot_password :Local :Args(0) :FormConfig {
 sub reset_password :Local :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
 
-    my $form = $c->stash->{form};
-    my $api = $c->registry(api => 'Member');
-    my $member = $api->load_from_email($form->param_value('email'));
+    $c->logout;
 
-    unless ($member && $member->activation_token eq $c->req->param('token')) {
-        return $c->res->redirect('/');
-    }
+    my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
+        my $api = $c->registry(api => 'Member');
+        my $member = $api->reset_password(
+            {
+                email => $form->param_value('email'),
+                token => $form->param_value('token'),
+            }
+        );
+        unless ($member) {
+            $form->form_error_message_xml(
+                sprintf('your reset password url is invalid. <a href="%s">try again</a>', $c->uri_for('forgot_password'))
+            );
+            $form->force_error_message(1);
+            return;
+        }
         my $auth_api = $c->registry(api => 'MemberAuth');
         $auth_api->update_auth(
             {

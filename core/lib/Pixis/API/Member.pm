@@ -59,6 +59,46 @@ sub create {
     return $member;
 }
 
+# returns member with activation_token
+sub forgot_password {
+    my ($self, $args) = @_;
+
+    $args->{email} or die 'no email';
+    my $member = $self->load_from_email($args->{email}) or return;
+    $member->is_active or return;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    $member = $schema->txn_do( sub {
+            my $schema = shift;
+            $member->activation_token(Digest::SHA1::sha1_hex(time, rand, $$, {}, $self->cache_prefix, $member->id));
+            $member->update;
+            # delete the cache, just in case
+            $self->cache_del([ $self->cache_prefix, $member->id ]);
+            return $self->find($member->id);
+    }, $schema );
+    return $member;
+}
+
+# returns member matching email and activation_token
+sub reset_password {
+    my ($self, $args) = @_;
+    $args->{email} && $args->{token} or return;
+    my $member = $self->load_from_email($args->{email}) or return;
+    $member->is_active or return;
+    $member->activation_token eq $args->{token} or return;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    $member = $schema->txn_do( sub {
+            my $schema = shift;
+            $member->activation_token(undef);
+            $member->update;
+            # delete the cache, just in case
+            $self->cache_del([ $self->cache_prefix, $member->id ]);
+            return $self->find($member->id);
+    }, $schema );
+    return $member;
+}
+
 sub activate {
     my ($self, $args) = @_;
 
