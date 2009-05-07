@@ -3,7 +3,7 @@ use Moose;
 with 
     'Test::Pixis::Setup::Basic',
     'Test::Pixis::Setup::Schema',
-    'Test::Pixis::Setup::Mechanize',
+    'Test::Pixis::Web::Common',
 ;
 
 use utf8;
@@ -53,31 +53,6 @@ sub signin : Test : Plan(13) {
         $mech->get_ok($activation_uri); 
         ok $mech->find_link(text => 'ログアウト');
     } "email check all ok";
-}
-
-sub login : Test : Plan(4) {
-    my ($self, $args) = @_;
-    my $mech = $self->reset_mech;
-    $mech->get_ok('/');
-    $mech->follow_link_ok({text => 'ログイン'});
-    $mech->submit_form_ok(
-        {
-            form_number => 1,
-            fields => {
-                email => $args->{email} || '',
-                password => $args->{password} || '',
-            },
-            button => 'submit',
-        }
-    );
-    ok $mech->find_link(text => 'ログアウト');
-}
-
-sub logout : Test : Plan(2) {
-    my ($self, $args) = @_;
-    my $mech = $self->mech;
-    $mech->get_ok('/');
-    $mech->follow_link_ok({text => 'ログアウト'});
 }
 
 sub forgot_password : Test :Plan(9) {
