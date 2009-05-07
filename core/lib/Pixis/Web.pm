@@ -1,5 +1,7 @@
 package Pixis::Web;
 use Moose;
+use Catalyst;
+use Carp::Always;
 
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
@@ -14,10 +16,6 @@ BEGIN {
 }
 
 extends 'Catalyst';
-use Module::Pluggable::Object;
-use Pixis::Web::Exception;
-
-our $VERSION = '0.01';
 
 __PACKAGE__->config(
     name => 'Pixis::Web',
@@ -74,15 +72,22 @@ __PACKAGE__->config(
     },
     'View::TT' => {
         PRE_PROCESS => 'preprocess.tt',
-        LOAD_TEMPLATES => [
-            Template::Provider::Encoding->new(
+        PROVIDERS => [
+            { name => 'Encoding',
+              args => {
                 INCLUDE_PATH => [ __PACKAGE__->path_to('root') ],
                 COMPILE_DIR  => __PACKAGE__->path_to('tt2'),
-            )
+              }
+            }
         ],
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
+
+use Module::Pluggable::Object;
+use Pixis::Web::Exception;
+
+our $VERSION = '0.01';
 
 # mk_classdata is overkill for these.
 my %REGISTERED_PLUGINS = ();
@@ -212,11 +217,10 @@ sub add_formfu_path {
     }
 }
 
-sub finalize {
-    my ( $c ) = shift;
+before finalize => sub {
+    my $c = shift;
     $c->handle_exception if @{ $c->error };
-    $c->NEXT::finalize( @_ );
-}
+};
 
 sub handle_exception {
     my( $c )  = @_;
