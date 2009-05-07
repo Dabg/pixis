@@ -1,5 +1,6 @@
 package Pixis::Web;
 use Moose;
+use namespace::clean -except => qw(meta);
 use Catalyst;
 use Carp::Always;
 
@@ -13,9 +14,8 @@ our $REGISTRY;
 
 BEGIN {
     $REGISTRY = Pixis::Registry->instance;
+    extends 'Catalyst';
 }
-
-extends 'Catalyst';
 
 __PACKAGE__->config(
     name => 'Pixis::Web',
@@ -83,6 +83,17 @@ __PACKAGE__->config(
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
+__PACKAGE__->setup(qw/
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+    Unicode
+/);
 
 use Module::Pluggable::Object;
 use Pixis::Web::Exception;
@@ -104,7 +115,6 @@ sub registry {
 after setup_finalize => sub {
     my $self = shift;
 
-    $REGISTRY->set(pixis => web => $self);
 
     # for various reasons, we /NEED/ to have Catalyst setup itself before
     # we setup our plugins.
@@ -113,6 +123,8 @@ after setup_finalize => sub {
 
 sub setup_pixis_plugins {
     my $self = shift;
+
+    $REGISTRY->set(pixis => web => $self);
 
     # set the search path so we can look for plugins
     my $search_path = $self->config->{plugins}->{search_path} || [];
@@ -281,17 +293,6 @@ $SIG{ __DIE__ } = sub {
     }
 };
 
-__PACKAGE__->setup(qw/
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-    Unicode
-/);
 __PACKAGE__->setup_pixis_plugins();
 
 
