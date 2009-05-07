@@ -1,4 +1,4 @@
-package Test::Pixis::Login;
+package Test::Pixis::Web::Login;
 use Moose;
 with 
     'Test::Pixis::Setup::Basic',

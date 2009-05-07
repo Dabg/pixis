@@ -15,7 +15,7 @@ my $user_reset = {
 
 run_tests {
     test { 
-        [ 'Test::Pixis::Login' ],
+        [ 'Test::Pixis::Web::Login' ],
         [ 'setup_db' ],
         [ 'setup_web' ],
         [ 'signin', $user ],
