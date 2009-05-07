@@ -55,7 +55,7 @@ requires 'Module::Pluggable';
 requires 'Moose';
 requires 'MooseX::AttributeHelpers';
 requires 'MooseX::Types::Path::Class';
-requires 'MooseX::Singleton';
+requires 'MooseX::Singleton', '0.17';
 requires 'MooseX::WithCache';
 requires 'SQL::Translator';
 requires 'Text::CSV_XS';
