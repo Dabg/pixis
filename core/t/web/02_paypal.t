@@ -11,18 +11,22 @@ my $user = {
 run_tests {
     test { 
         [ 'Test::Pixis::Web::Paypal' ],
-        [ 'login', $user ],
+
+        # XXX TODO: Can't we just call setup() once? (via Moose?)
+        [ 'setup_db' ],
+        [ 'setup' ],
 
         # XXX TODO: We probably need to hand wave this and put the item and
         # the order via the API, not from web, and then just test paypal itself
 
         # Make sure there's something in the purchase item list
-        # [ 'FIX ME' ]
+        [ 'create_purchase_item' ],
 
         # Place an order via the API
         # [ 'FIX ME' ]
 
         # Pay for it via paypal
+        [ 'login', $user ],
         [ 'payfor_it' ],
 
         # Make sure by checking the paypal site
