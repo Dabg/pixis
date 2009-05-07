@@ -1,6 +1,7 @@
 package Test::Pixis::Login;
 use Moose;
 with 
+    'Test::Pixis::Setup::Basic',
     'Test::Pixis::Setup::Schema',
     'Test::Pixis::Setup::Mechanize',
 ;
@@ -25,7 +26,8 @@ sub signin : Test : Plan(13) {
             form_number => 1,
             fields => $args,
             button => 'submit',
-        }
+        },
+        "新規登録ボタン",
     );
     unlike $mech->content, qr{form_error_message};
     $mech->submit_form_ok(
