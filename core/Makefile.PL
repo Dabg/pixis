@@ -65,6 +65,8 @@ requires 'Template::Provider::Encoding';
 recommends 'Catalyst::Engine::FastCGI';
 
 test_requires 'Test::More', '0.82';
+test_requires 'Test::FITesque';
+test_requires 'Test::WWW::Mechanize::Catalyst';
 
 catalyst;
 
