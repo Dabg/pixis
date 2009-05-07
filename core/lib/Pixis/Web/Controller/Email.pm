@@ -5,13 +5,6 @@ use base qw(Catalyst::Controller);
 use utf8;
 use Encode ();
 
-sub COMPONENT {
-    my ($self, $c, $config) = @_;
-    $self = $self->NEXT::COMPONENT($c, $config);
-    $self->config($config);
-    $self;
-}
-
 sub send :Private {
     my ($self, $c, $args) = @_;
 
