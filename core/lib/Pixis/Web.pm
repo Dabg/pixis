@@ -1,8 +1,11 @@
 package Pixis::Web;
 use Moose;
 use namespace::clean -except => qw(meta);
+
+# XXX Note to self: You /HAVE/ to say use Catalyst before doing anything
+# that depends on $c->config->{home} (such as ->path_to()), as import()
+# is where the initialization gets triggered
 use Catalyst;
-use Carp::Always;
 
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
