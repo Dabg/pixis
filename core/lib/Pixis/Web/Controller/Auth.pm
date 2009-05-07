@@ -17,7 +17,8 @@ sub assert_logged_in :Private {
         $c->res->redirect($c->uri_for('/auth/login'));
         return ();
     }
-    $c->log->debug("user " . $c->user->email . " asserted");
+    $c->log->debug("user " . $c->user->email . " asserted")
+        if $c->log->is_debug;
     return 1;
 }
 
