@@ -18,7 +18,7 @@ my $test = Test::FITesque::Suite->new;
 
 my $signup = Test::FITesque::Test->new({
         data => [
-        [ 'Test::Pixis::FITesque::Login' ],
+        [ 'Test::Pixis::Login' ],
         [ 'setup_db' ],
         [ 'setup_web' ],
         [ 'signin', $user ],
