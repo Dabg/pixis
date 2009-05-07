@@ -16,7 +16,7 @@ requires 'Catalyst::Runtime' => '5.8';
 requires 'Catalyst::Controller::HTML::FormFu';
 requires 'Catalyst::Authentication::Credential::Password';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
-requires 'Catalyst::Model::Data::Localize', '0.00003';
+requires 'Catalyst::Model::Data::Localize', '0.00005';
 requires 'Catalyst::Model::DBIC::Schema';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Authorization::Roles';
