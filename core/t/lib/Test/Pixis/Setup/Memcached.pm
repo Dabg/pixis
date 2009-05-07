@@ -60,8 +60,7 @@ sub check_memcached {
     }
 
     if (! $server_ok) {
-        # XXX FIX ME
-#        plan(skip_all => "No memcached servers available");
+        fail("No memcached servers available");
     }
 }
 
