@@ -116,12 +116,4 @@ HOWTO SETUP PIXIS
 
     make test
 
-    # or, TEST script directly
-
-    ./t/TEST [script]
-
-    # If you want to enable memcached
-
-    env MEMCACHED_SERVER=127.0.0.1:11211 make test
-
 EOM
