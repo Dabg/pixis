@@ -7,6 +7,7 @@ use utf8;
 use parent 'Test::FITesque::Fixture';
 
 use Test::More;
+use Test::Exception;
 use Email::Send::Test;
 
 sub signin : Test : Plan(13) {
@@ -41,11 +42,13 @@ sub signin : Test : Plan(13) {
     );
     unlike $mech->content, qr{form_error_message};
     my @emails = Email::Send::Test->emails;
-    is scalar @emails, 1, 'activation mail sent';
-    my $body = $emails[0]->body;
-    ok( my ($activation_uri) = $body =~ m{http://localhost(/signup/activate\S+)});
-    $mech->get_ok($activation_uri); 
-    ok $mech->find_link(text => 'ログアウト');
+    lives_and {
+        is scalar @emails, 1, 'activation mail sent';
+        my $body = $emails[0]->body;
+        ok( my ($activation_uri) = $body =~ m{http://localhost(/signup/activate\S+)});
+        $mech->get_ok($activation_uri); 
+        ok $mech->find_link(text => 'ログアウト');
+    } "email check all ok";
 }
 
 sub login : Test : Plan(4) {
