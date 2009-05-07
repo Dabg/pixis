@@ -7,7 +7,7 @@ __PACKAGE__->mk_accessors($_) for qw(steps);
 
 sub COMPONENT {
     my ($self, $c, $config) = @_;
-    $self = $self->NEXT::COMPONENT($c, $config);
+    $self = $self->maybe::next::method($c, $config);
 
     $self->steps(['experience', 'commit', 'send_activate', 'activate' ]) unless $self->steps;
     $self;

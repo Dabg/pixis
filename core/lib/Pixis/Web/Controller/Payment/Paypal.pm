@@ -9,7 +9,7 @@ __PACKAGE__->mk_accessors($_) for qw(complete_url accept_url cancel_url);
 sub COMPONENT {
     my ($self, $c, $config) = @_;
 
-    $self = $self->NEXT::COMPONENT($c, $config);
+    $self = $self->maybe::next::method($c, $config);
     $self->complete_url( $config->{complete_url} || 'complete' );
     $self->accept_url( $config->{accept_url} || 'accept' );
     $self->cancel_url( $config->{cancel_url} || 'cancel' );
