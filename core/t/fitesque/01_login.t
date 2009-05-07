@@ -1,6 +1,5 @@
-use Test::FITesque::Suite;
-use Test::FITesque::Test;
 use lib 't/lib';
+use Test::FITesque;
 
 my $user = {
     email => 'foo@example.com', 
@@ -14,10 +13,8 @@ my $user_reset = {
     password => 'kogaidan',
 };
 
-my $test = Test::FITesque::Suite->new;
-
-my $signup = Test::FITesque::Test->new({
-        data => [
+run_tests {
+    test { 
         [ 'Test::Pixis::Login' ],
         [ 'setup_db' ],
         [ 'setup_web' ],
@@ -27,10 +24,5 @@ my $signup = Test::FITesque::Test->new({
         [ 'forgot_password', $user_reset ],
         [ 'login', $user_reset ],
         [ 'reset_password_without_token', $user_reset ],
-        ]
     }
-);
-
-$test->add($signup);
-
-$test->run_tests;
+};
