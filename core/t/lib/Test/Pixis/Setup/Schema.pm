@@ -1,12 +1,13 @@
 package Test::Pixis::Setup::Schema;
 use Moose::Role;
 use Test::Pixis;
+use Pixis::CLI::SetupDB;
 
 sub setup_db {
     # XXX FIX ME!!!
     my $t = Test::Pixis->instance();
 
-    if (! $ENV{PIXIS_SKIP_SETUPDB}) {
+    if ($ENV{PIXIS_SKIP_SETUPDB}) {
         return;
     }
     my $connect_info = $t->config->{'Schema::Master'}->{connect_info};
