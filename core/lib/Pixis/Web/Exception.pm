@@ -25,33 +25,41 @@ use Exception::Class
     },
 ;
 
-sub headers {
-    my $self    = shift;
-    my $headers = $self->{headers};
-
-    unless ( defined $headers ) {
-        return ();
+{
+    no warnings 'redefine';
+    sub headers {
+        my $self    = shift;
+        my $headers = $self->{headers};
+    
+        unless ( defined $headers ) {
+            return ();
+        }
+    
+        if ( Scalar::Util::blessed $headers && $headers->isa('HTTP::Headers') ) {
+            return $headers;
+        }
+    
+        if ( ref $headers eq 'ARRAY' ) {
+            return $self->{headers} = HTTP::Headers->new( @{ $headers } );
+        }
+    
+        if ( ref $headers eq 'HASH' ) {
+            return $self->{headers} = HTTP::Headers->new( %{ $headers } );
+        }
+    
+        Pixis::Web::Exception->throw(
+            message => qq(Can't coerce a '$headers' into a HTTP::Headers instance.)
+        );
     }
 
-    if ( Scalar::Util::blessed $headers && $headers->isa('HTTP::Headers') ) {
-        return $headers;
+    sub status {
+        return $_[0]->{status} ||= 500;
     }
 
-    if ( ref $headers eq 'ARRAY' ) {
-        return $self->{headers} = HTTP::Headers->new( @{ $headers } );
+    sub status_message {
+        return $_[0]->{status_message} ||= HTTP::Status::status_message( $_[0]->status );
     }
 
-    if ( ref $headers eq 'HASH' ) {
-        return $self->{headers} = HTTP::Headers->new( %{ $headers } );
-    }
-
-    Pixis::Web::Exception->throw(
-        message => qq(Can't coerce a '$headers' into a HTTP::Headers instance.)
-    );
-}
-
-sub status {
-    return $_[0]->{status} ||= 500;
 }
 
 foreach my $method qw(is_info is_success is_redirect is_error is_client_error is_server_error) {
@@ -65,10 +73,6 @@ foreach my $method qw(is_info is_success is_redirect is_error is_client_error is
 
 sub status_line {
     return sprintf "%s %s", $_[0]->status, $_[0]->status_message;
-}
-
-sub status_message {
-    return $_[0]->{status_message} ||= HTTP::Status::status_message( $_[0]->status );
 }
 
 my %messages = (
