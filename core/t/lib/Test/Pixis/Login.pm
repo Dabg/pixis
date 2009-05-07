@@ -1,6 +1,9 @@
 package Test::Pixis::Login;
 use Moose;
-with 'Test::Pixis::Setup';
+with 
+    'Test::Pixis::Setup::Schema',
+    'Test::Pixis::Setup::Mechanize',
+;
 
 use utf8;
 
@@ -13,8 +16,7 @@ use Email::Send::Test;
 sub signin : Test : Plan(13) {
     my ($self, $args) = @_;
     $args->{password_check} ||= $args->{password};
-    my $mech = $self->mech;
-    $mech->cookie_jar({}); #reset cookies
+    my $mech = $self->reset_mech;
     $mech->get_ok('/');
     $mech->follow_link_ok({text => 'ログイン'});
     $mech->follow_link_ok({text_regex => qr/新規登録/});
@@ -32,7 +34,7 @@ sub signin : Test : Plan(13) {
             button => 'submit',
         }
     );
-    unlike $self->mech->content, qr{form_error_message};
+    unlike $mech->content, qr{form_error_message};
     Email::Send::Test->clear;
     $mech->submit_form_ok(
         {
@@ -53,8 +55,7 @@ sub signin : Test : Plan(13) {
 
 sub login : Test : Plan(4) {
     my ($self, $args) = @_;
-    my $mech = $self->mech;
-    $mech->cookie_jar({}); #reset cookies
+    my $mech = $self->reset_mech;
     $mech->get_ok('/');
     $mech->follow_link_ok({text => 'ログイン'});
     $mech->submit_form_ok(
@@ -79,8 +80,7 @@ sub logout : Test : Plan(2) {
 
 sub forgot_password : Test :Plan(9) {
     my ($self, $args) = @_;
-    my $mech = $self->mech;
-    $mech->cookie_jar({}); #reset cookies
+    my $mech = $self->reset_mech;
     $mech->get_ok('/');
     $mech->follow_link_ok({text => 'ログイン'});
     $mech->follow_link_ok({text_regex => qr{忘}});
@@ -115,8 +115,7 @@ sub forgot_password : Test :Plan(9) {
 
 sub reset_password_without_token : Test : Plan(3) {
     my ( $self, $args ) = @_;
-    my $mech = $self->mech;
-    $mech->cookie_jar({}); #reset cookies
+    my $mech = $self->reset_mech;
     $mech->get_ok("/member/reset_password?email=$args->{email}");
     $mech->submit_form_ok(
         {
