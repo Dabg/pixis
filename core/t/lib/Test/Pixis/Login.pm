@@ -1,6 +1,6 @@
-package Test::Pixis::FITesque::Login;
+package Test::Pixis::Login;
 use Moose;
-with 'Test::Pixis::FITesque::Setup';
+with 'Test::Pixis::Setup';
 
 use utf8;
 

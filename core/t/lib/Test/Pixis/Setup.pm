@@ -1,4 +1,4 @@
-package Test::Pixis::FITesque::Setup;
+package Test::Pixis::Setup;
 use parent 'Test::FITesque::Fixture';
 use Moose::Role;
 
@@ -29,6 +29,7 @@ sub _build_mech {
 sub setup_db {
     my $t = Test::Pixis->instance();
 
+    if (! $ENV{PIXIS_SKIP_SETUPDB}) {
     my $connect_info = $t->config->{'Schema::Master'}->{connect_info};
 
     Pixis::CLI::SetupDB->new(
@@ -37,6 +38,7 @@ sub setup_db {
         password => $connect_info->[2] || '',
         drop => 1,
     )->run();
+    }
 }
 
 sub setup_web : Test : Plan(1) {
