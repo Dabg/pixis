@@ -12,8 +12,7 @@ name 'Pixis-Web';
 all_from 'lib/Pixis/Web.pm';
 
 requires 'namespace::clean';
-requires 'Apache::Test';
-requires 'Catalyst::Runtime' => '5.7015';
+requires 'Catalyst::Runtime' => '5.8';
 requires 'Catalyst::Controller::HTML::FormFu';
 requires 'Catalyst::Authentication::Credential::Password';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
@@ -63,6 +62,7 @@ requires 'Text::CSV_XS';
 requires 'Template::Provider::Encoding';
 
 recommends 'Catalyst::Engine::FastCGI';
+recommends 'Apache::Test';
 
 test_requires 'Test::More', '0.82';
 test_requires 'Test::FITesque';
