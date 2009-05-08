@@ -1,18 +1,14 @@
 package Test::Pixis::Web::Paypal;
 use Moose;
 
-with 
-    'Test::Pixis::Setup::Basic',
-    'Test::Pixis::Setup::Schema',
-    'Test::Pixis::Web::Common',
-;
-
-use utf8;
-
-use parent 'Test::FITesque::Fixture';
-
-use Test::More;
-use Test::Exception;
+BEGIN {
+    extends 'Test::Pixis::Fixture';
+    with 
+        'Test::Pixis::Setup::Basic',
+        'Test::Pixis::Setup::Schema',
+        'Test::Pixis::Web::Common',
+    ;
+}
 
 sub setup :Test :Plan(2) {
     my $self = shift;
@@ -42,3 +38,4 @@ sub create_purchase_item :Test :Plan(1) {
 sub payfor_it :Test :Plan(3) {
 }
 
+__PACKAGE__->meta->make_immutable;

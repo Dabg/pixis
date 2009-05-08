@@ -1,18 +1,17 @@
 package Test::Pixis::Web::Login;
 use Moose;
-with 
-    'Test::Pixis::Setup::Basic',
-    'Test::Pixis::Setup::Schema',
-    'Test::Pixis::Web::Common',
-;
-
-use utf8;
-
-use parent 'Test::FITesque::Fixture';
-
-use Test::More;
-use Test::Exception;
 use Email::Send::Test;
+
+BEGIN
+{
+    extends 'Test::Pixis::Fixture';
+    with 
+        'Test::Pixis::Setup::Basic',
+        'Test::Pixis::Setup::Schema',
+        'Test::Pixis::Web::Common',
+    ;
+}
+
 
 sub signin : Test : Plan(13) {
     my ($self, $args) = @_;
@@ -108,4 +107,4 @@ sub reset_password_without_token : Test : Plan(3) {
     $mech->content_like(qr{form_error_message});
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

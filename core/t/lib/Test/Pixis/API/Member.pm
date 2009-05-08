@@ -1,16 +1,16 @@
 package Test::Pixis::API::Member;
 use Moose;
-use parent 'Test::FITesque::Fixture';
 use Digest::SHA1 ();
-use namespace::clean -except => qw(meta);
-use Test::Exception;
-use Test::More;
-with 
-    'Test::Pixis::Setup::Basic',
-    'Test::Pixis::Setup::Schema',
-    'Test::Pixis::Setup::Mechanize',
-    'Test::Pixis::Setup::Memcached',
-;
+
+BEGIN {
+    extends 'Test::Pixis::Fixture';
+    with 
+        'Test::Pixis::Setup::Basic',
+        'Test::Pixis::Setup::Schema',
+        'Test::Pixis::Setup::Mechanize',
+        'Test::Pixis::Setup::Memcached',
+    ;
+}
 
 has members => (
     is => 'rw',
