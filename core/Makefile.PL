@@ -47,6 +47,7 @@ requires 'DBIx::Class::VirtualColumns';
 requires 'Digest::SHA1';
 requires 'Exception::Class';
 requires 'MooseX::Getopt';
+requires 'MooseX::NonMoose';
 requires 'MooseX::Types::Path::Class';
 requires 'HTML::FormFu';
 requires 'HTML::FormFu::Model::DBIC';
