@@ -22,7 +22,7 @@ __PACKAGE__->add_columns(
         is_nullable => 1,
     }
 );
-
+__PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(member => 'Pixis::Schema::Master::Member' => 'member_id');
 
 1;
