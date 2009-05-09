@@ -1,4 +1,5 @@
 package Test::Pixis::Web::Login;
+use utf8;
 use Moose;
 use Email::Send::Test;
 
