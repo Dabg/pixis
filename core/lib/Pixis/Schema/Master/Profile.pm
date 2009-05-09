@@ -24,5 +24,6 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(member => 'Pixis::Schema::Master::Member' => 'member_id');
+__PACKAGE__->utf8_columns(qw(bio));
 
 1;

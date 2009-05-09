@@ -1,0 +1,16 @@
+---
+auto_fieldset: 1
+method: POST
+indicator: submit
+
+elements:
+    - type: Hidden
+      name: id
+    - type: Textarea
+      name: bio
+      attributes:
+        cols: 60
+        rows: 10
+    - type: Submit
+      name: submit
+      value_loc: Submit
