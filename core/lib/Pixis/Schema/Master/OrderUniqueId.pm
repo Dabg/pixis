@@ -22,7 +22,9 @@ __PACKAGE__->set_primary_key('value');
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
-    $self->create_unique_keys($schema, 10_000);
+
+    $self->create_unique_keys($schema, 
+        $ENV{PIXIS_ORDER_UNIQUE_ID_COUNT} || 100);
 }
 
 sub create_unique_keys {
