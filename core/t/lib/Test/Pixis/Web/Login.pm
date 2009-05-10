@@ -66,4 +66,31 @@ sub reset_password_without_token : Test : Plan(3) {
     $mech->content_like(qr{form_error_message});
 }
 
+sub signin_with_duplicate_email : Test : Plan(6) {
+    my ($self, $args ) = @_;
+    my $mech = $self->reset_mech;
+
+    $mech->get_ok('/');
+    $mech->follow_link_ok({text => 'ログイン'});
+    $mech->follow_link_ok({text_regex => qr/新規登録/});
+    $mech->submit_form_ok(
+        {
+            form_number => 1,
+            fields => $args,
+            button => 'submit',
+        },
+        "新規登録ボタン",
+    );
+    $mech->content_like(qr{form_error_message});
+    $mech->content_like(qr{使用されたメールアドレスはすでに登録されています});
+}
+
+sub activate_with_invalid_token : Test :Plan(3) {
+    my ($self,$args) = @_;
+    my $mech = $self->reset_mech;
+    $mech->get_ok("/signup/activate?email=$args->{email}&token=brabbrabrabrabrabrabrabrabrabrabrabrabra");
+    $mech->content_like(qr{form_error_message});
+    $mech->content_like(qr{指定されたユーザーは存在しませんでした});
+}
+
 __PACKAGE__->meta->make_immutable;

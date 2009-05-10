@@ -24,5 +24,7 @@ run_tests {
         [ 'forgot_password', $user_reset ],
         [ 'login', $user_reset ],
         [ 'reset_password_without_token', $user_reset ],
+        [ 'signin_with_duplicate_email', $user ],
+        [ 'activate_with_invalid_token', $user ],
     }
 };

@@ -9,7 +9,7 @@ my @modules = qw(
 " > t/00_allload.t
 
 find lib -name "*.pm" | sed "s/lib\//   /;s/\.pm//;s/\//::/g" >> t/00_allload.t
-find ../plugins/*/lib -name "*.pm" | sed "s/^.*lib\//   /;s/\.pm//;s/\//::/g" >> t/00_allload.t
+#find ../plugins/*/lib -name "*.pm" | sed "s/^.*lib\//   /;s/\.pm//;s/\//::/g" >> t/00_allload.t
 
 echo "
 );

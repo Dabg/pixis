@@ -26,4 +26,12 @@ sub create : Test : Plan(4) {
     $mech->content_like(qr{$args->{bio}});
 }
 
+sub edit : Test : Plan(1) {
+    my ($self, $args) = @_;
+    my $mech = $self->mech;
+    $mech->get_ok('/profile/edit');
+
+
+}
+
 1;

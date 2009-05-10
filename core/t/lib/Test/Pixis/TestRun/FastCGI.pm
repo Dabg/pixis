@@ -76,6 +76,8 @@ sub start_fastcgi {
                 CORE::exit(1);
             }
         } else {
+$ENV{CATALYST_CONFIG} = Path::Class::File->new($home, 't', 'conf', 'pixis_test.yaml')->absolute->stringify;
+
             $ENV{MYAPP_HOME}    = $home;
             $ENV{MYAPP_PIDFILE} = $pidfile;
             $ENV{MYAPP_SOCKET}  = $listen;

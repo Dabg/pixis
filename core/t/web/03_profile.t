@@ -1,4 +1,5 @@
 use lib 't/lib';
+use utf8;
 use Test::FITesque;
 
 my $user = {

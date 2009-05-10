@@ -18,3 +18,4 @@ core/t/htdocs/
 core/t/logs/
 cover_db
 cover_db_view
+sentmail.txt

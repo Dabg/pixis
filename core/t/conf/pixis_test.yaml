@@ -12,4 +12,7 @@ Schema::Master:
             - 'SET sql_mode = "STRICT_TRANS_TABLES"'
 View::Email:
     sender:
-        mailer: Test
+#        mailer: Test
+        mailer: IO
+        mailer_args:
+            - __path_to(sentmail.txt)__
