@@ -86,17 +86,6 @@ __PACKAGE__->config(
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
-__PACKAGE__->setup(qw/
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-    Unicode
-/);
 
 use Module::Pluggable::Object;
 use Pixis::Web::Exception;
@@ -118,10 +107,19 @@ sub registry {
 after setup_finalize => sub {
     my $self = shift;
 
-
     # for various reasons, we /NEED/ to have Catalyst setup itself before
     # we setup our plugins.
     push @_, $ENV{CATALYST_DEBUG} ? "-log=error,debug" : "-log=error";
+    $self->setup_pixis_plugins();
+$SIG{ __DIE__ } = sub {
+    return if Scalar::Util::blessed( $_[ 0 ] );
+    die $_[0] if $_[0] eq 'catalyst_detach';
+    if ($_[0] ne 'No such file or directory') {
+        Pixis::Web::Exception->throw( message => join '', @_ );
+    }
+};
+
+
 };
 
 sub setup_pixis_plugins {
@@ -186,7 +184,7 @@ sub add_tt_include_path {
     return unless @paths;
 
     my $view = $self->view('TT');
-    my $providers = $view->{LOAD_TEMPLATES};
+    my $providers = $view->template->{SERVICE}->{CONTEXT}->{CONFIG}->{LOAD_TEMPLATES};
     if ($providers) {
         foreach my $provider (@$providers) {
             $provider->include_path([
@@ -235,6 +233,22 @@ sub add_formfu_path {
 before finalize => sub {
     my $c = shift;
     $c->handle_exception if @{ $c->error };
+    if ( $c->response->{body} && utf8::is_utf8($c->response->{body}) ){
+        utf8::encode( $c->response->{body} );
+    }
+};
+
+after prepare_parameters => sub {
+    my $c = shift;
+
+    for my $value ( values %{ $c->request->{parameters} } ) {
+
+        if ( ref $value && ref $value ne 'ARRAY' ) {
+            next;
+        }
+
+        utf8::decode($_) for ( ref($value) ? @{$value} : $value );
+    }
 };
 
 sub handle_exception {
@@ -288,16 +302,17 @@ sub handle_exception {
     $c->response->body( $error->as_public_html ) if $@;
 }
 
-$SIG{ __DIE__ } = sub {
-    return if Scalar::Util::blessed( $_[ 0 ] );
-    die $_[0] if $_[0] eq 'catalyst_detach';
-    if ($_[0] ne 'No such file or directory') {
-        Pixis::Web::Exception->throw( message => join '', @_ );
-    }
-};
-
-__PACKAGE__->setup_pixis_plugins();
-
+__PACKAGE__->setup(qw/
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+/);
+#    Unicode
 
 1;
 
