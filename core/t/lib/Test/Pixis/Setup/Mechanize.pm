@@ -27,10 +27,16 @@ has seen_links => (
     }
 );
 
+has apache_test_server => (
+    is => 'ro',
+    isa => 'Str',
+    lazy_build => 1,
+);
+
 sub _build_mech { 
     my ($self) = @_;
     my $mech;
-    if ($self->get_apache_test_server()) {
+    if ($self->apache_test_server()) {
         $mech = Test::WWW::Mechanize::Catalyst->new;
         $mech->allow_external(1);
         $mech->host(Apache::TestRequest::hostport());
@@ -50,7 +56,7 @@ sub reset_mech {
 
 sub setup_web :Test :Plan(1) {
     my ($self) = @_;
-    if (my $server = $self->get_apache_test_server()) {
+    if (my $server = $self->apache_test_server()) {
         ok(LWP::Simple::get($server));
     } else {
         $ENV{CATALYST_CONFIG} ||= 't/conf/pixis_test.yaml';
@@ -71,7 +77,7 @@ sub spider {
     }
 }
 
-sub get_apache_test_server {
+sub _build_apache_test_server {
     my ($self) = @_;
     if (eval { require Apache::TestMM }) {
         my $baseurl = Apache::TestRequest::resolve_url('/');
@@ -80,6 +86,7 @@ sub get_apache_test_server {
             return $baseurl;
         }
     }
+    return '';
 }
 
 1;
