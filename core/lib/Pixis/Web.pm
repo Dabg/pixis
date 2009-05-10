@@ -155,8 +155,15 @@ sub setup_pixis_plugins {
         my $args = $self->config->{plugins}->{config}->{$plugin} || {} ;
         $plugin = $pkg->new(%$args);
         if (! $plugin->registered && !($REGISTERED_PLUGINS{ $pkg }++) ){
-            print STDERR "[Pixis Plugin]: Registring $pkg\n";
-            $plugin->register($self);
+            $self->log->debug("[Pixis Plugin]: Registering $pkg")
+                if $self->log->is_debug;
+            eval {
+                $plugin->register($self);
+            };
+            if ($@) {
+                $self->log->error("[Pixis Plugin]: Failed to register $plugin: $@");
+                confess("Initialization failed during plugin registration for $plugin: $@");
+            }
             $plugin->registered(1);
             push @PLUGINS, $plugin;
         }
