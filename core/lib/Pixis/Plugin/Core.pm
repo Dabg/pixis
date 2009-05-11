@@ -23,9 +23,14 @@ before register => sub {
     foreach my $name qw(Member MemberAuth MemberRelationship Order Payment::Paypal Payment::Transaction PurchaseItem Profile) {
         my $api_config = $config->{"API::$name"} || {};
         my $module     = "Pixis::API::$name";
-        Class::MOP::load_class($module);
-        my $api = $module->new(%$api_config);
-        push @list, $api;
+        eval {
+            Class::MOP::load_class($module);
+            my $api = $module->new(%$api_config);
+            push @list, $api;
+        };
+        if ($@) {
+            warn && confess;
+        }
     }
     $self->extra_api(\@list);
 };
