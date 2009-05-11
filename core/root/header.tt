@@ -5,7 +5,7 @@
 <li id="hnav_settings"><a href="/member/settings">[% loc("Member Settings") %]</a></li>
 <li id="hnav_username"><a href="/member/home">[% loc("x's Home", c.user.nickname) %]</a></li>
 [% ELSE %]
-<li id="hnav_login"><a href="/auth/login">[% loc("Login") %]</a></li>
+<li id="hnav_login"><a href="/auth/login?next=[% c.req.uri | uri %]">[% loc("Login") %]</a></li>
 [% END %]
 </ul>
 </div><!-- header -->
