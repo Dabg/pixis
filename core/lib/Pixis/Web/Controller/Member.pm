@@ -41,9 +41,19 @@ sub home :Local {
 sub view :Chained('load_member') :PathPart('') Args(0) {
     my ($self, $c) = @_;
 
-    # Load my latest activities
-    $c->stash->{activities} = [ $c->registry(api => 'Member')->load_recent_activity( { member_id => $c->user->id } ) ];
+    {
+        my $api = $c->registry(api => 'MemberNotice');
+        # Check to see if we have notices
+        $c->stash->{notices} =
+            [ $api->load_from_member({ member_id => $c->user->id }) ];
+    }
 
+    {
+        my $api = $c->registry(api => 'Member');
+        # Load my latest activities
+        $c->stash->{activities} = 
+            [ $api->load_recent_activity( { member_id => $c->user->id } ) ];
+    }
 }
 
 # XXX - follow status
