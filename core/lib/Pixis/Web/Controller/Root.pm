@@ -1,12 +1,17 @@
 package Pixis::Web::Controller::Root;
+use Moose;
 
-use strict;
-use warnings;
-use parent 'Catalyst::Controller';
+BEGIN { extends 'Catalyst::Controller' };
 
 __PACKAGE__->config->{namespace} = '';
-__PACKAGE__->mk_accessors($_) for qw(site_index);
 
+has site_index => (
+    is => 'ro',
+    isa => 'Str',
+    predicate => 'has_site_index',
+);
+
+=head1
 sub COMPONENT {
     my ($self, $c, $config) = @_;
 
@@ -16,11 +21,13 @@ sub COMPONENT {
     $self->site_index($site_index) if $site_index;
     return $self;
 }
+=cut
 
 sub index :Path :Args(0) {
     my ($self, $c) = @_;
 
-    if (my $index = $self->site_index()) {
+    if ($self->has_site_index) {
+        my $index = $self->site_index();
         # user has define some sort of custom index
         $c->res->redirect($c->uri_for($index));
     }
