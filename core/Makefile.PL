@@ -63,6 +63,7 @@ requires 'Text::CSV_XS';
 requires 'Template::Provider::Encoding';
 
 recommends 'Catalyst::Engine::FastCGI';
+recommends 'Catalyst::Log::Log4perl';
 recommends 'Apache::Test';
 
 test_requires 'Test::More', '0.82';
