@@ -311,7 +311,7 @@ sub handle_exception {
         $c->log->error( $error->as_string );
     }
     elsif ( $error->is_client_error ) {
-        $c->log->warn( $error->as_string ) if $error->status =~ /^40[034]$/;
+        $c->log->warn( join(' ', $c->request->uri, $error->status, $error->as_string ) ) if $error->status =~ /^40[034]$/;
     }
 
     if( $error->is_redirect ) {
