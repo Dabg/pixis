@@ -7,6 +7,12 @@ use namespace::clean -except => qw(meta);
 # is where the initialization gets triggered
 use Catalyst;
 
+# if you have Log4perl installed, you get colored messages. Yey!
+use constant HAVE_LOG4PERL => eval {
+    require Catalyst::Log::Log4perl;
+    1;
+};
+
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
 
@@ -104,6 +110,18 @@ sub registry {
     $REGISTRY->get(@_);
 }
 
+if (HAVE_LOG4PERL) {
+    after setup_log => sub {
+        my $self = shift;
+        $self->log(
+            Catalyst::Log::Log4perl->new(
+                $self->path_to('Log4perl.conf')->stringify,
+                (autoflush => 1, watch_delay => 5, override_cspecs => 1)
+            )
+        );
+    };
+}
+
 after setup_finalize => sub {
     my $self = shift;
 
@@ -111,15 +129,13 @@ after setup_finalize => sub {
     # we setup our plugins.
     push @_, $ENV{CATALYST_DEBUG} ? "-log=error,debug" : "-log=error";
     $self->setup_pixis_plugins();
-$SIG{ __DIE__ } = sub {
-    return if Scalar::Util::blessed( $_[ 0 ] );
-    die $_[0] if $_[0] eq 'catalyst_detach';
-    if ($_[0] ne 'No such file or directory') {
-        Pixis::Web::Exception->throw( message => join '', @_ );
-    }
-};
-
-
+    $SIG{ __DIE__ } = sub {
+        return if Scalar::Util::blessed( $_[ 0 ] );
+        die $_[0] if $_[0] eq 'catalyst_detach';
+        if ($_[0] ne 'No such file or directory') {
+            Pixis::Web::Exception->throw( message => join '', @_ );
+        }
+    };
 };
 
 sub setup_pixis_plugins {
@@ -140,7 +156,7 @@ sub setup_pixis_plugins {
     my $config = $self->config->{plugin_loader} || {};
 
     my $mpo = Module::Pluggable::Object->new(
-        require => 1,
+        require => 0,
         search_path => [
             'Pixis::Plugin',
             'Pixis::Web::Plugin'
@@ -153,6 +169,15 @@ sub setup_pixis_plugins {
     foreach my $plugin (@plugins) {
         my $pkg = $plugin;
         my $args = $self->config->{plugins}->{config}->{$plugin} || {} ;
+        $self->log->debug("[Pixis Plugin]: Loading plugin $pkg")
+            if $self->log->is_debug;
+        eval {
+            Class::MOP::load_class($pkg);
+        };
+        if ($@) {
+            $self->log->error("[Pixis Plugin]: Failed to load $plugin: $@");
+            confess("Initialization failed during plugin load for $plugin: $@");
+        }
         $plugin = $pkg->new(%$args);
         if (! $plugin->registered && !($REGISTERED_PLUGINS{ $pkg }++) ){
             $self->log->debug("[Pixis Plugin]: Registering $pkg")

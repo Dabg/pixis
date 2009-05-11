@@ -1,5 +1,5 @@
 
-package Pixis::Schema::Master::PurchaseItem;
+package Pixis::Schema::Master::Result::PurchaseItem;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);

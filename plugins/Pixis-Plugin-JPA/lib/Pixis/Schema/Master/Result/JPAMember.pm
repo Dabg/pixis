@@ -1,5 +1,5 @@
 
-package Pixis::Schema::Master::JPAMember;
+package Pixis::Schema::Master::Result::JPAMember;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);

@@ -1,6 +1,6 @@
 # $Id: /mirror/pixis/Pixis-Core/trunk/lib/Pixis/Schema/Master/MemberAuth.pm 101255 2009-02-27T01:43:08.730273Z daisuke  $
 
-package Pixis::Schema::Master::MemberAuth;
+package Pixis::Schema::Master::Result::MemberAuth;
 use strict;
 use warnings;
 use base 'Pixis::Schema::Base::MySQL';

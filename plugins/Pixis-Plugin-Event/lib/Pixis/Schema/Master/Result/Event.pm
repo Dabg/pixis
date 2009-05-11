@@ -4,7 +4,7 @@
 #       is contained within an event
 #    possibly multi: tracked
 
-package Pixis::Schema::Master::Event;
+package Pixis::Schema::Master::Result::Event;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);

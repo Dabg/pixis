@@ -4,7 +4,11 @@ use namespace::clean -except => qw(meta);
 
 extends 'DBIx::Class::Schema';
 
-__PACKAGE__->load_classes;
+__PACKAGE__->load_namespaces(
+    result_namespace => [ qw(+Pixis::Schema::Master::Result) ],
+    resultset_namespace => [ qw(+Pixis::Schema::Master::ResultSet) ],
+    default_resultset_class => 'ResultSet'
+);
 
 sub connection {
     my ($self, @args) = @_;

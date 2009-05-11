@@ -35,7 +35,7 @@ sub initiate_purchase :Private {
             {
                 id        => $form->param('order'),
                 member_id => $c->user->id,
-                status    => &Pixis::Schema::Master::Order::ST_INIT,
+                status    => &Pixis::Schema::Master::Result::Order::ST_INIT,
             }
         );
     }
@@ -153,7 +153,7 @@ sub complete :Local :FormConfig{
     $c->registry(api => 'order')->change_status(
         {
             order_id => $form->param('order'),
-            status   => &Pixis::Schema::Master::Order::ST_DONE,
+            status   => &Pixis::Schema::Master::Result::Order::ST_DONE,
         }
     );
     $c->stash->{order} = $order;

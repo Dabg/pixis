@@ -1,11 +1,11 @@
 
-package Pixis::Schema::Master::EventRegistration;
+package Pixis::Schema::Master::Result::EventTicket;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);
 
 __PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "UTF8Columns", "Core");
-__PACKAGE__->table("pixis_event_registration");
+__PACKAGE__->table("pixis_event_ticket");
 __PACKAGE__->add_columns(
     "id" => {
         data_type => "INTEGER",
@@ -16,23 +16,23 @@ __PACKAGE__->add_columns(
     "event_id" => {
         data_type => "VARCHAR",
         is_nullable => 0,
-        size => 32
-    },
-    "member_id" => {
-        data_type => "INTEGER",
-        is_nullable => 0,
         size => 32,
     },
-    is_active => {
-        data_type => 'TINYINT',
+    "name" => {
+        data_type => "TEXT",
+        is_nullable => 0
+    },
+    "price" => {
+        data_type => "INTEGER",
+        is_nullable => 0,
+        size => 8,
+    },
+    "payment_type" => {
+        data_type => "SMALLINT",
         is_nullable => 0,
         default_value => 0,
-        size => 1,
-    },
-    order_id => {
-        data_type => "CHAR",
-        is_nullable => 1,
-        size => 12,
+        # 0 -> pre-pay (default)
+        # 1 -> pay on-site
     },
     modified_on => {
         data_type => "TIMESTAMP",
@@ -45,6 +45,6 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint([ qw(event_id member_id) ]);
+__PACKAGE__->utf8_columns("name");
 
 1;
