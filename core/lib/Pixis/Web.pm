@@ -172,7 +172,6 @@ sub setup_pixis_plugins {
         $self->log->debug("[Pixis Plugin]: Loading plugin $pkg")
             if $self->log->is_debug;
         eval {
-warn "Loading $pkg";
             Class::MOP::load_class($pkg);
         };
         if ($@) {
