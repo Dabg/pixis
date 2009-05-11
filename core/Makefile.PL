@@ -67,7 +67,7 @@ recommends 'Apache::Test';
 
 test_requires 'Test::More', '0.82';
 test_requires 'Test::FITesque';
-test_requires 'Test::WWW::Mechanize::Catalyst';
+test_requires 'Test::WWW::Mechanize::Catalyst', '0.51';
 test_requires 'Email::Send::Test';
 
 catalyst;
