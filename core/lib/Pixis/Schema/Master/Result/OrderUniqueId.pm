@@ -1,5 +1,5 @@
 
-package Pixis::Schema::Master::OrderUniqueId;
+package Pixis::Schema::Master::Result::OrderUniqueId;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);

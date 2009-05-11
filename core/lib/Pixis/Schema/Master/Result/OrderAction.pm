@@ -1,5 +1,5 @@
 
-package Pixis::Schema::Master::OrderAction;
+package Pixis::Schema::Master::Result::OrderAction;
 use strict;
 use base qw(Pixis::Schema::Base::MySQL);
 

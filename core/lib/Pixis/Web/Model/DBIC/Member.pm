@@ -3,7 +3,7 @@
 package Pixis::Web::Model::DBIC::Member;
 use strict;
 use Pixis::Registry;
-use Pixis::Schema::Master::Member;
+use Pixis::Schema::Master::Result::Member;
 
 sub ACCEPT_CONTEXT {
     return Pixis::Registry->get(schema => 'master')->resultset('Member');

@@ -132,7 +132,7 @@ sub initiate_purchase {
         my $message = "HTTP request to paypal failed: " .  $response->code . ", " . $response->message;
         $order_api->change_status( {
             order_id  => $order_id,
-            status    => &Pixis::Schema::Master::Order::ST_SYSTEM_ERROR,
+            status    => &Pixis::Schema::Master::Result::Order::ST_SYSTEM_ERROR,
             message   => $message,
             txn => {
                 id => $txn->id,
@@ -163,7 +163,7 @@ sub initiate_purchase {
         $order_api->change_status(
             {
                 order_id => $order_id,
-                status => &Pixis::Schema::Master::Order::ST_SYSTEM_ERROR,
+                status => &Pixis::Schema::Master::Result::Order::ST_SYSTEM_ERROR,
                 message => $message,
                 txn => {
                     id       => $txn->id,
@@ -183,7 +183,7 @@ sub initiate_purchase {
     $order_api->change_status(
         {
             order_id => $order_id,
-            status => &Pixis::Schema::Master::Order::ST_CREDIT_CHECK,
+            status => &Pixis::Schema::Master::Result::Order::ST_CREDIT_CHECK,
             txn => {
                 id       => $txn->id,
                 txn_type => 'paypal',
@@ -224,7 +224,7 @@ sub complete_purchase {
     $order_api->change_status(
         {
             order_id => $order_id,
-            status   => &Pixis::Schema::Master::Order::ST_CREDIT_ACCEPT,
+            status   => &Pixis::Schema::Master::Result::Order::ST_CREDIT_ACCEPT,
             txn      => {
                 id => $args->{txn_id},
                 txn_type => 'paypal',
@@ -270,7 +270,7 @@ sub complete_purchase {
             {
                 order_id => $order_id,
                 message  => $message,
-                status   => &Pixis::Schema::Master::Order::ST_SYSTEM_ERROR,
+                status   => &Pixis::Schema::Master::Result::Order::ST_SYSTEM_ERROR,
                 txn      => {
                     id => $txn->id,
                     txn_type => 'paypal',
@@ -302,7 +302,7 @@ sub complete_purchase {
             {
                 order_id => $order_id,
                 message  => $message,
-                status   => &Pixis::Schema::Master::Order::ST_SYSTEM_ERROR,
+                status   => &Pixis::Schema::Master::Result::Order::ST_SYSTEM_ERROR,
                 txn      => {
                     id => $txn->id,
                     txn_type => 'paypal',
@@ -316,7 +316,7 @@ sub complete_purchase {
     $order_api->change_status(
         {
             order_id => $order_id,
-            status   => &Pixis::Schema::Master::Order::ST_DONE,
+            status   => &Pixis::Schema::Master::Result::Order::ST_DONE,
             message => join(', ', map { "$_ => $result->{$_}" } qw(CORRELATION_ID TXN_ID) ),
             txn      => {
                 id => $txn->id,

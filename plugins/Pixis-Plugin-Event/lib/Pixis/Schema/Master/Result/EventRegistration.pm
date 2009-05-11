@@ -1,16 +1,16 @@
 
-package Pixis::Schema::Master::EventDate;
+package Pixis::Schema::Master::Result::EventRegistration;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);
 
-__PACKAGE__->load_components("PK::Auto", "Core");
-__PACKAGE__->table("pixis_event_date");
+__PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "UTF8Columns", "Core");
+__PACKAGE__->table("pixis_event_registration");
 __PACKAGE__->add_columns(
     "id" => {
         data_type => "INTEGER",
-        is_nullable => 0,
         is_auto_increment => 1,
+        is_nullable => 0,
         size => 8,
     },
     "event_id" => {
@@ -18,19 +18,21 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 32
     },
-    "date" => {
-        data_type => "DATE",
+    "member_id" => {
+        data_type => "INTEGER",
         is_nullable => 0,
+        size => 32,
     },
-    "start_on" => {
-        data_type => "TIME",
+    is_active => {
+        data_type => 'TINYINT',
         is_nullable => 0,
-        default_value => "09:00"
+        default_value => 0,
+        size => 1,
     },
-    "end_on" => {
-        data_type => "TIME",
-        is_nullable => 0,
-        default_value => "21:00"
+    order_id => {
+        data_type => "CHAR",
+        is_nullable => 1,
+        size => 12,
     },
     modified_on => {
         data_type => "TIMESTAMP",
@@ -43,5 +45,6 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint([ qw(event_id member_id) ]);
 
 1;

@@ -1,27 +1,26 @@
 
-package Pixis::Schema::Master::MemberActivity;
+package Pixis::Schema::Master::Result::EventTrack;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);
 
-__PACKAGE__->load_components("PK::Auto", "Core");
-__PACKAGE__->table("pixis_member_actiity");
+__PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "UTF8Columns", "Core");
+__PACKAGE__->table("pixis_event_track");
 __PACKAGE__->add_columns(
     "id" => {
         data_type => "INTEGER",
+        is_nullable => 0,
         is_auto_increment => 1,
-        is_nullable => 0,
         size => 32,
     },
-    member_id => {
-        data_type => "INTEGER",
+    "title" => {
+        data_type => "TEXT",
         is_nullable => 0,
-        size => 32,
     },
-    activity_id => {
-        data_type => "INTEGER",
+    "event_id" => {
+        data_type => "VARCHAR",
         is_nullable => 0,
-        size => 32,
+        size => 64,
     },
     modified_on => {
         data_type => "TIMESTAMP",
@@ -34,5 +33,6 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->utf8_columns("title");
 
 1;

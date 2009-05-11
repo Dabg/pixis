@@ -1,5 +1,5 @@
 
-package Pixis::Schema::Master::PaymentTransaction;
+package Pixis::Schema::Master::Result::PaymentTransaction;
 use strict;
 use warnings;
 use base qw(Pixis::Schema::Base::MySQL);
