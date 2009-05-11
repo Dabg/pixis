@@ -51,10 +51,17 @@ sub login :Local :FormConfig {
             $form->param('email'), $form->param('password')
         ] ) && !@{$c->error};
         if ($auth_ok) {
-            $c->res->redirect(
+            my $next = URI->new(
                 $c->session->{next_uri} ||
-                $c->uri_for('/member', $c->user->id)
+                $form->param('next') 
             );
+            $next->scheme(undef);
+            if ($next->can('host_port')) {
+                $next->host(undef);
+                $next->port(undef);
+            }
+
+            $c->res->redirect($c->uri_for("$next" || ('/member', $c->user->id)));
             return;
         }
 
