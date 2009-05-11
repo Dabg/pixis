@@ -156,7 +156,7 @@ sub setup_pixis_plugins {
     my $config = $self->config->{plugin_loader} || {};
 
     my $mpo = Module::Pluggable::Object->new(
-        require => 1,
+        require => 0,
         search_path => [
             'Pixis::Plugin',
             'Pixis::Web::Plugin'
@@ -169,6 +169,16 @@ sub setup_pixis_plugins {
     foreach my $plugin (@plugins) {
         my $pkg = $plugin;
         my $args = $self->config->{plugins}->{config}->{$plugin} || {} ;
+        $self->log->debug("[Pixis Plugin]: Loading plugin $pkg")
+            if $self->log->is_debug;
+        eval {
+warn "Loading $pkg";
+            Class::MOP::load_class($pkg);
+        };
+        if ($@) {
+            $self->log->error("[Pixis Plugin]: Failed to load $plugin: $@");
+            confess("Initialization failed during plugin load for $plugin: $@");
+        }
         $plugin = $pkg->new(%$args);
         if (! $plugin->registered && !($REGISTERED_PLUGINS{ $pkg }++) ){
             $self->log->debug("[Pixis Plugin]: Registering $pkg")
