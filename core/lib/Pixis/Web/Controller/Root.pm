@@ -11,18 +11,6 @@ has site_index => (
     predicate => 'has_site_index',
 );
 
-=head1
-sub COMPONENT {
-    my ($self, $c, $config) = @_;
-
-    $self = $self->maybe::next::method($c, $config);
-
-    my $site_index = $config->{site_index} || $c->config->{site}->{index};
-    $self->site_index($site_index) if $site_index;
-    return $self;
-}
-=cut
-
 sub index :Path :Args(0) {
     my ($self, $c) = @_;
 

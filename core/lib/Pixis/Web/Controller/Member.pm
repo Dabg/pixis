@@ -1,10 +1,10 @@
-# $Id: /mirror/pixis/Pixis-Core/trunk/lib/Pixis/Web/Controller/Member.pm 101219 2009-02-25T02:24:11.216454Z daisuke  $
 
 package Pixis::Web::Controller::Member;
-use strict;
-use warnings;
+use Moose;
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+
 use utf8;
-use base qw(Catalyst::Controller::HTML::FormFu);
 use Digest::SHA1 ();
 
 sub auto :Private {

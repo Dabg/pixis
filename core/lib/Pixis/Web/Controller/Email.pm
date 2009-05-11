@@ -1,7 +1,8 @@
 package Pixis::Web::Controller::Email;
-use strict;
-use warnings;
-use base qw(Catalyst::Controller);
+use Moose;
+
+BEGIN { extends 'Catalyst::Controller' }
+
 use utf8;
 use Encode ();
 

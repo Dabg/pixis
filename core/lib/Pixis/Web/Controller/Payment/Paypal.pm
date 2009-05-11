@@ -1,21 +1,23 @@
-# $Id$
 
 package Pixis::Web::Controller::Payment::Paypal;
-use strict;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
 
-__PACKAGE__->mk_accessors($_) for qw(complete_url accept_url cancel_url);
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
-sub COMPONENT {
-    my ($self, $c, $config) = @_;
+has complete_url => (
+    is => 'rw',
+    default => 'complete',
+);
 
-    $self = $self->maybe::next::method($c, $config);
-    $self->complete_url( $config->{complete_url} || 'complete' );
-    $self->accept_url( $config->{accept_url} || 'accept' );
-    $self->cancel_url( $config->{cancel_url} || 'cancel' );
+has accept_url => (
+    is => 'rw',
+    default => 'accept',
+);
 
-    return $self;
-}
+has cancel_url => (
+    is => 'rw',
+    default => 'cancel'
+);
 
 sub auto :Private {
     my ($self, $c) = @_;
@@ -160,5 +162,3 @@ sub complete :Local :FormConfig{
 }
 
 1;
-
-__END__

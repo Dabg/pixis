@@ -1,9 +1,8 @@
 # $Id: /mirror/pixis/Pixis-Core/trunk/lib/Pixis/Web/Controller/Auth.pm 101264 2009-02-27T05:10:06.352581Z daisuke  $
 
 package Pixis::Web::Controller::Auth;
-use strict;
-use warnings;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
 sub fail : Private {
     my ($self, $c) = @_;

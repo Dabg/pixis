@@ -1,8 +1,9 @@
 package Pixis::Web::Controller::Profile;
-use strict;
-use warnings;
+use Moose;
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+
 use utf8;
-use base qw(Catalyst::Controller::HTML::FormFu);
 
 sub auto :Private {
     my ( $self, $c ) = @_;
