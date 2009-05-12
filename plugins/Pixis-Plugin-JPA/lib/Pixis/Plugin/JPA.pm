@@ -13,7 +13,7 @@ after 'register' => sub {
     my $registry = Pixis::Registry->instance;
     my $c = $registry->get(pixis => 'web');
 
-    push @{$c->controller('Signup')->steps}, '/jpa/signup/contd' ;
+    $c->controller('Signup')->add_step('/jpa/signup/contd') ;
 };
 
 __PACKAGE__->meta->make_immutable;

@@ -1,16 +1,24 @@
 
 package Pixis::Web::Controller::Signup;
-use utf8;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+use MooseX::AttributeHelpers;
 
-__PACKAGE__->mk_accessors($_) for qw(steps);
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
-sub COMPONENT {
-    my ($self, $c, $config) = @_;
-    $self = $self->maybe::next::method($c, $config);
+has steps => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef[Str]',
+    lazy_build => 1,
+    required => 1,
+    provides => {
+        push => 'add_step'
+    }
+);
 
-    $self->steps(['experience', 'commit', 'send_activate', 'activate' ]) unless $self->steps;
-    $self;
+
+sub _build_steps {
+    ['experience', 'commit', 'send_activate', 'activate' ]
 }
 
 # Ask things like name, and email address
