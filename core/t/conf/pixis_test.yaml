@@ -15,4 +15,4 @@ View::Email:
 #        mailer: Test
         mailer: IO
         mailer_args:
-            - __path_to(sentmail.txt)__
+            - __path_to(t/log/mail)__
