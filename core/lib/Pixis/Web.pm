@@ -125,9 +125,6 @@ if (HAVE_LOG4PERL) {
 after setup_finalize => sub {
     my $self = shift;
 
-    # for various reasons, we /NEED/ to have Catalyst setup itself before
-    # we setup our plugins.
-    push @_, $ENV{CATALYST_DEBUG} ? "-log=error,debug" : "-log=error";
     $self->setup_pixis_plugins();
     $SIG{ __DIE__ } = sub {
         return if Scalar::Util::blessed( $_[ 0 ] );
@@ -262,25 +259,10 @@ sub add_formfu_path {
     }
 }
 
-before finalize => sub {
+override finalize => sub {
     my $c = shift;
     $c->handle_exception if @{ $c->error };
-    if ( $c->response->{body} && utf8::is_utf8($c->response->{body}) ){
-        utf8::encode( $c->response->{body} );
-    }
-};
-
-after prepare_parameters => sub {
-    my $c = shift;
-
-    for my $value ( values %{ $c->request->{parameters} } ) {
-
-        if ( ref $value && ref $value ne 'ARRAY' ) {
-            next;
-        }
-
-        utf8::decode($_) for ( ref($value) ? @{$value} : $value );
-    }
+    $c->next::method(@_);
 };
 
 sub handle_exception {
@@ -335,6 +317,7 @@ sub handle_exception {
 }
 
 __PACKAGE__->setup(qw/
+    Unicode
     Authentication
     Authorization::Roles
     ConfigLoader
@@ -343,8 +326,7 @@ __PACKAGE__->setup(qw/
     Session::Store::File
     Session::State::Cookie
     Static::Simple
-/);
-#    Unicode
+/ );
 
 1;
 
