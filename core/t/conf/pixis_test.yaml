@@ -13,6 +13,6 @@ Schema::Master:
 View::Email:
     sender:
 #        mailer: Test
-        mailer: IO
+        mailer: Test::DataDumper
         mailer_args:
-            - __path_to(t/log/mail)__
+            - __path_to(t/logs/mail)__

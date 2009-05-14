@@ -4,11 +4,13 @@ use utf8;
 use parent 'Test::FITesque::Fixture';
 use Test::More;
 use Test::Exception;
+use Email::Send::Test::DataDumper;
+use Email::MIME;
 
 with 
     'Test::Pixis::Setup::Mechanize',
 ;
-
+$Email::Send::Test::DataDumper::FILENAME = 't/logs/mail';
 
 sub signin : Test : Plan(13) {
     my ($self, $args) = @_;
@@ -33,7 +35,7 @@ sub signin : Test : Plan(13) {
         }
     );
     unlike $mech->content, qr{form_error_message};
-    Email::Send::Test->clear;
+    Email::Send::Test::DataDumper->clear;
     $mech->submit_form_ok(
         {
             form_number => 1,
@@ -41,11 +43,11 @@ sub signin : Test : Plan(13) {
         }
     );
     unlike $mech->content, qr{form_error_message};
-    my @emails = Email::Send::Test->emails;
+    my @emails = Email::Send::Test::DataDumper->emails;
     lives_and {
         is scalar @emails, 1, 'activation mail sent';
         my $body = $emails[0]->body;
-        ok( my ($activation_uri) = $body =~ m{http://localhost(/signup/activate\S+)});
+        ok( my ($activation_uri) = $body =~ m{http://localhost(?:\:\d+)?(/signup/activate\S+)});
         $mech->get_ok($activation_uri); 
         ok $mech->find_link(text => 'ログアウト');
     } "email check all ok";

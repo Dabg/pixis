@@ -1,7 +1,8 @@
 package Test::Pixis::Web::Login;
 use utf8;
 use Moose;
-use Email::Send::Test;
+use Email::Send::Test::DataDumper;
+use Email::MIME;
 
 BEGIN
 {
@@ -11,6 +12,8 @@ BEGIN
         'Test::Pixis::Setup::Schema',
         'Test::Pixis::Web::Common',
     ;
+
+    $Email::Send::Test::DataDumper::FILENAME = 't/logs/mail';
 }
 
 sub forgot_password : Test :Plan(9) {
@@ -19,7 +22,7 @@ sub forgot_password : Test :Plan(9) {
     $mech->get_ok('/');
     $mech->follow_link_ok({text => 'ログイン'});
     $mech->follow_link_ok({text_regex => qr{忘}});
-    Email::Send::Test->clear;
+    Email::Send::Test::DataDumper->clear;
     $mech->submit_form_ok(
         {
             form_number => 1,
@@ -29,10 +32,10 @@ sub forgot_password : Test :Plan(9) {
             button => 'submit',
         }
     );
-    my @emails = Email::Send::Test->emails;
+    my @emails = Email::Send::Test::DataDumper->emails;
     is scalar @emails, 1, 'activation mail sent';
     my $body = $emails[0]->body;
-    ok( my ($activation_uri) = $body =~ m{http://localhost(/member/reset_password\S+)});
+    ok( my ($activation_uri) = $body =~ m{http://localhost(?:\:\d+)?(/member/reset_password\S+)});
     $mech->get_ok($activation_uri); 
     $mech->submit_form_ok(
         {

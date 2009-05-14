@@ -71,11 +71,13 @@ test_requires 'Test::FITesque';
 test_requires 'Test::WWW::Mechanize::Catalyst', '0.51';
 test_requires 'Email::Send::Test';
 test_requires 'Email::Send::IO';
+test_requires 'Email::Send::Test::DataDumper';
 
 catalyst;
 
 tests("t/*.t t/*/*.t");
 install_script glob('script/*.pl');
+#auto_include;
 auto_install;
 WriteAll;
 

@@ -2,6 +2,7 @@
 package Pixis::Web::Controller::Signup;
 use Moose;
 use MooseX::AttributeHelpers;
+use utf8;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
