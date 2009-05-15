@@ -72,6 +72,7 @@ test_requires 'Test::WWW::Mechanize::Catalyst', '0.51';
 test_requires 'Email::Send::Test';
 test_requires 'Email::Send::IO';
 test_requires 'Email::Send::Test::DataDumper';
+# from github.com/lopnor/Email-Send-Test-DataDumper
 
 catalyst;
 
