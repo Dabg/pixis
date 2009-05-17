@@ -1,3 +1,5 @@
-[% WRAPPER wrapper.tt %]
+[% WRAPPER wrapper.tt title = 'プロフィールの編集' %]
+<div id="content">
 [% form %]
+</div>
 [% END %]

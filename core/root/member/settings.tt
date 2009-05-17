@@ -3,6 +3,14 @@
 <div id="content">
 <div class="form_full section">
 [%#<h2><a href="/member/settings/basic">%][%# loc("Basic Settings") %][%#</a></h2>%]
+<h2>[% loc("profiles") %]</h2>
+<ul>
+[% FOR p IN profiles %]
+<li><a href="[% c.uri_for('/profile', p.id , 'edit') %]">[% p.name %]</li></li>
+[% END %]
+<li><a href="[% c.uri_for('/profile/create') %]">[% loc("create new") %]</a></li>
+</ul>
+
 <h2>[% loc("Basic Settings") %]</h2>
 [% form %]
 </div><!-- section -->

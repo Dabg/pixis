@@ -5,20 +5,22 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-__PACKAGE__->meta->make_immutable;
+around create => sub {
+    my ($next, $self, $args) = @_;
+    $args->{created_on} = \'NOW()';
+    return $next->($self, $args);
+};
 
-sub update_from_form {
-    my ($self, $user, $form) = @_;
-    my $schema = Pixis::Registry->get(schema => 'master');
-    my $rs = $schema->resultset('Profile');
-    my $profile = $rs->update_or_create(
-        {
-            ($form->param('id') ? (id => $form->param('id')) : () ),
-            bio => $form->param('bio'),
-            member_id => $user->id,
-        }
+sub load_from_member {
+    my ($self, $args) = @_;
+
+    my @list = $self->resultset->search(
+        { member_id => $args->{member_id} },
+        { order_by => 'id DESC' }
     );
-    return $profile;
+    return wantarray ? @list : \@list;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
