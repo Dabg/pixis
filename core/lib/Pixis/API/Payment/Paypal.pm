@@ -67,7 +67,7 @@ sub _build_user_agent {
 
 sub _build_web_url {
     my $self = shift;
-    $self->mode eq 'production' ?
+    return $self->mode eq 'production' ?
         'https://www.paypal.com' :
         'https://www.sandbox.paypal.com'
     ;
@@ -75,7 +75,7 @@ sub _build_web_url {
 
 sub _build_api_url {
     my $self = shift;
-    $self->mode eq 'production' ?
+    return $self->mode eq 'production' ?
         'https://api-3t.paypal.com/nvp' :
         'https://api-3t.sandbox.paypal.com/nvp'
     ;
@@ -325,6 +325,7 @@ sub complete_purchase {
             }
         }
     );
+    return ();
 }
 
 1;

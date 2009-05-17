@@ -24,15 +24,18 @@ sub index :Path :Args(0) {
         $c->res->redirect($c->uri_for('/member/home'));
         $c->finalize();
     }
+    return ();
 }
 
 sub default :Path {
     Pixis::Web::Exception::FileNotFound->throw();
+    return ();
 }
 
 sub error :Private {
     my ($self, $c, $comment) = @_;
     Pixis::Web::Exception->new(message => $comment);
+    return ();
 }
 
 sub end : ActionClass('RenderView') {}

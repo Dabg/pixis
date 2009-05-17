@@ -67,6 +67,7 @@ sub sqlt_deploy_hook {
         fields => [ 'order_id' ],
     );
     $self->next::method($sqlt_table);
+    return ();
 }
 
 1;

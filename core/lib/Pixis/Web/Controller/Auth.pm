@@ -1,5 +1,3 @@
-# $Id: /mirror/pixis/Pixis-Core/trunk/lib/Pixis/Web/Controller/Auth.pm 101264 2009-02-27T05:10:06.352581Z daisuke  $
-
 package Pixis::Web::Controller::Auth;
 use Moose;
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
@@ -7,6 +5,7 @@ BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 sub fail : Private {
     my ($self, $c) = @_;
     $c->res->body("You don't have permission to use this resource");
+    return ();
 }
 
 sub assert_logged_in :Private {
@@ -30,15 +29,6 @@ sub assert_roles : Private{
         return ();
     }
     return 1;
-}
-
-{ # XXX - TODO Create a C::Auth::Store subclass that doesn't require
-  # this horrible, horrible workaround
-    package FudgeWorkAround;
-    sub new {
-        bless [ $_[1] ], $_[0];
-    }
-    sub first { $_[0]->[0] }
 }
 
 sub login :Local :FormConfig {
@@ -69,6 +59,7 @@ sub login :Local :FormConfig {
             $c->localize("Authentication failed"));
         $form->force_error_message(1);
     }
+    return ();
 }
 
 sub authenticate :Private {
@@ -88,7 +79,7 @@ sub authenticate :Private {
         my $member = Pixis::Registry->get(api => 'Member')->load_from_email($email);
         if ($member) {
             $member->password($auth->auth_data);
-            my $dummy = FudgeWorkAround->new($member);
+            my $dummy = Pixis::AuthWorkAround->new($member);
 
             $c->log->debug("Authenticating against user $member") if $c->log->is_debug;
             return $c->authenticate({ password => $password, dbix_class => { resultset => $dummy } }, $realm);
@@ -134,6 +125,7 @@ sub openid :Local :FormConfig {
             return;
         }
     }
+    return ();
 }
 
 sub logout :Local {
@@ -141,6 +133,15 @@ sub logout :Local {
 
     $c->delete_session;
     $c->res->redirect($c->uri_for('/'));
+    return ();
 }
+
+package Pixis::AuthWorkAround; ## no critic
+# XXX - TODO Create a C::Auth::Store subclass that doesn't require
+# this horrible, horrible workaround
+use strict;
+use warnings;
+sub new { return bless [ $_[1] ], $_[0] } ## no critic
+sub first { return $_[0]->[0] } ## no critic
 
 1;

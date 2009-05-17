@@ -78,13 +78,14 @@ sub __change_status {
         order_id => $order->id,
         message => $message
     } );
+    return ();
 }
 
 sub change_status {
     my ($self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( \&__change_status, $self, $schema, $args );
+    return $schema->txn_do( \&__change_status, $self, $schema, $args );
 }
 
 sub log_action {
@@ -95,7 +96,7 @@ sub log_action {
         confess "No such order: $args->{order_id}";
     }
 
-    Pixis::Registry->get(schema => 'master')->resultset('OrderAction')->create( {
+    return Pixis::Registry->get(schema => 'master')->resultset('OrderAction')->create( {
         order_id => $order->id,
         message  => $args->{message}
     } );
@@ -120,13 +121,14 @@ sub __change_txn_status {
         $txn->$field( $args->{$field} ) if exists $args->{$field};
     }
     $txn->update;
+    return ();
 }
 
 sub change_txn_status {
     my ($self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( \&__change_txn_status, $self, $schema, $args );
+    return $schema->txn_do( \&__change_txn_status, $self, $schema, $args );
 }
 
 sub __match_txn {
@@ -150,7 +152,7 @@ sub match_txn {
     my ($self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( \&__match_txn, $self, $schema, $args );
+    return $schema->txn_do( \&__match_txn, $self, $schema, $args );
 }
 
 1;

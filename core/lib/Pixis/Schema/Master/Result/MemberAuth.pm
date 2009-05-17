@@ -56,6 +56,7 @@ sub sqlt_deploy_hook {
     my ($c) = grep { $_->name eq 'unique_auth_per_user' } $sqlt_table->get_constraints();
     $c->fields([ 'member_id', 'auth_type(8)' ]);
     $self->next::method($sqlt_table);
+    return ();
 }
 
 sub populate_initial_data {
@@ -66,6 +67,7 @@ sub populate_initial_data {
             [ qw(1 password), sha1_hex('admin'), DateTime->now ],
         ],
     );
+    return ();
 }
 
 1;

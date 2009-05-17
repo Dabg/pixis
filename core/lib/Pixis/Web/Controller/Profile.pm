@@ -20,10 +20,12 @@ sub load_member : Chained : PathPart('profile') : CaptureArgs(1) {
         return;
     }
     $c->stash->{profile} = $profile;
+    return ();
 }
 
 sub view : Chained('load_member') : PathPart('') Args(0) {
     my ($self, $c) = @_;
+    return ();
 }
 
 sub edit :Local :FormConfig {
@@ -37,6 +39,7 @@ sub edit :Local :FormConfig {
         my $profile = $api->update_from_form( $c->user, $form );
         $c->res->redirect($c->uri_for($profile->id));
     }
+    return ();
 }
 
 1;

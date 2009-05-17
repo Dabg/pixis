@@ -46,6 +46,7 @@ sub sqlt_deploy_hook {
         name => 'is_expired_idx',
         fields => [ 'is_expired' ]
     );
+    return ();
 }
 
 1;

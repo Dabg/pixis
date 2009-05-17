@@ -110,9 +110,9 @@ __PACKAGE__->add_unique_constraint(unique_email => ['email']);
 __PACKAGE__->add_unique_constraint(unique_activation_token => ['activation_token']);
 
 sub gravatar_url {
-    my $self = shift;
+    my ($self, @args) = @_;
     my $uri  =  URI->new(sprintf("http://www.gravatar.com/avatar/%s.jpg", Digest::MD5::md5_hex($self->email)));
-    $uri->query_form(@_) if @_;
+    $uri->query_form(@args) if @args;
     return $uri;
 }
 
@@ -126,6 +126,7 @@ sub sqlt_deploy_hook {
     my ($c) = grep { $_->name eq 'unique_email' } $sqlt_table->get_constraints();
     $c->fields([ 'email(255)' ]);
     $self->next::method($sqlt_table);
+    return ();
 }
 
 sub populate_initial_data {
@@ -136,6 +137,7 @@ sub populate_initial_data {
             [ qw(me@example.jp admin Admin Admin 1), join('|', qw(admin)), DateTime->now ],
         ],
     );
+    return ();
 }
 
 1;

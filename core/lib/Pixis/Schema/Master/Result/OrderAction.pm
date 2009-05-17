@@ -1,6 +1,7 @@
 
 package Pixis::Schema::Master::Result::OrderAction;
 use strict;
+use warnings;
 use base qw(Pixis::Schema::Base::MySQL);
 
 __PACKAGE__->load_components("PK::Auto", "Core");

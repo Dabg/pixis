@@ -92,6 +92,18 @@ __PACKAGE__->config(
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
+__PACKAGE__->setup(qw/
+    Unicode
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+/ );
+
 
 use Module::Pluggable::Object;
 use Pixis::Web::Exception;
@@ -259,10 +271,27 @@ sub add_formfu_path {
     }
 }
 
-override finalize => sub {
+before setup_components => sub {
+    my $class = shift;
+    my @paths   = qw( ::Controller ::Model ::View );
+    my $config  = $class->config->{ setup_components };
+    my $extra   = delete $config->{ search_extra } || [];
+
+    push @paths, @$extra;
+
+    my $locator = Module::Pluggable::Object->new(
+        search_path => [ map { s/^(?=::)/Pixis::Web/; $_; } @paths ],
+        %$config
+    );
+    my @comps = sort { length $a <=> length $b } $locator->plugins;
+    foreach my $comp (@comps ) {
+        
+    }
+};
+
+before finalize => sub {
     my $c = shift;
     $c->handle_exception if @{ $c->error };
-    $c->next::method(@_);
 };
 
 sub handle_exception {
@@ -316,18 +345,6 @@ sub handle_exception {
     $c->response->body( $error->as_public_html ) if $@;
 }
 
-__PACKAGE__->setup(qw/
-    Unicode
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-/ );
-
 1;
 
 __END__
@@ -351,6 +368,16 @@ Add a hash that gets translated into the (global) navigation bar
 Add localization data
 
 =back
+
+=head1 TODO
+
+how to hijack the application?
+
+    package MyApp 
+    use Moose
+    extends Pixis::Web ?
+
+You can't generate controllers in memory?
 
 =cut
 
