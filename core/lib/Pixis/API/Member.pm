@@ -82,7 +82,11 @@ sub forgot_password {
 # returns member matching email and activation_token
 sub reset_password {
     my ($self, $args) = @_;
-    $args->{email} && $args->{token} or return;
+
+    if (! $args->{email} || ! $args->{token}) {
+        return ();
+    }
+
     my $member = $self->load_from_email($args->{email}) or return;
     $member->is_active or return;
     $member->activation_token eq $args->{token} or return;
@@ -106,7 +110,7 @@ sub activate {
     $args->{email} or die "no email";
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( sub {
+    return $schema->txn_do( sub {
         my ($self, $args) = @_;
         local $self->{resultset_constraints} = {};
         my $member = $self->resultset()->search({
@@ -201,21 +205,21 @@ sub follow {
     my ($self, $from, $to)  = @_;
     $self->cache_del([ 'member', 'following', $from ]);
     $self->cache_del([ 'member', 'followers', $to ]);
-    Pixis::Registry->get(api => 'MemberRelationship')->follow($from, $to);
+    return Pixis::Registry->get(api => 'MemberRelationship')->follow($from, $to);
 }
 
 sub unfollow {
     my ($self, $from, $to)  = @_;
     $self->cache_del([ 'member', 'following', $from ]);
     $self->cache_del([ 'member', 'followers', $to ]);
-    Pixis::Registry->get(api => 'MemberRelationship')->unfollow($from, $to);
+    return Pixis::Registry->get(api => 'MemberRelationship')->unfollow($from, $to);
 }
 
 sub soft_delete {
     my ($self, $id) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( sub {
+    return $schema->txn_do( sub {
         my ($self, $id) = @_;
 
         # invalidate followings, followers
@@ -246,3 +250,5 @@ sub load_recent_activity {
 
 
 __PACKAGE__->meta->make_immutable;
+
+1;

@@ -11,13 +11,15 @@ sub update_from_form {
     my ($self, $user, $form) = @_;
     my $schema = Pixis::Registry->get(schema => 'master');
     my $rs = $schema->resultset('Profile');
-    my $profile = $rs->update_or_create(
-        {
-            ($form->param('id') ? (id => $form->param('id')) : () ),
-            bio => $form->param('bio'),
-            member_id => $user->id,
-        }
+    my %args = (
+        bio => $form->param('bio') || undef,
+        member_id => $user->id,
     );
+    if ( $form->param('id') ) {
+        $args{id} = $form->param('id');
+    }
+
+    my $profile = $rs->update_or_create(\%args);
     return $profile;
 }
 

@@ -5,7 +5,7 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-sub _build_resultset_constraints { +{ is_expired => 1 } };
+sub _build_resultset_constraints { return +{ is_expired => 1 } };
 
 sub load_from_member {
     my ($self, $args) = @_;
@@ -19,4 +19,6 @@ sub load_from_member {
 }
 
 __PACKAGE__->meta->make_immutable;
+
+1;
 

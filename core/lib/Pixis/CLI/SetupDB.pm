@@ -5,6 +5,7 @@ use Moose;
 use DateTime;
 use Digest::SHA1 qw(sha1_hex);
 use Pixis::Schema::Master;
+use namespace::clean -except => qw(meta);
 
 with 'MooseX::Getopt';
 
@@ -31,8 +32,6 @@ has 'drop' => (
 );
 
 __PACKAGE__->meta->make_immutable;
-
-no Moose;
 
 sub run {
     my $self = shift;
@@ -64,6 +63,7 @@ sub run {
             }
         }
     }
+    return ();
 }
 
 1;

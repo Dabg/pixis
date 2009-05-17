@@ -23,7 +23,10 @@ sub connection {
             push @{$args[3]->{on_connect_do}}, 'SET sql_mode = "STRICT_TRANS_TABLES"';
         }
     }
-    $self->next::method(@args);
+    return $self->next::method(@args);
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
+
+1;
+

@@ -52,10 +52,9 @@ sub update_auth {
     my $member = Pixis::Registry->get(api => 'member')->find($args->{member_id});
     my $cache_key = [ 'pixis', 'member_auth', $member->email, $args->{auth_type}];
 
-    $self->cache_del($cache_key);
+    return $self->cache_del($cache_key);
 }
 
 1;
-
 
 

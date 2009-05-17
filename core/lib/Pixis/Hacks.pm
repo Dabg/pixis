@@ -2,13 +2,14 @@
 
 package Pixis::Hacks;
 use strict;
+use warnings;
 use Carp qw(croak);
 use HTML::FormFu;
 use Catalyst::Controller::HTML::FormFu;
 
 BEGIN {
     # XXX - voodoo to make config values not choke on multibyte chars
-    eval "require YAML::Syck";
+    eval "require YAML::Syck"; ## no critic
     if (!$@) {
         $YAML::Syck::ImplicitUnicode = 1;
     }
@@ -20,9 +21,9 @@ BEGIN {
 # portions from HTML::FormFu
 # http://rt.cpan.org/Public/Bug/Display.html?id=42928
 if ($HTML::FormFu::VERSION <= 0.03007) {
-    no warnings 'redefine';
+    no warnings 'redefine'; ## no critic
 
-    package HTML::FormFu::Localize;
+    package HTML::FormFu::Localize; ## no critic
     my $sub = sub {
         my ( $self, @original_strings ) = @_;
 
@@ -75,8 +76,8 @@ if ($HTML::FormFu::VERSION <= 0.03007) {
 # HTML::FormFu can't handle multiple search paths for the forms.
 # http://rt.cpan.org/Public/Bug/Display.html?id=43529
 {
-    no warnings 'redefine';
-    package HTML::FormFu::ObjectUtil;
+    no warnings 'redefine'; ## no critic
+    package HTML::FormFu::ObjectUtil; ## no critic
     sub _load_config {
         my ( $self, $use_stems, @filenames ) = @_;
 

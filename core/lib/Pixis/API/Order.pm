@@ -46,13 +46,13 @@ __PACKAGE__->txn_method(create_txn => sub {
     my ($self, $args, $schema) = @_;
 
     my $txn_args = $args->{txn};
-    $schema->resultset('PaymentTransaction')->create(
-        {
-            %$txn_args,
-            order_id => $args->{order_id},
-            created_on => \'NOW()',
-        }
+    my %args     = (
+        %$txn_args, 
+        order_id => $args->{order_id},
+        created_on => \'NOW()',
     );
+
+    $schema->resultset('PaymentTransaction')->create(\%args);
 });
 
 sub __change_status {

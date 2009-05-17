@@ -34,6 +34,7 @@ sub follow {
         $there_to_here->approved(1);
         $there_to_here->update;
     }
+    return ();
 }
 
 sub unfollow {
@@ -48,7 +49,7 @@ sub unfollow {
     }
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( sub {
+    return $schema->txn_do( sub {
         my ($self, $from, $to) = @_;
         my $rs = $self->resultset();
 
@@ -90,7 +91,7 @@ sub break_all {
     }
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $schema->txn_do( sub {
+    return $schema->txn_do( sub {
         my ($self, $from) = @_;
 
         my $rs = $self->resultset();
@@ -104,3 +105,5 @@ sub break_all {
 }
 
 __PACKAGE__->meta->make_immutable;
+
+1;

@@ -125,7 +125,7 @@ sub _build_translation_path {
     my $file = "$class.pm";
     my $path = $INC{ $file };
     $path =~ s{\.pm$}{/I18N/*.po};
-    [ $path ];
+    return [ $path ];
 }
 
 sub register {
@@ -146,6 +146,7 @@ sub register {
         $pkg =~ s/^Pixis::API:://;
         $registry->set(api => split(/::/, $pkg), $api);
     }
+    return ();
 }
 
 1;

@@ -162,7 +162,7 @@ sub delete {
     }, $self, $schema, $id );
 }
 
-sub txn_method {
+sub txn_method { ## no critic 
     my $class = shift;
     my $name  = shift;
     my $schema_name;

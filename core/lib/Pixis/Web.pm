@@ -115,11 +115,11 @@ my %REGISTERED_PLUGINS = ();
 my %TT_ARGS            = ();
 my @PLUGINS            = ();
 
-sub registry {
+sub registry { ## no critic
     shift;
     # XXX the initialization code is currently at Model::API. Should this
     # be changed?
-    $REGISTRY->get(@_);
+    return $REGISTRY->get(@_);
 }
 
 if (HAVE_LOG4PERL) {
@@ -138,7 +138,7 @@ after setup_finalize => sub {
     my $self = shift;
 
     $self->setup_pixis_plugins();
-    $SIG{ __DIE__ } = sub {
+    $SIG{ __DIE__ } = sub { ## no critic
         return if Scalar::Util::blessed( $_[ 0 ] );
         die $_[0] if $_[0] eq 'catalyst_detach';
         if ($_[0] ne 'No such file or directory') {
@@ -202,9 +202,10 @@ sub setup_pixis_plugins {
             push @PLUGINS, $plugin;
         }
     }
+    return ();
 }
 
-sub plugins { \@PLUGINS }
+sub plugins { return \@PLUGINS }
 
 # Note: This exists *solely* for the benefit of pixis_web_server.pl
 # In your real app (fastcgi deployment suggested), you need to do something
@@ -216,6 +217,7 @@ sub add_static_include_path {
     my $config = $self->config->{static};
     $config->{include_path} ||= [];
     push @{$config->{include_path}}, @paths;
+    return ();
 }
 
 sub add_tt_include_path {
@@ -238,6 +240,7 @@ sub add_tt_include_path {
         @paths,
         @{ $view->include_path }
     );
+    return ();
 }
 
 sub add_translation_path {
@@ -249,6 +252,7 @@ sub add_translation_path {
     my ($localizer) = $localize->find_localizers(isa => 'Data::Localize::Gettext');
 
     $localizer->path_add( $_ ) for @paths;
+    return ();
 }
 
 sub add_formfu_path {
@@ -269,25 +273,8 @@ sub add_formfu_path {
             push @$orig, $path;
         }
     }
+    return ();
 }
-
-before setup_components => sub {
-    my $class = shift;
-    my @paths   = qw( ::Controller ::Model ::View );
-    my $config  = $class->config->{ setup_components };
-    my $extra   = delete $config->{ search_extra } || [];
-
-    push @paths, @$extra;
-
-    my $locator = Module::Pluggable::Object->new(
-        search_path => [ map { s/^(?=::)/Pixis::Web/; $_; } @paths ],
-        %$config
-    );
-    my @comps = sort { length $a <=> length $b } $locator->plugins;
-    foreach my $comp (@comps ) {
-        
-    }
-};
 
 before finalize => sub {
     my $c = shift;
@@ -298,7 +285,7 @@ sub handle_exception {
     my( $c )  = @_;
     my $error = $c->error->[ 0 ];
 
-    if( !Scalar::Util::blessed( $error ) or !$error->isa( 'Pixis::Web::Exception' ) ) {
+    if( !Scalar::Util::blessed( $error ) || !$error->isa( 'Pixis::Web::Exception' ) ) {
         $error = Pixis::Web::Exception->new( message => "$error" );
     }
 
@@ -343,6 +330,7 @@ sub handle_exception {
 
     # processing the error has bombed. just send it back plainly.
     $c->response->body( $error->as_public_html ) if $@;
+    return ();
 }
 
 1;

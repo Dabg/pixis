@@ -26,8 +26,8 @@ use Exception::Class
 ;
 
 {
-    no warnings 'redefine';
-    sub headers {
+    no warnings 'redefine'; ## no critic
+    sub headers { ## no critic
         my $self    = shift;
         my $headers = $self->{headers};
     
@@ -50,20 +50,21 @@ use Exception::Class
         Pixis::Web::Exception->throw(
             message => qq(Can't coerce a '$headers' into a HTTP::Headers instance.)
         );
+        return ();
     }
 
-    sub status {
-        return $_[0]->{status} ||= 500;
+    sub status { ## no critic
+        return $_[0]->{status} ||= 500; 
     }
 
-    sub status_message {
+    sub status_message { ## no critic
         return $_[0]->{status_message} ||= HTTP::Status::status_message( $_[0]->status );
     }
 
 }
 
 foreach my $method qw(is_info is_success is_redirect is_error is_client_error is_server_error) {
-    eval <<"    EOCODE";
+    eval <<"    EOCODE"; ## no critic
         sub $method {
             HTTP::Status::$method( \$_[0]->status );
         }
@@ -71,7 +72,7 @@ foreach my $method qw(is_info is_success is_redirect is_error is_client_error is
     die if $@;
 }
 
-sub status_line {
+sub status_line { ## no critic
     return sprintf "%s %s", $_[0]->status, $_[0]->status_message;
 }
 
@@ -85,7 +86,7 @@ my %messages = (
     501 => 'The server does not support the functionality required to fulfill the request.',
 );
 
-sub public_message {
+sub public_message { ## no critic
     return $messages{ $_[0]->status } || 'An error occurred.';
 }
 
@@ -110,15 +111,15 @@ EOF
 
 }
 
-sub has_headers {
+sub has_headers { ## no critic
     return defined $_[0]->{headers} ? 1 : 0;
 }
 
-sub has_payload {
+sub has_payload { ## no critic
     return defined $_[0]->{payload} && length $_[0]->{payload} ? 1 : 0;
 }
 
-sub has_status_message {
+sub has_status_message { ## no critic
     return defined $_[0]->{status_message} ? 1 : 0;
 }
 
@@ -133,14 +134,16 @@ sub full_message {
     return $message;
 }
 
-package Pixis::Web::Exception::FileNotFound;
+package Pixis::Web::Exception::FileNotFound; ## no critic
 
-sub status {
+sub status { ## no critic
     return $_[0]->{status} ||= 404;
 }
 
-package Pixis::Web::Exception::AccessDenied;
+package Pixis::Web::Exception::AccessDenied; ## no critic
 
-sub status {
+sub status { ## no critic
     return $_[0]->{status} ||= 401;
 }
+
+1;
