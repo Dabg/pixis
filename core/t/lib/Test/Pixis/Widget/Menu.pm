@@ -23,11 +23,12 @@ sub run : Test :Plan(4) {
 sub run_esi :Test :Plan(4) {
     my $self = shift;
     local $self->widget->{is_esi} = 1;
+    local $self->widget->{query_params} = { is_logged_in => 1 };
     my $h = $self->widget->run();
     isa_ok( $h, "HASH" );
     is($h->{template}, "widget/menu.tt", "args->{template}");
     ok($h->{is_esi}, "args->{is_esi}");
-    is($h->{esi_uri}, "widget/menu");
+    is($h->{esi_uri}, "widget/menu?is_logged_in=1");
 }
 
 sub run_from_tt :Test :Plan(1) {

@@ -1,6 +1,7 @@
 package Pixis::Widget;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
+use MooseX::AttributeHelpers;
 use MooseX::Types::Path::Class;
 use namespace::clean -except => qw(meta);
 use URI;
@@ -41,6 +42,18 @@ has esi_uri => (
     lazy_build => 1
 );
 
+has query_params => (
+    metaclass => 'Collection::Hash',
+    is => 'ro',
+    isa => 'HashRef',
+    default => sub { +{} },
+    provides => {
+        set => 'query_params_set',
+        get => 'query_params_get',
+        clear => 'query_params_clear',
+    }
+);
+
 sub _build_template {
     my $self = shift;
     my $name = blessed $self;
@@ -57,7 +70,9 @@ sub _build_esi_uri {
     my $name = blessed $self;
     $name =~ s/^Pixis::Widget:://;
     my @args = ('widget' , map { lc $_ } split(/::/, $name) );
-    URI->new(join('/', @args));
+    my $uri  = URI->new(join('/', @args));
+    $uri->query_form($self->query_params);
+    return $uri;
 }
 
 sub run {
