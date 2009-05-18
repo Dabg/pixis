@@ -4,18 +4,20 @@ use Template;
 use Test::MockObject;
 BEGIN { extends 'Test::Pixis::Fixture' }
 
-has widget => ( is => 'ro', does => 'Pixis::Widget', lazy_build => 1 );
+has widget => (is => 'ro', does => 'Pixis::Widget', lazy_build => 1);
 
 sub _build_widget {
     Class::MOP::load_class("Pixis::Widget::Menu");
     return Pixis::Widget::Menu->new();
 }
 
-sub run : Test :Plan(1) {
+sub run : Test :Plan(4) {
     my $self = shift;
     my $h = $self->widget->run();
     isa_ok( $h, "HASH" );
-    is($h->{template}, "widget/menu.tt");
+    is($h->{template}, "widget/menu.tt", "args->{template}");
+    ok(! $h->{is_esi}, "args->{is_esi}");
+    ok(! $h->{esi_uri}, "args->{esi_uri}");
 }
 
 sub run_from_tt :Test :Plan(1) {
