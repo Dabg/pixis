@@ -9,6 +9,7 @@ pm_to_blib
 Build
 _build
 core/tt2
+core/t/tt2
 core/inc
 core/META.yml
 core/pixis_web_local.yaml
