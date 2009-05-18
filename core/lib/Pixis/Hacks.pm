@@ -145,45 +145,4 @@ if ($HTML::FormFu::VERSION <= 0.03007) {
     };
 }
 
-if (defined *Catalyst::) {
-    *Catalyst::Util::ensure_class_loaded = sub {
-        my $class = shift;
-        my $opts  = shift;
-
-        croak "Malformed class Name $class"
-            if $class =~ m/(?:\b\:\b|\:{3,})/;
-        croak "Malformed class Name $class"
-            if $class =~ m/[^\w:]/;
-        croak "ensure_class_loaded should be given a classname, not a filename ($class)"
-            if $class =~ m/\.pm$/;
-
-        # $opts->{ignore_loaded} can be set to true, and this causes the class to be required, even
-        # if it already has symbol table entries. This is to support things like Schema::Loader, which
-        # part-generate classes in memory, but then also load some of their contents from disk.
-        (Class::MOP::is_class_loaded($class) ? "YES" : "NO");
-        return if !$opts->{ ignore_loaded }
-            && Class::MOP::is_class_loaded($class); # if a symbol entry exists we do n't load again
-
-        # this hack is so we don't overwrite $@ if the load did not generate an error
-        my $error;
-        {
-            local $@;
-            my $file = $class . '.pm';
-            $file =~ s{::}{/}g;
-            if (-f $file) {
-                eval { CORE::require($file) };
-                $error = $@;
-            }
-        }
-
-        die $error if $error;
-
-        warn "require $class was successful but the package is not defined."
-            unless Class::MOP::is_class_loaded($class);
-
-        return 1;
-    }
-}
-
-
 1;

@@ -134,8 +134,10 @@ if (HAVE_LOG4PERL) {
     };
 }
 
-after setup_finalize => sub {
-    my $self = shift;
+sub setup_finalize {
+    my ($self, @args) = @_;
+
+    $self->next::method(@args);
 
     $self->setup_pixis_plugins();
     $SIG{ __DIE__ } = sub { ## no critic
@@ -145,6 +147,7 @@ after setup_finalize => sub {
             Pixis::Web::Exception->throw( message => join '', @_ );
         }
     };
+    return;
 };
 
 sub setup_pixis_plugins {

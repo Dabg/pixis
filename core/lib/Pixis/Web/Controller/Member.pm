@@ -15,7 +15,7 @@ sub auto :Private {
     } else {
         $c->forward('/auth/assert_logged_in') or return;
     }
-    return ();
+    return 1;
 }
 
 sub load_member :Chained :PathPart('member') CaptureArgs(1) {
@@ -37,8 +37,7 @@ sub load_member :Chained :PathPart('member') CaptureArgs(1) {
 sub home :Local {
     # XXX Later?
     my($self, $c) = @_;
-    $c->res->redirect($c->uri_for($c->user->id));
-    return ()
+    return $c->res->redirect($c->uri_for($c->user->id));
 }
 
 sub view :Chained('load_member') :PathPart('') Args(0) {
