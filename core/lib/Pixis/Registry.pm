@@ -44,8 +44,8 @@ around 'set' => sub {
 };
 
 sub __to_key {
-    my $self = shift;
-    return join('.', map { my $x = $_; $x =~ s/\./\_/g; lc $x } @_ );
+    my ($self, @args) = @_;
+    return join('.', map { my $x = $_; $x =~ s/\./\_/g; lc $x } @args );
 }
 
 1;

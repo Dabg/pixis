@@ -74,22 +74,27 @@ sub sqlt_deploy_hook {
     );
     
     $self->next::method($sqlt_table);
+    return ();
 }
 
 sub is_init {
-    return $_[0]->status eq ST_INIT;
+    my $self = shift;
+    return $self->status eq ST_INIT;
 }
 
 sub is_pending_accept {
-    return $_[0]->status eq ST_CREDIT_ACCEPT;
+    my $self = shift;
+    return $self->status eq ST_CREDIT_ACCEPT;
 }
 
 sub is_pending_credit_check {
-    return $_[0]->status eq ST_CREDIT_CHECK;
+    my $self = shift;
+    return $self->status eq ST_CREDIT_CHECK;
 }
 
 sub is_done {
-    return $_[0]->status eq ST_DONE;
+    my $self = shift;
+    return $self->status eq ST_DONE;
 }
 
 1;

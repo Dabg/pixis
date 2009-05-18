@@ -2,6 +2,7 @@
 
 package Pixis::FormFu::Constraint::OpenID;
 use strict;
+use warnings;
 use base 'HTML::FormFu::Constraint';
 use Pixis::Registry;
 use Pixis::API::MemberAuth;

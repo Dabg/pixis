@@ -22,6 +22,7 @@ has cancel_url => (
 sub auto :Private {
     my ($self, $c) = @_;
     $c->forward('/auth/assert_logged_in');
+    return ();
 }
 
 sub initiate_purchase :Private {
@@ -71,6 +72,7 @@ sub initiate_purchase :Private {
     }
 
     $c->res->redirect($url);
+    return ();
 }
 
 sub complete_purchase :Private {
@@ -87,11 +89,13 @@ sub complete_purchase :Private {
     }
 
     $c->res->redirect($args->{return_url});
+    return ();
 }
 
 sub index :Index :Args(0) {
     my ($self, $c) = @_;
     $self->initiate_purchase($c);
+    return ();
 }
 
 sub accept :Local {
@@ -130,6 +134,7 @@ sub accept :Local {
         payer_id    => $form->param('PayerID'),
 
     } );
+    return ();
 }
 
 sub cancel :Local :FormConfig {
@@ -137,6 +142,7 @@ sub cancel :Local :FormConfig {
 
     $c->controler('Payment::Paypal')->cancel($c, {
     } );
+    return ();
 }
 
 sub complete :Local :FormConfig{
@@ -159,6 +165,7 @@ sub complete :Local :FormConfig{
         }
     );
     $c->stash->{order} = $order;
+    return ();
 }
 
 1;

@@ -2,12 +2,14 @@
 
 package Pixis::Hacks;
 use strict;
+use warnings;
+use Carp qw(croak);
 use HTML::FormFu;
 use Catalyst::Controller::HTML::FormFu;
 
 BEGIN {
     # XXX - voodoo to make config values not choke on multibyte chars
-    eval "require YAML::Syck";
+    eval "require YAML::Syck"; ## no critic
     if (!$@) {
         $YAML::Syck::ImplicitUnicode = 1;
     }
@@ -19,9 +21,9 @@ BEGIN {
 # portions from HTML::FormFu
 # http://rt.cpan.org/Public/Bug/Display.html?id=42928
 if ($HTML::FormFu::VERSION <= 0.03007) {
-    no warnings 'redefine';
+    no warnings 'redefine'; ## no critic
 
-    package HTML::FormFu::Localize;
+    package HTML::FormFu::Localize; ## no critic
     my $sub = sub {
         my ( $self, @original_strings ) = @_;
 
@@ -74,8 +76,8 @@ if ($HTML::FormFu::VERSION <= 0.03007) {
 # HTML::FormFu can't handle multiple search paths for the forms.
 # http://rt.cpan.org/Public/Bug/Display.html?id=43529
 {
-    no warnings 'redefine';
-    package HTML::FormFu::ObjectUtil;
+    no warnings 'redefine'; ## no critic
+    package HTML::FormFu::ObjectUtil; ## no critic
     sub _load_config {
         my ( $self, $use_stems, @filenames ) = @_;
 
@@ -141,6 +143,46 @@ if ($HTML::FormFu::VERSION <= 0.03007) {
 
         return $self;
     };
+}
+
+if (defined *Catalyst::) {
+    *Catalyst::Util::ensure_class_loaded = sub {
+        my $class = shift;
+        my $opts  = shift;
+
+        croak "Malformed class Name $class"
+            if $class =~ m/(?:\b\:\b|\:{3,})/;
+        croak "Malformed class Name $class"
+            if $class =~ m/[^\w:]/;
+        croak "ensure_class_loaded should be given a classname, not a filename ($class)"
+            if $class =~ m/\.pm$/;
+
+        # $opts->{ignore_loaded} can be set to true, and this causes the class to be required, even
+        # if it already has symbol table entries. This is to support things like Schema::Loader, which
+        # part-generate classes in memory, but then also load some of their contents from disk.
+        (Class::MOP::is_class_loaded($class) ? "YES" : "NO");
+        return if !$opts->{ ignore_loaded }
+            && Class::MOP::is_class_loaded($class); # if a symbol entry exists we do n't load again
+
+        # this hack is so we don't overwrite $@ if the load did not generate an error
+        my $error;
+        {
+            local $@;
+            my $file = $class . '.pm';
+            $file =~ s{::}{/}g;
+            if (-f $file) {
+                eval { CORE::require($file) };
+                $error = $@;
+            }
+        }
+
+        die $error if $error;
+
+        warn "require $class was successful but the package is not defined."
+            unless Class::MOP::is_class_loaded($class);
+
+        return 1;
+    }
 }
 
 

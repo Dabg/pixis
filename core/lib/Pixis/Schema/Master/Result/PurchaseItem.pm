@@ -53,6 +53,7 @@ sub sqlt_deploy_hook {
         fields => [ 'store_name(8)' ],
     );
     $self->next::method($sqlt_table);
+    return ();
 }
 
 1;

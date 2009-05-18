@@ -1,6 +1,7 @@
 
 package Pixis::Plagger::Plugin::MemberActivity;
 use strict;
+use warnings;
 use base qw( Plagger::Plugin );
 use DBI;
 
@@ -12,6 +13,7 @@ sub register {
         'subscription.load' => $self->can('load'),
         'publish.feed'      => $self->can('publish_feed'),
     );
+    return ();
 }
 
 sub load {
@@ -43,6 +45,7 @@ sub load {
             $add_feed->("http://github.com/$github_id.atom");
         }
     }
+    return ();
 }
 
 sub publish_feed {
@@ -62,6 +65,7 @@ sub publish_feed {
         $sth->execute($e->id, $e->permalink, $e->title, $e->body, $e->date);
     }
     $dbh->commit();
+    return ();
 }
 
 1;

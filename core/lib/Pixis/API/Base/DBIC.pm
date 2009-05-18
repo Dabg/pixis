@@ -34,14 +34,14 @@ with_cache 'cache' => (backend => 'Cache::Memcached');
 
 sub _build_resultset_moniker {
     my $self = shift;
-    (split(/::/, ref $self))[-1];
+    return (split(/::/, ref $self))[-1];
 }
 
-sub _build_resultset_constraints { +{} }
+sub _build_resultset_constraints { return +{} }
 
 sub _build_cache_prefix {
     my $self = shift;
-    join('.', split(/\./, ref $self));
+    return join('.', split(/\./, ref $self));
 }
 
 sub resultset {
@@ -121,7 +121,7 @@ sub create_from_form {
 sub create {
     my ($self, $args) = @_;
     my $rs = $self->resultset();
-    $rs->create($args);
+    return $rs->create($args);
 }
 
 sub update {
@@ -149,7 +149,7 @@ sub delete {
     my ($self, $id) = @_;
 
     my $schema = Pixis::Registry->get('schema' => 'master');
-    $schema->txn_do( sub {
+    return $schema->txn_do( sub {
         my ($self, $schema, $id) = @_;
         my $obj = $schema->resultset($self->resultset_moniker)->find($id);
         if ($obj) {
@@ -162,7 +162,7 @@ sub delete {
     }, $self, $schema, $id );
 }
 
-sub txn_method {
+sub txn_method { ## no critic 
     my $class = shift;
     my $name  = shift;
     my $schema_name;
@@ -188,6 +188,7 @@ sub txn_method {
     } else {
         return ($name => $wrapper);
     }
+    return ();
 }
 
 1;

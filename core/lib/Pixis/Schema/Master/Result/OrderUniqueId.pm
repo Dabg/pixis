@@ -25,6 +25,7 @@ sub populate_initial_data {
 
     $self->create_unique_keys($schema, 
         $ENV{PIXIS_ORDER_UNIQUE_ID_COUNT} || 100);
+    return ();
 }
 
 sub create_unique_keys {
@@ -38,6 +39,7 @@ sub create_unique_keys {
                 1..$howmany
         ],
     );
+    return ();
 }
 
 my @constituents = sort { 

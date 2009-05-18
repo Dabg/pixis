@@ -15,6 +15,7 @@ sub auto :Private {
     } else {
         $c->forward('/auth/assert_logged_in') or return;
     }
+    return ();
 }
 
 sub load_member :Chained :PathPart('member') CaptureArgs(1) {
@@ -30,12 +31,14 @@ sub load_member :Chained :PathPart('member') CaptureArgs(1) {
 
     $c->stash->{following} = $api->load_following($id);
     $c->stash->{followers} = $api->load_followers($id);
+    return ();
 }
 
 sub home :Local {
     # XXX Later?
     my($self, $c) = @_;
     $c->res->redirect($c->uri_for($c->user->id));
+    return ()
 }
 
 sub view :Chained('load_member') :PathPart('') Args(0) {
@@ -54,6 +57,7 @@ sub view :Chained('load_member') :PathPart('') Args(0) {
         $c->stash->{activities} = 
             [ $api->load_recent_activity( { member_id => $c->user->id } ) ];
     }
+    return ();
 }
 
 # XXX - follow status
@@ -63,6 +67,7 @@ sub follow :Chained('load_member') :Args(0) {
     $c->forward('/auth/assert_logged_in') or return;
     $c->registry(api => 'MemberRelationship')->follow($c->user, $c->stash->{member});
     $c->res->redirect($c->uri_for($c->stash->{member}->id));
+    return ();
 }
 
 sub unfollow :Chained('load_member') :Args(0) {
@@ -70,6 +75,7 @@ sub unfollow :Chained('load_member') :Args(0) {
     $c->forward('/auth/assert_logged_in') or return;
     $c->registry(api => 'MemberRelationship')->unfollow($c->user, $c->stash->{member});
     $c->res->redirect($c->uri_for($c->stash->{member}->id));
+    return ();
 }
 
 sub settings :Local :Args(0) {
@@ -84,12 +90,12 @@ sub settings :Local :Args(0) {
     $form = $self->form();
     $form->load_config_filestem('member/settings_auth');
     $c->stash->{form_password} = $form;
-
     {
         my $api = $c->registry(api => 'Profile');
         $c->stash->{profiles} = 
             [ $api->load_from_member({ member_id => $c->user->id }) ];
     }
+    return ();
 }
 
 sub settings_basic :Path('settings/basic') :Args(0) :FormConfig {
@@ -106,6 +112,7 @@ sub settings_basic :Path('settings/basic') :Args(0) :FormConfig {
         }
         $c->res->redirect($c->uri_for('home'));
     }
+    return ();
 }
 
 sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
@@ -137,6 +144,7 @@ sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
         );
         $c->res->redirect($c->uri_for('/member/settings'));
     }
+    return ();
 }
 
 sub forgot_password :Local :Args(0) :FormConfig {
@@ -166,6 +174,7 @@ sub forgot_password :Local :Args(0) :FormConfig {
             $form->force_error_message(1);
         }
     }
+    return ();
 }
 
 sub reset_password :Local :Args(0) :FormConfig {
@@ -201,6 +210,7 @@ sub reset_password :Local :Args(0) :FormConfig {
         $c->forward('/auth/authenticate', [ $member->email, $auth->auth_data, 'members_internal' ]);
         $c->res->redirect($c->uri_for('home'));
     }
+    return ();
 }
 
 sub search :Local :Args(0) :FormConfig {
@@ -210,6 +220,7 @@ sub search :Local :Args(0) :FormConfig {
     if ($form->submitted_and_valid) {
         $c->stash->{members} = $c->registry(api => 'Member')->search_members($form->params);
     }
+    return ();
 }
 
 sub leave :Local :Args(0) :FormConfig {
@@ -220,6 +231,7 @@ sub leave :Local :Args(0) :FormConfig {
         $c->stash->{template} = 'member/leave_confirm.tt';
         $form->action('/member/leave/commit');
     }
+    return ();
 }
 
 sub leave_commit :Path('leave/commit') :Args(0) :FormConfig {
@@ -235,6 +247,7 @@ sub leave_commit :Path('leave/commit') :Args(0) :FormConfig {
 
     # why would you get here?!
     $c->res->redirect($c->uri_for('/member/leave'));
+    return ();
 }
 
 1;

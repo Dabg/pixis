@@ -13,6 +13,7 @@ sub sqlt_deploy_hook {
 
     $sqlt_table->extra->{mysql_table_type} = $self->engine;
     $sqlt_table->extra->{mysql_charset}    = $self->charset;
+    return ();
 }
 
 1;

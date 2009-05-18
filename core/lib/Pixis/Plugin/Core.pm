@@ -33,6 +33,9 @@ before register => sub {
         }
     }
     $self->extra_api(\@list);
+    return ();
 };
 
 __PACKAGE__->meta->make_immutable();
+
+1;

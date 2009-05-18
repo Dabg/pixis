@@ -36,6 +36,7 @@ sub send :Private {
     local $c->stash->{email} = \%args;
 
     $c->forward( $c->view('Email') );
+    return ();
 }
 
 1;

@@ -1,0 +1,9 @@
+severity = 4
+verbose  = 4
+exclude  = Subroutines::ProhibitBuiltinHomonyms ValuesAndExpressions::ProhibitConstantPragma
+
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = Moose, Moose::Role, MooseX::Singleton
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules = Moose, Moose::Role, MooseX::Singleton

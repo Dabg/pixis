@@ -11,6 +11,7 @@ __PACKAGE__->config(
 sub auto :Private {
     my ( $self, $c ) = @_;
     $c->forward('/auth/assert_logged_in') or return;
+    return 1;
 }
 
 sub index : Local :Path('') :Args(0) :FormConfig {
@@ -24,6 +25,7 @@ sub index : Local :Path('') :Args(0) :FormConfig {
         );
         $c->stash->{profiles} = \@profiles;
     }
+    return ();
 }
 
 sub create : Local :Args(0) :FormConfig('profile/edit') {
@@ -39,6 +41,7 @@ sub create : Local :Args(0) :FormConfig('profile/edit') {
         my $profile = $api->create($args);
         $c->res->redirect($c->uri_for($profile->id));
     }
+    return ();
 }
 
 sub load_profile : Chained : PathPart('profile') : CaptureArgs(1) {
@@ -51,10 +54,12 @@ sub load_profile : Chained : PathPart('profile') : CaptureArgs(1) {
         return;
     }
     $c->stash->{profile} = $profile;
+    return ();
 }
 
 sub view : Chained('load_profile') : PathPart('') Args(0) {
     my ($self, $c) = @_;
+    return ();
 }
 
 sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
@@ -72,6 +77,7 @@ sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
         my $profile = $api->update( $args );
         $c->res->redirect($c->uri_for($profile->id));
     }
+    return ();
 }
 
 sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
@@ -83,6 +89,7 @@ sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
         $c->registry(api => 'Profile')->delete($c->stash->{profile}->id);
         $c->res->redirect($c->uri_for('/member/settings'));
     }
+    return ();
 }
 
 1;

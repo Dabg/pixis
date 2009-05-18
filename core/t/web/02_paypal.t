@@ -23,11 +23,10 @@ run_tests {
         [ 'create_purchase_item' ],
 
         # Place an order via the API
-        # [ 'FIX ME' ]
+        [ 'place order', { email => $user->{email} }, ],
 
         # Pay for it via paypal
         [ 'login', $user ],
-        [ 'payfor_it' ],
 
         # Make sure by checking the paypal site
         [ 'logout' ],

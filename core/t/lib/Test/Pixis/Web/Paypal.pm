@@ -10,11 +10,13 @@ BEGIN {
     ;
 }
 
-sub setup :Test :Plan(2) {
+sub setup  {
     my $self = shift;
     my $api = $self->api('PurchaseItem');
     my $registry = Pixis::Registry->instance;
     $registry->set(api => 'purchaseitem' => $api);
+    $registry->set(api => 'order' => $self->api('Order'));
+    $registry->set(api => 'member' => $self->api('Member'));
     $registry->set(schema => 'master' => $self->schema);
 }
 
@@ -35,7 +37,24 @@ sub create_purchase_item :Test :Plan(1) {
     } "Created item";
 }
 
-sub payfor_it :Test :Plan(3) {
+sub place_order :Test :Plan(2) {
+    my ($self, $args) = @_;
+
+    lives_ok {
+        my $api = Pixis::Registry->get(api => 'order');
+        my $member = Pixis::Registry->get(api => 'member')->load_from_email($args->{email}) or die "No such member";
+
+
+        my %order_args = (
+            $args->{amount} || 1000,
+        );
+        $api->create(\%order_args);
+    } "Created order"
+}
+
+sub pay_for_it :Test :Plan(3) {
+    
+
 }
 
 __PACKAGE__->meta->make_immutable;

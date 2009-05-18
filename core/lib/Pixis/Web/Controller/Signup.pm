@@ -19,7 +19,7 @@ has steps => (
 
 
 sub _build_steps {
-    ['experience', 'commit', 'send_activate', 'activate' ]
+    return ['experience', 'commit', 'send_activate', 'activate' ]
 }
 
 # Ask things like name, and email address
@@ -45,6 +45,7 @@ sub start :Index :Path :Args(0) :FormConfig {
         my $subsession = $self->new_subsession($c, $params);
         return $c->forward('next_step', [$subsession]);
     }
+    return ();
 }
 
 sub next_step :Private {
@@ -80,6 +81,7 @@ sub next_step :Private {
     $c->log->debug("Next step is forwading to $uri") if $c->log->is_debug;
     $c->res->redirect( $uri );
     $c->finalize();
+    return ();
 }
 
 # Ask things like coderepos/github accounts
@@ -93,6 +95,7 @@ sub experience :Local :Args(1) :FormConfig {
         $self->set_subsession($c, $subsession, $params);
         return $c->forward('next_step', [$subsession]); 
     }
+    return ();
 }
 
 # All done, save
@@ -115,6 +118,7 @@ sub commit :Local :Args(1) :FormConfig {
         } 
     }
     $c->stash->{confirm} = $self->get_subsession($c, $subsession);
+    return ();
 }
 
 sub activate :Local :Args(0) :FormConfig {
@@ -139,6 +143,7 @@ sub activate :Local :Args(0) :FormConfig {
         $form->form_error_message("指定されたユーザーは存在しませんでした");
         $form->force_error_message(1);
     }
+    return ();
 }
 
 sub send_activate :Local :Args(1) {
@@ -161,11 +166,13 @@ sub send_activate :Local :Args(1) {
     });
 
     $c->res->redirect($c->uri_for('activate'));
+    return ();
 }
 
 sub done :Local {
     my ($self, $c, $subsession) =  @_;
     $c->res->redirect($c->uri_for('/member/home'));
+    return ();
 }
 
 sub new_subsession {
@@ -177,17 +184,17 @@ sub new_subsession {
 
 sub get_subsession {
     my ($self, $c, $subsession) = @_;
-    $c->session->{__subsessions}->{$subsession} || {};
+    return $c->session->{__subsessions}->{$subsession} || {};
 }
 
 sub set_subsession {
     my ($self, $c, $subsession, $value) = @_;
-    $c->session->{__subsessions}->{$subsession} = $value;
+    return $c->session->{__subsessions}->{$subsession} = $value;
 }
 
 sub delete_subsession {
     my ($self, $c, $subsession, $value) = @_;
-    delete $c->session->{__subsessions}->{$subsession};
+    return delete $c->session->{__subsessions}->{$subsession};
 }
 
 1;

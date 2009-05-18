@@ -92,6 +92,18 @@ __PACKAGE__->config(
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
+__PACKAGE__->setup(qw/
+    Unicode
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+/ );
+
 
 use Module::Pluggable::Object;
 use Pixis::Web::Exception;
@@ -103,11 +115,11 @@ my %REGISTERED_PLUGINS = ();
 my %TT_ARGS            = ();
 my @PLUGINS            = ();
 
-sub registry {
+sub registry { ## no critic
     shift;
     # XXX the initialization code is currently at Model::API. Should this
     # be changed?
-    $REGISTRY->get(@_);
+    return $REGISTRY->get(@_);
 }
 
 if (HAVE_LOG4PERL) {
@@ -126,7 +138,7 @@ after setup_finalize => sub {
     my $self = shift;
 
     $self->setup_pixis_plugins();
-    $SIG{ __DIE__ } = sub {
+    $SIG{ __DIE__ } = sub { ## no critic
         return if Scalar::Util::blessed( $_[ 0 ] );
         die $_[0] if $_[0] eq 'catalyst_detach';
         if ($_[0] ne 'No such file or directory') {
@@ -190,9 +202,10 @@ sub setup_pixis_plugins {
             push @PLUGINS, $plugin;
         }
     }
+    return ();
 }
 
-sub plugins { \@PLUGINS }
+sub plugins { return \@PLUGINS }
 
 # Note: This exists *solely* for the benefit of pixis_web_server.pl
 # In your real app (fastcgi deployment suggested), you need to do something
@@ -204,6 +217,7 @@ sub add_static_include_path {
     my $config = $self->config->{static};
     $config->{include_path} ||= [];
     push @{$config->{include_path}}, @paths;
+    return ();
 }
 
 sub add_tt_include_path {
@@ -226,6 +240,7 @@ sub add_tt_include_path {
         @paths,
         @{ $view->include_path }
     );
+    return ();
 }
 
 sub add_translation_path {
@@ -237,6 +252,7 @@ sub add_translation_path {
     my ($localizer) = $localize->find_localizers(isa => 'Data::Localize::Gettext');
 
     $localizer->path_add( $_ ) for @paths;
+    return ();
 }
 
 sub add_formfu_path {
@@ -257,19 +273,19 @@ sub add_formfu_path {
             push @$orig, $path;
         }
     }
+    return ();
 }
 
-override finalize => sub {
+before finalize => sub {
     my $c = shift;
     $c->handle_exception if @{ $c->error };
-    $c->next::method(@_);
 };
 
 sub handle_exception {
     my( $c )  = @_;
     my $error = $c->error->[ 0 ];
 
-    if( !Scalar::Util::blessed( $error ) or !$error->isa( 'Pixis::Web::Exception' ) ) {
+    if( !Scalar::Util::blessed( $error ) || !$error->isa( 'Pixis::Web::Exception' ) ) {
         $error = Pixis::Web::Exception->new( message => "$error" );
     }
 
@@ -314,19 +330,8 @@ sub handle_exception {
 
     # processing the error has bombed. just send it back plainly.
     $c->response->body( $error->as_public_html ) if $@;
+    return ();
 }
-
-__PACKAGE__->setup(qw/
-    Unicode
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-/ );
 
 1;
 
@@ -351,6 +356,16 @@ Add a hash that gets translated into the (global) navigation bar
 Add localization data
 
 =back
+
+=head1 TODO
+
+how to hijack the application?
+
+    package MyApp 
+    use Moose
+    extends Pixis::Web ?
+
+You can't generate controllers in memory?
 
 =cut
 
