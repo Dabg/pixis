@@ -1,4 +1,5 @@
-[% WRAPPER wrapper.tt title = 'プロフィールの編集' %]
+[% WRAPPER wrapper.tt title = 'プロフィールの編集', no_pagetitle = 1 %]
+[% INCLUDE 'profile/menu.tt' %]
 <div id="content">
 [% form %]
 </div>

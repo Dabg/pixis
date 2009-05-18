@@ -1,0 +1,11 @@
+---
+auto_fieldset: 1
+method: GET
+indicator: submit
+
+elements:
+    - type: Text
+      name: q
+    - type: Submit
+      name: submit
+      value: search

@@ -1,0 +1,11 @@
+<div id="title" class="clearfix">
+<div id="info">
+<h1><a href="[% c.uri_for(profile.id) %]">[% profile.name %]</a></h1>
+[% IF c.user.id == profile.member_id %]
+<ul id="member_menu" class="clearfix">
+<li><a href="[% c.uri_for(profile.id, 'edit') %]">[% loc('edit') %]</a></li>
+<li><a href="[% c.uri_for(profile.id, 'delete') %]">[% loc('delete') %]</a></li>
+</ul>
+[% END %]
+</div>
+</div>

@@ -6,7 +6,7 @@
 <h2>[% loc("profiles") %]</h2>
 <ul>
 [% FOR p IN profiles %]
-<li><a href="[% c.uri_for('/profile', p.id , 'edit') %]">[% p.name %]</li></li>
+<li><a href="[% c.uri_for('/profile', p.id , 'edit') %]">[% p.name %]</a></li>
 [% END %]
 <li><a href="[% c.uri_for('/profile/create') %]">[% loc("create new") %]</a></li>
 </ul>

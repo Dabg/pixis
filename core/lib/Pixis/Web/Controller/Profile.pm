@@ -10,7 +10,35 @@ __PACKAGE__->config(
 
 sub auto :Private {
     my ( $self, $c ) = @_;
-    return 1;
+    $c->forward('/auth/assert_logged_in') or return;
+}
+
+sub index : Local :Path('') :Args(0) :FormConfig {
+    my ( $self, $c ) = @_;
+    my $form = $c->stash->{form};
+    if ( $form->submitted_and_valid ) {
+        my @profiles = $c->registry(api => 'Profile')->search(
+            {
+                name => {like => '%'.$form->param_value('q').'%'}
+            }
+        );
+        $c->stash->{profiles} = \@profiles;
+    }
+}
+
+sub create : Local :Args(0) :FormConfig('profile/edit') {
+    my ( $self, $c ) = @_;
+
+    my $form = $c->stash->{form};
+    if ($form->submitted_and_valid) {
+        my $api = $c->registry(api => 'Profile');
+        my $args = $form->params;
+        delete $args->{submit};
+        delete $args->{id};
+        $args->{member_id} = $c->user->id;
+        my $profile = $api->create($args);
+        $c->res->redirect($c->uri_for($profile->id));
+    }
 }
 
 sub load_profile : Chained : PathPart('profile') : CaptureArgs(1) {
@@ -32,10 +60,12 @@ sub view : Chained('load_profile') : PathPart('') Args(0) {
 sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
 
+    $c->stash->{profile}->member_id == $c->user->id
+        or return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+
     my $form = $c->stash->{form};
+    $form->model->default_values($c->stash->{profile});
     my $api = $c->registry(api => 'Profile');
-    my $existing = $c->stash->{profile};
-    $form->model->default_values($existing) if $existing;
     if ($form->submitted_and_valid) {
         my $args = $form->params;
         delete $args->{submit};
@@ -44,21 +74,14 @@ sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
     }
 }
 
-sub create : Local :Args(0) {
+sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
 
-    my $form = $self->form;
-    $form->load_config_filestem('profile/edit');
-    $form->process($c->req->params);
-    $c->stash->{form} = $form;
-    if ($form->submitted_and_valid) {
-        my $api = $c->registry(api => 'Profile');
-        my $args = $form->params;
-        delete $args->{submit};
-        delete $args->{id};
-        $args->{member_id} = $c->user->id;
-        my $profile = $api->create($args);
-        $c->res->redirect($c->uri_for($profile->id));
+    $c->stash->{profile}->member_id == $c->user->id
+        or return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+    if ($c->stash->{form}->submitted_and_valid) {
+        $c->registry(api => 'Profile')->delete($c->stash->{profile}->id);
+        $c->res->redirect($c->uri_for('/member/settings'));
     }
 }
 
