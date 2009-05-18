@@ -56,4 +56,7 @@ sub init_meta {
     }
 }
 
+sub setup {}
+sub teardown {}
+
 1;

@@ -20,3 +20,12 @@ END;
 
  -%]
 [%- SET lang = c.session.lang || 'ja' -%]
+
+[%- MACRO run_widget(widget, args) BLOCK -%]
+[%-
+    object = c.model('Widget').load(widget);
+    args   = object.run(args);
+    template = args.template;
+-%]
+[% INCLUDE $template, args %]
+[%- END -%]
