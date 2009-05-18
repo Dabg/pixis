@@ -6,11 +6,19 @@ indicator: submit
 elements:
     - type: Hidden
       name: id
+    - type: Text
+      name: name
+      label_loc: Name
+      constraints:
+        - Required
     - type: Textarea
       name: bio
+      label_loc: Bio
       attributes:
         cols: 60
         rows: 10
+      constraints:
+        - Required
     - type: Submit
       name: submit
       value_loc: Submit

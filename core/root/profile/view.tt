@@ -1,3 +1,6 @@
-[% WRAPPER wrapper.tt %]
-[% profile.bio | html %]
+[% WRAPPER wrapper.tt title = profile.name no_pagetitle = 1 %]
+[% INCLUDE 'profile/menu.tt' %]
+<div id="content">
+<p>[% profile.bio | html | html_line_break %]</p>
+</div>
 [% END %]

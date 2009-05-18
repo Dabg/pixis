@@ -91,6 +91,11 @@ sub settings :Local :Args(0) {
     $form = $self->form();
     $form->load_config_filestem('member/settings_auth');
     $c->stash->{form_password} = $form;
+    {
+        my $api = $c->registry(api => 'Profile');
+        $c->stash->{profiles} = 
+            [ $api->load_from_member({ member_id => $c->user->id }) ];
+    }
     return ();
 }
 

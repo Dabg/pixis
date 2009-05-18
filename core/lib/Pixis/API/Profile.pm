@@ -5,7 +5,21 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-__PACKAGE__->meta->make_immutable;
+around create => sub {
+    my ($next, $self, $args) = @_;
+    $args->{created_on} = \'NOW()';
+    return $next->($self, $args);
+};
+
+sub load_from_member {
+    my ($self, $args) = @_;
+
+    my @list = $self->resultset->search(
+        { member_id => $args->{member_id} },
+        { order_by => 'id DESC' }
+    );
+    return wantarray ? @list : \@list;
+}
 
 sub update_from_form {
     my ($self, $user, $form) = @_;
@@ -22,5 +36,7 @@ sub update_from_form {
     my $profile = $rs->update_or_create(\%args);
     return $profile;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;

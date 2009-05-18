@@ -10,7 +10,13 @@ my $user = {
 };
 
 my $profile = {
+    name => 'キャベツ星人',
     bio => 'キャベツは特別！',
+};
+
+my $profile2 = {
+    name => 'foobar',
+    bio => 'hoge',
 };
 
 run_tests {
@@ -21,5 +27,6 @@ run_tests {
         [ 'signin', $user ],
         [ 'login', $user ],
         [ 'create', $profile ],
+        [ 'edit', $profile, $profile2 ],
     }
 };
