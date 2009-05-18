@@ -20,6 +20,16 @@ sub run : Test :Plan(4) {
     ok(! $h->{esi_uri}, "args->{esi_uri}");
 }
 
+sub run_esi :Test :Plan(4) {
+    my $self = shift;
+    local $self->widget->{is_esi} = 1;
+    my $h = $self->widget->run();
+    isa_ok( $h, "HASH" );
+    is($h->{template}, "widget/menu.tt", "args->{template}");
+    ok($h->{is_esi}, "args->{is_esi}");
+    is($h->{esi_uri}, "widget/menu");
+}
+
 sub run_from_tt :Test :Plan(1) {
     my $self = shift;
     my $template = Template->new(

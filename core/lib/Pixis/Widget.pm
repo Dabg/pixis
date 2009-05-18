@@ -3,6 +3,7 @@ use Moose::Role;
 use Moose::Util::TypeConstraints;
 use MooseX::Types::Path::Class;
 use namespace::clean -except => qw(meta);
+use URI;
 
 # if running in stand alone mode
 has view => ( is => 'ro', isa => 'Catalyst::View' );
@@ -23,7 +24,7 @@ has template => (
 );
 
 has is_esi => (
-    is => 'ro',
+    is => 'rw',
     isa => 'Bool',
     default => 0
 );
@@ -49,6 +50,14 @@ sub _build_template {
         $args[-1] .= $self->suffix;
     }
     return Path::Class::File->new( @args );
+}
+
+sub _build_esi_uri {
+    my $self = shift;
+    my $name = blessed $self;
+    $name =~ s/^Pixis::Widget:://;
+    my @args = ('widget' , map { lc $_ } split(/::/, $name) );
+    URI->new(join('/', @args));
 }
 
 sub run {
