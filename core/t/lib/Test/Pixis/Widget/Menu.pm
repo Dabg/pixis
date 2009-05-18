@@ -4,7 +4,7 @@ use Template;
 use Test::MockObject;
 BEGIN { extends 'Test::Pixis::Fixture' }
 
-has widget => (is => 'ro', does => 'Pixis::Widget', lazy_build => 1);
+has widget => ( is => 'ro', does => 'Pixis::Widget', lazy_build => 1 );
 
 sub _build_widget {
     Class::MOP::load_class("Pixis::Widget::Menu");
