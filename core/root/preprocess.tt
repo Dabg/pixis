@@ -24,13 +24,18 @@ END;
 [%-
 
 MACRO run_widget(widget, args) BLOCK;
-    SET object = c.model('Widget').load(widget);
-    SET args   = object.run(args);
-    IF (args.is_esi);
-        GET widget2esi(args);
-    ELSE ;
-        SET template = args.template;
-        INCLUDE $template, args;
+    TRY;
+        SET object = c.model('Widget').load(widget);
+        SET args   = object.run(args);
+        IF (args.is_esi);
+            GET widget2esi(args);
+        ELSE ;
+            SET template = args.template;
+            INCLUDE $template, args;
+        END;
+    CATCH;
+        GET "There was an error while processing a widget: ";
+        GET error.info;
     END;
 END
 
