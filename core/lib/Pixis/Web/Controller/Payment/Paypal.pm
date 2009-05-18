@@ -1,6 +1,7 @@
 
 package Pixis::Web::Controller::Payment::Paypal;
 use Moose;
+use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 

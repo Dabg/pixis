@@ -1,5 +1,7 @@
 package Pixis::Web::Controller::Auth;
 use Moose;
+use namespace::clean -except => qw(meta);
+
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
 sub fail : Private {

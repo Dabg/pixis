@@ -3,6 +3,7 @@ package Pixis::Web::Controller::Signup;
 use Moose;
 use MooseX::AttributeHelpers;
 use utf8;
+use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
