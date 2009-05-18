@@ -21,11 +21,17 @@ END;
  -%]
 [%- SET lang = c.session.lang || 'ja' -%]
 
-[%- MACRO run_widget(widget, args) BLOCK -%]
 [%-
-    object = c.model('Widget').load(widget);
-    args   = object.run(args);
-    template = args.template;
+
+MACRO run_widget(widget, args) BLOCK;
+    SET object = c.model('Widget').load(widget);
+    SET args   = object.run(args);
+    IF (args.is_esi);
+        GET widget2esi(args);
+    ELSE ;
+        SET template = args.template;
+        INCLUDE $template, args;
+    END;
+END
+
 -%]
-[% INCLUDE $template, args %]
-[%- END -%]
