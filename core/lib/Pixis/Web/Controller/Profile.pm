@@ -1,5 +1,6 @@
 package Pixis::Web::Controller::Profile;
 use Moose;
+use namespace::clean -except => qw(meta);
 use utf8;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }

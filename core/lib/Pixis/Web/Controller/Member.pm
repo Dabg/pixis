@@ -1,6 +1,7 @@
 
 package Pixis::Web::Controller::Member;
 use Moose;
+use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
