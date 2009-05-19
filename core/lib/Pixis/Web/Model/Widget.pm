@@ -22,6 +22,7 @@ sub load {
         my $class = "Pixis::Widget::$type";
         Class::MOP::load_class($class);
         $widget = $class->new();
+        $self->widgets->{$type} = $widget;
     }
     return $widget;
 }
