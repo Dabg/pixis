@@ -5,8 +5,8 @@ site:
 Schema::Master:
     connect_info:
         - dbi:mysql:dbname=pixis
-        - root
-        -
+        - mitsu
+        - mitsu
         - RaiseError: 1
           AutoCommit: 1
           on_connect_do:

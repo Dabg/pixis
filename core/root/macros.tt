@@ -7,6 +7,9 @@ END;
 
 # Main macro to run widgets
 MACRO run_widget(widget, args) BLOCK;
+    DEFAULT args = {};
+    DEFAULT args.user = c.user;
+
     TRY;
         SET object = c.model('Widget').load(widget);
         SET args   = object.run(args);
@@ -20,7 +23,19 @@ MACRO run_widget(widget, args) BLOCK;
         GET "There was an error while processing a widget: ";
         GET error.info;
     END;
-END
+END;
+
+# Generate an ESI snippet from a Widget
+MACRO widget2esi(widget, args) BLOCK;
+    TRY;
+        GET '<esi:include src="';
+        GET widget.esi_uri;
+        GET '"/>';
+    CATCH;
+        GET "Error in widget2esi";
+        GET error.info;
+    END;
+END;
 
 -%]
 
