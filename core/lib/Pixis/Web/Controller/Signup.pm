@@ -5,7 +5,7 @@ use MooseX::AttributeHelpers;
 use utf8;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession) }
 
 has steps => (
     metaclass => 'Collection::Array',
@@ -174,28 +174,6 @@ sub done :Local {
     my ($self, $c, $subsession) =  @_;
     $c->res->redirect($c->uri_for('/member/home'));
     return ();
-}
-
-sub new_subsession {
-    my ($self, $c, $value) = @_;
-    my $subsession = $c->generate_session_id;
-    $self->set_subsession($c, $subsession, $value);
-    return $subsession;
-}
-
-sub get_subsession {
-    my ($self, $c, $subsession) = @_;
-    return $c->session->{__subsessions}->{$subsession} || {};
-}
-
-sub set_subsession {
-    my ($self, $c, $subsession, $value) = @_;
-    return $c->session->{__subsessions}->{$subsession} = $value;
-}
-
-sub delete_subsession {
-    my ($self, $c, $subsession, $value) = @_;
-    return delete $c->session->{__subsessions}->{$subsession};
 }
 
 1;
