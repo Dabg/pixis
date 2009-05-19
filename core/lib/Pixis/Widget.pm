@@ -87,10 +87,8 @@ sub run {
 
     $self->reset();
 
-    $args ||= {};
-    my %args = (
-        template => $self->template->stringify
-    );
+    my %args = $args ? %$args : {};
+    $args{template} = $self->template->stringify;
 
     if ($self->is_esi) {
         $args{is_esi} = 1;
