@@ -35,7 +35,7 @@
 [% END %]
 </head>
 <body>
-[% PROCESS $header_tt %]
+[% run_widget($header_tt) %]
 <div id="container" class="clearfix">
 <div id="main">
 [%- IF (!no_pagetitle) -%]
@@ -48,9 +48,9 @@
 [%- END -%]
 [% content %]
 </div><!-- main -->
-[% PROCESS $left_tt %]
+[% run_widget($left_tt) %]
 </div><!--  container -->
-[%# PROCESS $right_tt %]
-[% PROCESS $footer_tt %]
+[%# PROCESS run_widget($right_tt) %]
+[% run_widget($footer_tt) %]
 </body>
 </html>
