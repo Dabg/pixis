@@ -13,7 +13,9 @@ sub run :Chained('load_widget') :PathPart('') :Args {
 
     my $widget = $c->model('Widget')->load($c->stash->{widget});
     my $args   = $widget->run({
-        user => $c->user 
+        user => $c->user,
+        request => $c->req,
+        referer => $c->req->param('referer'),
     });
     $c->res->body(
         $c->view('TT')->render($c, $args->{template}, { args => $args }) );

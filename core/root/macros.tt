@@ -9,6 +9,7 @@ END;
 MACRO run_widget(name, args) BLOCK;
     DEFAULT args = {};
     DEFAULT args.user = c.user;
+    DEFAULT args.request = c.req;
 
     TRY;
         SET object = c.model('Widget').load(name);
