@@ -1,3 +1,29 @@
+[% DEFAULT page = args.page -%]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<title>[% page.title | html %]</title>
+[% FOREACH meta IN page.metas -%]
+<meta[% FOREACH pair IN meta.pairs %] [% pair.key | html %]="[% pair.value | html %]"[% END %] />
+[%- END %]
+[% FOREACH script IN page.base_scripts %]
+    <script src="[% script %]" type="text/javascript"></script>
+[% END %] 
+[% FOREACH script IN page.scripts %]
+    <script src="[% script %]" type="text/javascript"></script>
+[% END %] 
+[% FOREACH style IN page.base_styles %]
+    <link rel="stylesheet" type="text/css" href="[% style %]">
+[% END %]
+[% FOREACH style IN page.styles %]
+    <link rel="stylesheet" type="text/css" href="[% style %]">
+[% END %]
+[% FOREACH feed IN page.feeds %]
+    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]">
+[% END %]
+</head>
+<body>
+
 <div id="header">
 <ul class="clearfix">
 [% IF args.user %]
@@ -6,7 +32,7 @@
 <li><a href="/profile/">[% loc('profile') %]</a></li>
 <li id="hnav_username"><a href="/member/home">[% loc("x's Home", args.user.nickname) %]</a></li>
 [% ELSE %]
-<li id="hnav_login"><a href="/auth/login?next=[% args.referer | uri %]">[% loc("Login") %]</a></li>
+<li id="hnav_login"><a href="/auth/login?next=[% args.referer || c.req.uri | uri %]">[% loc("Login") %]</a></li>
 [% END %]
 </ul>
 </div><!-- header -->

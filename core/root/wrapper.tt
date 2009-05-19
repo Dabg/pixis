@@ -1,33 +1,4 @@
-[%-
-    DEFAULT header_tt = 'Header';
-    DEFAULT right_tt = 'Right';
-    DEFAULT footer_tt = 'Footer';
--%]
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
-<head>
-<title>[% page.title | html %]</title>
-[% FOREACH meta IN page.metas -%]
-<meta[% FOREACH pair IN meta.pairs %] [% pair.key | html %]="[% pair.value | html %]"[% END %] />
-[%- END %]
-[% FOREACH script IN page.base_scripts %]
-    <script src="[% script %]" type="text/javascript"></script>
-[% END %] 
-[% FOREACH script IN page.scripts %]
-    <script src="[% script %]" type="text/javascript"></script>
-[% END %] 
-[% FOREACH style IN page.base_styles %]
-    <link rel="stylesheet" type="text/css" href="[% style %]">
-[% END %]
-[% FOREACH style IN page.styles %]
-    <link rel="stylesheet" type="text/css" href="[% style %]">
-[% END %]
-[% FOREACH feed IN page.feeds %]
-    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]">
-[% END %]
-</head>
-<body>
-[% run_widget(header_tt, { user => c.user }) %]
+[% run_widget('Header') %]
 <div id="container" class="clearfix">
 <div id="main">
 [%- IF (page.heading.enabled) -%]
@@ -42,7 +13,4 @@
 </div><!-- main -->
 [% run_widget('LeftNavigation') %]
 </div><!--  container -->
-[%# PROCESS run_widget(right_tt) %]
-[% run_widget(footer_tt) %]
-</body>
-</html>
+[% run_widget('Footer') %]

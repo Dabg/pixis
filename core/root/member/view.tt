@@ -1,4 +1,7 @@
-[% WRAPPER wrapper.tt, no_pagetitle = 1 %]
+[% WRAPPER wrapper.tt, 
+    page.title = 'メンバーホーム',
+    page.heading.enabled = 0
+%]
 [% SET owner = (c.user.id == member.id) %]
 <div id="member_title" class="clearfix">
 <p id="gravatar"><img src="[% member.gravatar_url %]" width="80" /></p>
@@ -8,7 +11,6 @@
 <!-- navbar? -->
 <ul id="member_menu" class="clearfix">
 [% IF (! owner) %]
-[% USE Dumper %]
     <li><a href="/member/home">[% loc("Member Home") %]</a></li>
     <li>[% IF (c.registry('api', 'MemberRelationship').is_following(c.user, member)) -%]
         <a href="/member/[% member.id %]/unfollow">[% loc("Unfollow") %]</a>
