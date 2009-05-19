@@ -7,6 +7,9 @@ END;
 
 # Main macro to run widgets
 MACRO run_widget(widget, args) BLOCK;
+    DEFAULT args = {};
+    DEFAULT args.user = c.user;
+
     TRY;
         SET object = c.model('Widget').load(widget);
         SET args   = object.run(args);
