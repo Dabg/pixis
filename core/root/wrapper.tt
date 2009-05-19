@@ -1,8 +1,8 @@
 [%-
-    DEFAULT header_tt = 'header.tt';
-    DEFAULT right_tt = 'right.tt';
-    DEFAULT footer_tt = 'footer.tt';
-    DEFAULT left_tt = 'left.tt';
+    DEFAULT header_tt = 'Header';
+    DEFAULT right_tt = 'Right';
+    DEFAULT footer_tt = 'Footer';
+    DEFAULT left_tt = 'Left';
 -%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
@@ -28,7 +28,7 @@
 [% END %]
 </head>
 <body>
-[% run_widget($header_tt) %]
+[% run_widget(header_tt) %]
 <div id="container" class="clearfix">
 <div id="main">
 [%- IF (page.heading.enabled) -%]
@@ -41,9 +41,9 @@
 [%- END -%]
 [% content %]
 </div><!-- main -->
-[% run_widget($left_tt) %]
+[% run_widget(left_tt) %]
 </div><!--  container -->
-[%# PROCESS run_widget($right_tt) %]
-[% run_widget($footer_tt) %]
+[%# PROCESS run_widget(right_tt) %]
+[% run_widget(footer_tt) %]
 </body>
 </html>
