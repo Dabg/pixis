@@ -69,7 +69,7 @@ sub _build_esi_uri {
     my $self = shift;
     my $name = blessed $self;
     $name =~ s/^Pixis::Widget:://;
-    my @args = ('widget' , map { lc $_ } split(/::/, $name) );
+    my @args = ('', 'widget' , map { $_ } split(/::/, $name) );
     my $uri  = URI->new(join('/', @args));
     $uri->query_form($self->query_params);
     return $uri;

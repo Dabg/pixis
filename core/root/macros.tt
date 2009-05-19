@@ -29,7 +29,7 @@ END;
 MACRO widget2esi(widget, args) BLOCK;
     TRY;
         GET '<esi:include src="';
-        GET c.uri_for('', widget.esi_uri);
+        GET widget.esi_uri;
         GET '"/>';
     CATCH;
         GET "Error in widget2esi";
