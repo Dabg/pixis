@@ -6,7 +6,7 @@ use namespace::clean -except => qw(meta);
 BEGIN { extends 'Catalyst::Model' }
 
 has widgets => (
-    metaclass => 'Collection::Has',
+    metaclass => 'Collection::Hash',
     is => 'ro',
     isa => 'HashRef',
     default => sub { +{} },

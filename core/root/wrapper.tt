@@ -2,7 +2,6 @@
     DEFAULT header_tt = 'Header';
     DEFAULT right_tt = 'Right';
     DEFAULT footer_tt = 'Footer';
-    DEFAULT left_tt = 'Left';
 -%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
@@ -41,7 +40,7 @@
 [%- END -%]
 [% content %]
 </div><!-- main -->
-[% run_widget(left_tt) %]
+[% run_widget('LeftNavigation') %]
 </div><!--  container -->
 [%# PROCESS run_widget(right_tt) %]
 [% run_widget(footer_tt) %]

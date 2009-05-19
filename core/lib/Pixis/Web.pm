@@ -140,13 +140,6 @@ sub setup_finalize {
     $self->next::method(@args);
 
     $self->setup_pixis_plugins();
-    $SIG{ __DIE__ } = sub { ## no critic
-        return if Scalar::Util::blessed( $_[ 0 ] );
-        die $_[0] if $_[0] eq 'catalyst_detach';
-        if ($_[0] ne 'No such file or directory') {
-            Pixis::Web::Exception->throw( message => join '', @_ );
-        }
-    };
     return;
 };
 

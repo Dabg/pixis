@@ -1,0 +1,42 @@
+package Pixis::Widget::LeftNavigation;
+use Moose;
+use MooseX::AttributeHelpers;
+use Moose::Util::TypeConstraints;
+use namespace::clean -except => qw(meta);
+
+with 'Pixis::Widget';
+
+subtype 'Pixis::Widget::LeftNavigation::Item'
+    => as 'HashRef'
+    => where {
+        exists $_->{uri} &&
+                $_->{text}
+    }
+;
+                
+has items => (
+    metaclass => 'Collection::Array',
+    is => 'ro',
+    isa => 'ArrayRef[Pixis::Widget::LeftNavigation::Item]',
+    default => sub { +[] },
+    provides => {
+        elements => 'all_items',
+        push => 'item_add',
+        clear => 'items_clear'
+    }
+);
+
+around run => sub {
+    my ($next, $self, @args) = @_;
+    my $args = $next->($self, @args);
+
+    $args->{items} = [ $self->all_items ];
+    return $args;
+};
+
+around _build_template 
+    => sub { return Path::Class::File->new('widget', 'left.tt') };
+
+__PACKAGE__->meta->make_immutable;
+
+1;
