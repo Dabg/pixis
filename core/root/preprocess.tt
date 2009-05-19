@@ -1,9 +1,7 @@
 [%-
 
-# Catalyst::Plugin::I18N compatible loc function
-MACRO loc(text, args) BLOCK;
-    c.localize(text, args);
-END;
+# include macros in one shot
+PROCESS macros.tt ;
 
 # XXX This is stupid. FIX ME
 # Site wide, template specific config. For example, site title,
@@ -38,25 +36,4 @@ DEFAULT page.heading.content = page.title;
 DEFAULT page.heading.enabled = 1;
 DEFAULT page.heading.id = "pagetitle";
 -%]
-
-[%-
-
-MACRO run_widget(widget, args) BLOCK;
-    TRY;
-        SET object = c.model('Widget').load(widget);
-        SET args   = object.run(args);
-        IF (args.is_esi);
-            GET widget2esi(args);
-        ELSE ;
-            SET template = args.template;
-            INCLUDE $template, args;
-        END;
-    CATCH;
-        GET "There was an error while processing a widget: ";
-        GET error.info;
-    END;
-END
-
--%]
-
 

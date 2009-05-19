@@ -1,0 +1,28 @@
+[%-
+
+# Catalyst::Plugin::I18N compatible loc function
+MACRO loc(text, args) BLOCK;
+    c.localize(text, args);
+END;
+
+# Main macro to run widgets
+MACRO run_widget(widget, args) BLOCK;
+    TRY;
+        SET object = c.model('Widget').load(widget);
+        SET args   = object.run(args);
+        IF (args.is_esi);
+            GET widget2esi(args);
+        ELSE ;
+            SET template = args.template;
+            INCLUDE $template, args;
+        END;
+    CATCH;
+        GET "There was an error while processing a widget: ";
+        GET error.info;
+    END;
+END
+
+-%]
+
+
+
