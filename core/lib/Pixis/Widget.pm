@@ -80,10 +80,12 @@ sub run {
     my %args = (
         template => $self->template->stringify
     );
+
     if ($self->is_esi) {
         $args{is_esi} = 1;
         $args{esi_uri} = $self->esi_uri;
     }
+
     return \%args;
 }
 

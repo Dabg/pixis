@@ -239,10 +239,12 @@ sub add_tt_include_path {
             ]);
         }
     }
+warn "adding @paths";
     $view->include_path(
         @paths,
         @{ $view->include_path }
     );
+warn "    -> " . join(", ", @{$view->include_path});
     return ();
 }
 

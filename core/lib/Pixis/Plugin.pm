@@ -133,6 +133,7 @@ sub register {
 
     my $registry = Pixis::Registry->instance;
     my $c = $registry->get(pixis => 'web');
+
     $c->add_tt_include_path($self->include_path);
     $c->add_static_include_path($self->static_path);
     $c->add_formfu_path($self->formfu_path);

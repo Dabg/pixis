@@ -28,7 +28,7 @@
 [% END %]
 </head>
 <body>
-[% run_widget(header_tt) %]
+[% run_widget(header_tt, { user => c.user }) %]
 <div id="container" class="clearfix">
 <div id="main">
 [%- IF (page.heading.enabled) -%]

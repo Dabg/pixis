@@ -59,6 +59,34 @@ sub run_from_tt :Test :Plan(1) {
     like ($out, qr/^\s*<div id="menu">\s*<\/div>\s*$/);
 }
 
+sub run_from_tt :Test :Plan(1) {
+    my $self = shift;
+    my $template = Template->new(
+        INCLUDE_PATH => 'root',
+        PRE_PROCESS  => 'preprocess.tt',
+        COMPILE_DIR  => 't/tt2',
+    );
+
+    my $out;
+    my %args = (
+        c => Test::MockObject->new
+            ->set_always(
+                model => Test::MockObject->new->set_always(
+                    load => $self->widget
+                )
+            )
+            ->set_always( plugins => () )
+            ->set_always( session => {} )
+        ,
+        widget => 'Menu',
+    );
+
+    $template->process(\'[% run_widget(widget) %]', \%args, \$out) ||
+        confess $template->error;
+
+    like ($out, qr/^\s*<div id="menu">\s*<\/div>\s*$/);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
