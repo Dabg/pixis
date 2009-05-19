@@ -6,15 +6,15 @@ MACRO loc(text, args) BLOCK;
 END;
 
 # Main macro to run widgets
-MACRO run_widget(widget, args) BLOCK;
+MACRO run_widget(name, args) BLOCK;
     DEFAULT args = {};
     DEFAULT args.user = c.user;
 
     TRY;
-        SET object = c.model('Widget').load(widget);
+        SET object = c.model('Widget').load(name);
         SET args   = object.run(args);
-        IF (args.is_esi);
-            GET widget2esi(args);
+        IF (c.config.use_esi);
+            GET widget2esi(object, args);
         ELSE ;
             SET template = args.template;
             INCLUDE $template, args;
@@ -29,7 +29,7 @@ END;
 MACRO widget2esi(widget, args) BLOCK;
     TRY;
         GET '<esi:include src="';
-        GET widget.esi_uri;
+        GET c.uri_for('', widget.esi_uri);
         GET '"/>';
     CATCH;
         GET "Error in widget2esi";

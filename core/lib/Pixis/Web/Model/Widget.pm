@@ -12,6 +12,8 @@ has widgets => (
 sub load {
     my ($self, $type) = @_;
 
+    return $type if blessed $type;
+
     if (! defined $type || ! length $type) {
         confess "No type passed to load";
     }
