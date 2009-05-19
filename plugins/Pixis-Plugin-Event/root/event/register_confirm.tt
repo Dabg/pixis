@@ -1,7 +1,8 @@
-[% WRAPPER wrapper.tt, title = event.title, pagetitle = {
-    tag     => 'p',
-    content => 'イベント参加確認',
-} %]
+[% WRAPPER wrapper.tt, 
+    page.title = event.title,
+    page.heading.tag = 'p',
+    page.heading.content = 'イベント参加確認',
+%]
 
 <div id="content">
 <div class="section">

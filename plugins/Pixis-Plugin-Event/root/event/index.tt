@@ -1,5 +1,5 @@
-[% WRAPPER wrapper.tt, title = loc("Event") %]
-
+[% WRAPPER wrapper.tt, 
+    page.title = loc("Event") %]
 <div id="content">
 <div class="section">
 [% IF (c.check_user_roles('admin')) %]

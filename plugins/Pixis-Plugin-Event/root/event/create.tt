@@ -1,4 +1,5 @@
-[% WRAPPER wrapper.tt, title = loc("Event Details") %]
+[% WRAPPER wrapper.tt, 
+    page.title = loc("Event Details") %]
 
 <div id="content">
 <div class="section form_full">

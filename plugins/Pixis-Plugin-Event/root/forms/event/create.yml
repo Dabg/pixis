@@ -78,6 +78,7 @@ elements:
       id: end_on_picker
       label_loc: 終了日
       constraints:
+        - Required
         - type: Regex
           regex: ^\d{2}/\d{2}/\d{4}$
       filters:
@@ -95,6 +96,8 @@ elements:
           - type: DateTime
             parser:
                 strptime: '%m/%d/%Y'
+      constraints:
+          - Required
     - type: Text
       name: registration_end_on
       id: registration_end_on_picker
@@ -103,6 +106,8 @@ elements:
           - type: DateTime
             parser:
                 strptime: '%m/%d/%Y'
+      constraints:
+          - Required
     - type: Submit
       name: submit
       value_loc: Create
