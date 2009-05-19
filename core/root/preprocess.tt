@@ -1,9 +1,11 @@
 [%-
 
+# Catalyst::Plugin::I18N compatible loc function
 MACRO loc(text, args) BLOCK;
     c.localize(text, args);
 END;
 
+# XXX This is stupid. FIX ME
 # Site wide, template specific config. For example, site title,
 # log URL, and more
 SET site_config = {
@@ -18,8 +20,24 @@ FOREACH plugin IN c.plugins;
     END;
 END;
 
- -%]
-[%- SET lang = c.session.lang || 'ja' -%]
+# XXX End stupidity
+
+# page variable will contain everything pertinent to the page.
+DEFAULT page = {};
+DEFAULT page.title = site_config.title || "Pixis - Default Installation";
+DEFAULT page.base_scripts =
+    [ '/static/js/jquery-1.3.1.js', '/static/js/jquery-ui-1.6rc6.min.js', '/static/js/jquery.dump.js' ];
+DEFAULT page.scripts = [];
+DEFAULT page.base_styles = [ '/static/css/import.css', '/static/js/theme/ui.all.css' ];
+DEFAULT page.styles = [];
+DEFAULT page.metas = [];
+DEFAULT page.feeds = [];
+DEFAULT page.heading = {};
+DEFAULT page.heading.tag = "h1";
+DEFAULT page.heading.content = page.title;
+DEFAULT page.heading.enabled = 1;
+DEFAULT page.heading.id = "pagetitle";
+-%]
 
 [%-
 
@@ -40,4 +58,5 @@ MACRO run_widget(widget, args) BLOCK;
 END
 
 -%]
+
 
