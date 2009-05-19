@@ -1,13 +1,16 @@
-[% DEFAULT submenu = site_config.submenu %]
 <!-- START left -->
 <div id="side">
 <div id="logo"><a href="/jpa"><img src="[% c.uri_for('/static', 'img', 'logo.jpg') %]" alt="Japan Perl Association" /></a></div>
 <div id="lnav_container">
-[% PROCESS navigation.tt %]
-[% IF (site_config.submenu) -%]
+<ul id="lnav">
+[% FOREACH nav IN args.items %]
+<li id="lnav_[% nav.id %]"><a href="[% nav.uri %]">[% loc(nav.text || 'Link') %]</a></li>
+[% END %]
+</ul>
+[% IF (args.submenu.size > 0) -%]
 <ul id="subnav"> 
-  [% FOREACH smenu IN submenu -%]
-<li><a href="[% smenu.link %]">[% smenu.text %]</a></li>
+  [% FOREACH smenu IN args.submenu -%]
+<li[% IF (smenu.id) %] id="[% id | html %]"[% END %]><a href="[% IF (smenu.uri.match('^https?://')) %][% smenu.uri | html %][% ELSE %][% c.uri_for(smenu.uri) %][% END %]">[% smenu.text | html %]</a></li>
   [%- END %]
 </ul>
 [%- END %]

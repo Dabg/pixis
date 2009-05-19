@@ -17,7 +17,7 @@ MACRO run_widget(name, args) BLOCK;
             GET widget2esi(object, args);
         ELSE ;
             SET template = args.template;
-            INCLUDE $template, args;
+            INCLUDE $template, args => args;
         END;
     CATCH;
         GET "There was an error while processing a widget: ";

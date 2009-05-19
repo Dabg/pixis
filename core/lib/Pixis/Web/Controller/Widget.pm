@@ -16,7 +16,7 @@ sub run :Chained('load_widget') :PathPart('') :Args {
         user => $c->user 
     });
     $c->res->body(
-        $c->view('TT')->render($c, $args->{template}, $args) );
+        $c->view('TT')->render($c, $args->{template}, { args => $args }) );
 }
 
 1;

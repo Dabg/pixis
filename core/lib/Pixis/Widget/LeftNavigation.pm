@@ -26,11 +26,27 @@ has items => (
     }
 );
 
+has submenus => (
+    metaclass => 'Collection::Array',
+    is => 'ro',
+    isa => 'ArrayRef[Pixis::Widget::LeftNavigation::Item]',
+    default => sub { +[] },
+    provides => {
+        elements => 'all_submenus',
+        push => 'submenu_add',
+        clear => 'submenus_clear',
+        count => 'submenu_count',
+    }
+);
+
 around run => sub {
     my ($next, $self, @args) = @_;
     my $args = $next->($self, @args);
 
     $args->{items} = [ $self->all_items ];
+    if ($self->submenu_count > 0) {
+        $args->{submenu} = [ $self->all_submenus ];
+    }
     return $args;
 };
 

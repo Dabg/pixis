@@ -1,5 +1,0 @@
-<ul id="lnav">
-[% FOREACH nav IN site_config.navigation %]
-<li id="lnav_[% nav.id %]"><a href="[% nav.url %]">[% loc(nav.text || 'Link') %]</a></li>
-[% END %]
-</ul>
