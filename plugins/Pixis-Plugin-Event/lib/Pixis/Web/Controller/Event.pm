@@ -52,7 +52,7 @@ sub load_event :Chained :PathPart('event') :CaptureArgs(1) {
         $c->log->error("Error at load_event: $@");
     }
     if (! $c->stash->{event}) {
-        Pixis::Web::Exception->throw(message => "Requrested event $id was not found");
+        Pixis::Web::Exception->throw(status => 404, message => "Requrested event $id was not found");
     }
 
     $c->stash->{tracks} = 
