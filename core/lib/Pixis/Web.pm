@@ -288,7 +288,7 @@ sub handle_exception {
     }
 
     # handle debug-mode forced-debug from RenderView
-    if( $c->debug && $error->message =~ m{^Forced debug}i ) {
+    if( $c->debug && $error->message =~ m{Forced debug}i ) {
         return;
     }
 
