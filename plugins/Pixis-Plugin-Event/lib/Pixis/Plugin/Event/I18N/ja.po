@@ -53,3 +53,15 @@ msgstr "参加登録"
 
 msgid "Event Venue"
 msgstr "場所"
+
+msgid "Talk Submission"
+msgstr "スピーカー参加申し込み"
+
+msgid "Session Duration"
+msgstr "講演時間"
+
+msgid "Session Title"
+msgstr "講演タイトル"
+
+msgid "Session Description"
+msgstr "講演内容"
