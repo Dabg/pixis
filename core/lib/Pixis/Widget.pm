@@ -80,6 +80,7 @@ sub reset {
     my $self = shift;
     $self->esi_uri_clear();
     $self->query_params_clear();
+    return ();
 }
 
 sub run {
