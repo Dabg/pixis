@@ -13,6 +13,11 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 8,
     },
+    "owner_id" => {
+        data_type => "INTEGER",
+        is_nullable => 0,
+        size => 32,
+    },
     "event_id" => {
         data_type => "VARCHAR",
         is_nullable => 0,
@@ -20,7 +25,7 @@ __PACKAGE__->add_columns(
     },
     "track_id" => {
         data_type => "INTEGER",
-        is_nullable => 0,
+        is_nullable => 1,
         size => 8,
     },
     "title" => {
@@ -37,11 +42,16 @@ __PACKAGE__->add_columns(
     },
     start_on => {
         data_type => "DATETIME",
-        is_nullable => 0,
+        is_nullable => 1,
     },
     end_on => {
         data_type => "DATETIME",
+        is_nullable => 1,
+    },
+    is_accepted => {
+        data_type => "TINYINT",
         is_nullable => 0,
+        default_value => 0,
     },
     modified_on => {
         data_type => "TIMESTAMP",
@@ -54,6 +64,6 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->utf8_columns("title", "description");
+__PACKAGE__->utf8_columns("title", "description", "presenter");
 
 1;
