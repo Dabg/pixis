@@ -20,6 +20,7 @@ sub load_track :Chained('/event/load_event')
     if ($c->stash->{track}->event_id ne $c->stash->{event}->id) {
         $c->detach('/default');
     }
+    return ();
 }
 
 sub add :Chained('/event/load_event')
@@ -37,6 +38,7 @@ sub add :Chained('/event/load_event')
         $c->registry(api => 'EventTrack')->create_from_form($form);
         $c->res->redirect($c->uri_for('/event', $event->id));
     }
+    return ();
 }
 
 sub view_default :Chained('load_track')
@@ -49,6 +51,7 @@ sub view_default :Chained('load_track')
         $c->stash->{event}->id
     );
     $c->res->redirect($c->uri_for('/event', $c->stash->{event}->id, 'track', $c->stash->{track}->id, $dates[0]->date));
+    return ();
 }
 
 1;

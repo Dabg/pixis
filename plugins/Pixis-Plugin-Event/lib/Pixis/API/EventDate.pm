@@ -23,7 +23,7 @@ sub load_from_event {
 sub load_from_event_date {
     my ($self, $args) = @_;
 
-    $self->resultset->search(
+    return $self->resultset->search(
         {
             event_id => $args->{event_id},
             date     => $args->{date}
@@ -32,3 +32,5 @@ sub load_from_event_date {
 }
 
 __PACKAGE__->meta->make_immutable;
+
+1;

@@ -67,16 +67,15 @@ __PACKAGE__->txn_method(add_session => sub {
         $track = $track_api->load_or_create_default_track($args);
     }
 
-    $track_api->add_session(
-        {
-            %$args,
-            track_id => $track->id,
-        }
-    );
+    my %args = %$args;
+    $args{track_id} = $track->id;
+
+    $track_api->add_session(\%args);
 });
 
 sub load_tracks {
-    Pixis::Registry->get(api => 'EventTrack')->load_from_event($_[1]);
+    my ($self, $args) = @_;
+    return Pixis::Registry->get(api => 'EventTrack')->load_from_event($args);
 }
 
 sub load_sessions {
@@ -89,7 +88,7 @@ sub load_sessions {
     } else {
         $track = $track_api->load_or_create_default_track($args);
     }
-    $track_api->load_sessions({ track_id => $track->id });
+    return $track_api->load_sessions({ track_id => $track->id });
 }
 
 sub load_sessions_from_date {
@@ -98,7 +97,7 @@ sub load_sessions_from_date {
     my $event = $self->find($args->{event_id});
     my $date = $args->{date} || $event->start_on;
 
-    Pixis::Registry->get(api => 'EventSession')
+    return Pixis::Registry->get(api => 'EventSession')
         ->load_from_date({ event_id => $event->id, start_on => $date });
 }
 
@@ -303,5 +302,6 @@ sub get_dates {
     return wantarray ? @dates : [@dates];
 }
 
-
 __PACKAGE__->meta->make_immutable;
+
+1;

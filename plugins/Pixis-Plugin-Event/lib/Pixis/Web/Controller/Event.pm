@@ -15,6 +15,7 @@ sub index :Index :Args(0) {
     $c->stash->{previous_events} = $event_api->load_previous();
     $c->stash->{events} = $event_api->load_coming(
         { max => DateTime->now(time_zone => 'local')->add(years => 1) });
+    return ();
 }
 
 sub create :Local :FormConfig :PixisPriv('admin') {
@@ -42,6 +43,7 @@ sub create :Local :FormConfig :PixisPriv('admin') {
         }
         return $c->res->redirect($c->uri_for('/event/' . $event->id));
     }
+    return ();
 }
 
 sub load_event :Chained :PathPart('event') :CaptureArgs(1) {
@@ -58,9 +60,11 @@ sub load_event :Chained :PathPart('event') :CaptureArgs(1) {
 
     $c->stash->{tracks} = 
         $c->registry(api => 'Event')->load_tracks($id);
+    return ();
 }
 
 sub view :Chained('load_event') :PathPart('') :Args(0) {
+    return ();
 }
 
 sub edit :Chained('load_event') :PathPart('edit') :Args(0) :FormConfig {
@@ -90,21 +94,25 @@ sub edit :Chained('load_event') :PathPart('edit') :Args(0) :FormConfig {
         }
         $c->stash->{dates} = \@dates;
     }
+    return ();
 }
 
 sub attendees :Chained('load_event') :Args(0) {
+    return ();
 }
 
 sub load_ticket :Chained('load_event') :CaptureArgs(1) :PathPart('ticket') {
     my ($self, $c, $ticket) = @_;
 
     $c->stash->{ticket} = $c->registry(api => 'EventTicket')->find($ticket);
+    return ();
 }
 
 sub register :Chained('load_event') :Args(0) :FormConfig {
     my ($self, $c) = @_;
 
-    $c->forward('/auth/assert_logged_in') or return;
+    $c->forward('/auth/assert_logged_in');
+    return ();
 }
 
 sub register_confirm :Chained('load_ticket') :PathPart('register/confirm') :Args(0) :FormConfig {
@@ -134,6 +142,7 @@ sub register_confirm :Chained('load_ticket') :PathPart('register/confirm') :Args
         $c->res->redirect($c->uri_for('/event', $event->id, 'ticket', $c->stash->{ticket}->id, 'registered', $order->id));
         return;
     }
+    return ();
 }
 
 sub registered :Chained('load_ticket') :Args(1) {
@@ -161,6 +170,7 @@ sub registered :Chained('load_ticket') :Args(1) {
     if ($order->amount <= 0) {
         $c->forward('send_confirmation');
     }
+    return ();
 }
 
 my $fmt = DateTime::Format::Strptime->new(pattern => '%Y-%m-%d', time_zone => 'local');
@@ -180,6 +190,7 @@ sub date :Chained('load_event')
     $c->stash->{start_hour} = int( $1 );
     $d->end_on =~ /^(\d+)/;
     $c->stash->{end_hour} = int( $1 );
+    return ();
 }
 
 # XXX this sucks. later!
@@ -195,12 +206,13 @@ sub send_confirmation : Private {
         },
         body    => $body
     });
+    return ();
 }
 
 sub done :Local {
     my ($self, $c, $subsession) =  @_;
     my $id = delete $c->session->{signup}->{$subsession};
-
+    return ();
 }
 
 sub cfp
@@ -234,6 +246,7 @@ sub cfp
         });
         $c->res->redirect($c->uri_for('/event', $event->id, 'cfp', 'submitted'));
     }
+    return ();
 }
 
 sub cfp_submitted
@@ -241,6 +254,7 @@ sub cfp_submitted
     :PathPart('cfp/submitted')
     :Args
 {
+    return ();
 }
 
 sub cfp_unavailable
@@ -248,6 +262,7 @@ sub cfp_unavailable
     :PathPart('cfp/unavailable')
     :Args
 {
+    return ();
 }
 
 1;

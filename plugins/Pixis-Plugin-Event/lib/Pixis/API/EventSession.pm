@@ -30,7 +30,7 @@ sub check_overlap {
     my $schema = Pixis::Registry->get(schema => 'master');
     my $start_on = $args->{start_on};
     my $end_on = $args->{end_on};
-    $schema->resultset('EventSession')->search(
+    return $schema->resultset('EventSession')->search(
         {   
             event_id => $args->{event_id},
             track_id => $args->{track_id},

@@ -20,6 +20,7 @@ sub load_session :Chained('/event/load_event')
         }
     }
     $c->stash->{session} = $session;
+    return ();
 }
 
 sub add :Chained('/event/track/load_track')
@@ -51,6 +52,7 @@ sub add :Chained('/event/track/load_track')
                 $c->uri_for('/event', $c->stash->{event}->id, 'track', $c->stash->{track}->id));
         }
     }
+    return ();
 }
 
 my $dur_format = DateTime::Format::Duration->new(
@@ -79,18 +81,14 @@ sub list :Chained('/event/track/load_track')
         } )
     ] ;
     $c->forward('View::JSON');
+    return ();
 }
 
 sub view :Chained('load_session')
          :PathPart('')
          :Args(0)
 {
-    my ($self, $c) = @_;
-
-    my $session = $c->stash->{session};
-
-        
-        $c
+    return ();
 }
 
 sub edit 
@@ -127,6 +125,7 @@ sub edit
     } else {
         $form->model->default_values( $c->stash->{session} );
     }
+    return ();
 }
 
 sub accept
@@ -143,12 +142,14 @@ sub accept
     
     $c->res->redirect(
         $c->uri_for('/event', $c->stash->{event}->id, 'session', $session->id, 'updated' ));
+    return ();
 }
 
 sub updated
     :Chained('load_session')
     :Args
 {
+    return ();
 }
 
 sub list
@@ -163,6 +164,7 @@ sub list
             event_id => $c->stash->{event}->id,
         });
     }
+    return ();
 }
 
 1;

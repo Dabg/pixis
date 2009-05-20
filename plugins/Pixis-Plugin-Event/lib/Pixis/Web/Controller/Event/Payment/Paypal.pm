@@ -24,6 +24,7 @@ sub complete :Local {
     $api->activate({ id => $registration->id });
 
     $c->stash->{template} = 'payment/paypal/complete.tt';
+    return ();
 }
 
 1;
