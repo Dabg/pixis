@@ -157,7 +157,7 @@ sub is_registration_open {
     my $count;
 
     $count = $self->load_tickets({ event_id => $args->{event_id} });
-    if ($count <= 0) {
+    if (defined $count && $count <= 0) {
         return ();
     }
 
