@@ -1,7 +1,9 @@
 
 package Pixis::Web::Controller::Event::Session;
-use strict;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+use namespace::clean -except => qw(meta);
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 use DateTime::Format::Duration;
 
 sub load_session :Chained('/event/load_event') 

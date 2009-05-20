@@ -1,6 +1,8 @@
 package Pixis::Web::Controller::Event::Ticket;
-use strict;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+use namespace::clean -except => qw(meta);
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
 sub create :Chained('/event/load_event')
            :PathPart('ticket/create')

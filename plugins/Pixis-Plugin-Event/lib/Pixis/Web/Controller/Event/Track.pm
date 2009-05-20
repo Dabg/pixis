@@ -1,7 +1,9 @@
 
 package Pixis::Web::Controller::Event::Track;
-use strict;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+use namespace::clean -except => qw(meta);
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
 sub load_track :Chained('/event/load_event')
                :PathPart('track')

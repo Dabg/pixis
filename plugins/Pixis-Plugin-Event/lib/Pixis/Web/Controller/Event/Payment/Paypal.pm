@@ -1,12 +1,12 @@
 package Pixis::Web::Controller::Event::Payment::Paypal;
-use strict;
-use base qw(Pixis::Web::Controller::Payment::Paypal);
+use Moose;
+use namespace::clean -except => qw(meta);
 
-sub COMPONENT {
-    my ($self, $c, $config) = @_;
-    $config->{complete_url} ||= '/event/payment/paypal/complete';
-    $self = $self->NEXT::COMPONENT($c, $config);
-}
+BEGIN { extends 'Pixis::Web::Controller::Payment::Paypal' };
+
+has '+complete_url' => (
+    default => '/event/payment/paypal/complete'
+);
 
 sub complete :Local {
     my ($self, $c) = @_;
