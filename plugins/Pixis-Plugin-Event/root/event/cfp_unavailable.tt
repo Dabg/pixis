@@ -1,0 +1,7 @@
+[% WRAPPER wrapper.tt,
+    page.title => "スピーカー募集",
+%]
+
+<div>本イベントでは現在スピーカー募集は行っておりません</div>
+
+[% END %]

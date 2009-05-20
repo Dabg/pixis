@@ -64,6 +64,11 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         default_value => 1
     },
+    is_cfp_open => {
+        data_type => 'TINYINT',
+        is_nullable => 0,
+        default_value => 0,
+    },
     registration_start_on => {
         data_type => 'DATETIME',
         is_nullable => 0,

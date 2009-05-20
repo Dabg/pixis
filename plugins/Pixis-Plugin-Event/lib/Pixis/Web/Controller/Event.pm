@@ -1,11 +1,12 @@
 
 package Pixis::Web::Controller::Event;
-use strict;
-use warnings;
-use base qw(Catalyst::Controller::HTML::FormFu);
+use Moose;
+use namespace::clean -except => qw(meta);
 use utf8;
 use Encode();
 use DateTime::Format::Strptime;
+
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
 sub index :Index :Args(0) {
     my ($self, $c) = @_;
@@ -211,6 +212,11 @@ sub cfp
 
     return unless $c->forward('/auth/assert_logged_in');
 
+    if (! $c->stash->{event}->is_cfp_open) {
+        $c->res->redirect( $c->uri_for('cfp/unavailable') );
+        return;
+    }
+
     my $form = $c->stash->{form};
 
     if ($form->submitted_and_valid) {
@@ -237,5 +243,11 @@ sub cfp_submitted
 {
 }
 
-1;
+sub cfp_unavailable
+    :Chained('/event/load_event')
+    :PathPart('cfp/unavailable')
+    :Args
+{
+}
+
 1;
