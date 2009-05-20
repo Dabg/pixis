@@ -65,3 +65,10 @@ msgstr "講演タイトル"
 
 msgid "Session Description"
 msgstr "講演内容"
+
+msgid "Call For Paper"
+msgstr "スピーカー参加申し込み"
+
+msgid "Submit Your Talk!"
+msgstr "応募する"
+

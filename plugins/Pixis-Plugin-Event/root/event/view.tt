@@ -28,20 +28,18 @@
     <th>[% loc("Event Venue") %]</th>
     <td>[% event.address.replace("\n", "<br>") %]</td>
 </tr>
+[% IF (event.event_type == "conference") %]
 <tr>
-    <th>[% loc("Event Dates") %]</th>
-    <td>[% 
-SET start_on_str = event.start_on.strftime('%Y/%m/%d');
-SET end_on_str   = event.end_on.strftime('%Y/%m/%d');
-IF (start_on_str == end_on_str);
-    GET start_on_str;
-ELSE %][% start_on_str %] - [% end_on_str %][% END %]
-</td>
+    <th>[% loc("Call For Paper") %]</th>
+    <td>
+        [%- IF (event.is_cfp_open) -%]
+            <a href="[% c.uri_for('/event', event.id, 'cfp') %]">[% loc("Submit Your Talk!") %]</a>
+        [%- ELSE -%]
+            -
+        [%- END -%]
+    </td>
 </tr>
-<tr>
-    <th>[% loc("Event Capacity") %]</th>
-    <td>[% loc("x persons", event.capacity) %]</td>
-</tr>
+[% END # IF %]
 <tr>
     <th>[% loc("Event Registration") %]</th>
     <td>
@@ -66,13 +64,25 @@ ELSE %][% start_on_str %] - [% end_on_str %][% END %]
 %]
     </td>
 </tr>
+<tr>
+    <th>[% loc("Event Dates") %]</th>
+    <td>[% 
+SET start_on_str = event.start_on.strftime('%Y/%m/%d');
+SET end_on_str   = event.end_on.strftime('%Y/%m/%d');
+IF (start_on_str == end_on_str);
+    GET start_on_str;
+ELSE %][% start_on_str %] - [% end_on_str %][% END %]
+</td>
+</tr>
+<tr>
+    <th>[% loc("Event Capacity") %]</th>
+    <td>[% loc("x persons", event.capacity) %]</td>
+</tr>
 </table>
 </div><!-- table_container -->
 </div><!-- section -->
 
 <div id="particpate" class="section">
-
-<div><a href="[% c.uri_for(event.id, 'cfp') %]">[% loc("Submit a talk proposal") %]</a></div>
 
 </div><!-- section --> 
 
