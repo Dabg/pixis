@@ -70,6 +70,12 @@ ELSE %][% start_on_str %] - [% end_on_str %][% END %]
 </div><!-- table_container -->
 </div><!-- section -->
 
+<div id="particpate" class="section">
+
+<div><a href="[% c.uri_for(event.id, 'cfp', 'submit') %]">[% loc("Submit a talk proposal") %]</a></div>
+
+</div><!-- section --> 
+
 <div id="sessions" class="section">
     <h2>[% loc("Event Sessions") %]</h2>
 [%

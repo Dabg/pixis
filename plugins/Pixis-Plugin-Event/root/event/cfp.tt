@@ -1,0 +1,5 @@
+[% WRAPPER wrapper.tt,
+    page.title => loc("Talk Submission"),
+%]
+[% form %]
+[% END %]

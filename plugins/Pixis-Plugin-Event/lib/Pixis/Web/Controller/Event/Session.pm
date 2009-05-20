@@ -4,14 +4,20 @@ use strict;
 use base qw(Catalyst::Controller::HTML::FormFu);
 use DateTime::Format::Duration;
 
-sub load_event :Chained('/event/load_event') 
+sub load_session :Chained('/event/load_event') 
                :PathPart('session')
                :CaptureArgs(1)
 {
     my ($self, $c, $session_id) = @_;
 
     # hmm, may need to check session.event_id = event.id
-    $c->stash->{session} = $c->registry(api => 'EventSession')->find($session_id)
+    my $session = $c->registry(api => 'EventSession')->find($session_id);
+    if (! $session->is_accepted ) {
+        if ($c->user->id ne $session->owner_id && ! $c->check_user_roles('admin')) {
+            Pixis::Web::Exception::FileNotFound->throw();
+        }
+    }
+    $c->stash->{session} = $session;
 }
 
 sub add :Chained('/event/track/load_track')
@@ -73,10 +79,88 @@ sub list :Chained('/event/track/load_track')
     $c->forward('View::JSON');
 }
 
-sub view :Chained('load_event')
+sub view :Chained('load_session')
          :PathPart('')
          :Args(0)
 {
+    my ($self, $c) = @_;
+
+    my $session = $c->stash->{session};
+
+        
+        $c
+}
+
+sub edit 
+    :Chained('load_session')
+    :Args
+    :FormConfig
+{
+    my ($self, $c) = @_;
+
+    return unless $c->forward('/auth/assert_logged_in');
+
+    if (! $c->forward('/auth/assert_roles', [ 'admin' ] ) ||
+            $c->user->id ne $c->stash->{session}->owner_id
+    ) {
+        return $c->detach('/auth/fail');
+    }
+
+    my $form = $c->stash->{form};
+
+
+    my @tracks = $c->registry(api => 'EventTrack')->load_from_event(
+        $c->stash->{event}->id);
+    my $track = $form->get_all_element({ name => 'track_id' });
+    $track->options([
+        map { [ $_->id, $_->title ] } @tracks
+    ]);
+
+    if ($form->submitted_and_valid) {
+        $c->registry(api => 'EventSession')->update_from_form(
+            $form, $c->stash->{session}
+        );
+        $c->res->redirect(
+            $c->uri_for('/event', $c->stash->{event}->id, 'session', $c->stash->{session}->id, 'updated' ));
+    } else {
+        $form->model->default_values( $c->stash->{session} );
+    }
+}
+
+sub accept
+    :Chained('load_session')
+    :Args
+{
+    my ($self, $c) = @_;
+
+    my $session = $c->stash->{session};
+    $c->registry(api => 'EventSession')->update( {
+        id => $session->id,
+        is_accepted => $session->is_accepted ? 0 : 1,
+    });
+    
+    $c->res->redirect(
+        $c->uri_for('/event', $c->stash->{event}->id, 'session', $session->id, 'updated' ));
+}
+
+sub updated
+    :Chained('load_session')
+    :Args
+{
+}
+
+sub list
+    :Chained('/event/load_event')
+    :PathPart('session/list')
+    :Args
+{
+    my ($self, $c) = @_;
+
+    if ($c->check_user_roles('admin')) {
+        $c->stash->{unaccepted} = $c->registry(api => 'EventSession')->load_unaccepted({
+            event_id => $c->stash->{event}->id,
+        });
+    }
 }
 
 1;

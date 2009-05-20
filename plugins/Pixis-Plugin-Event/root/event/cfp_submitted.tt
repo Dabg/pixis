@@ -1,0 +1,13 @@
+[% WRAPPER wrapper.tt,
+    page.title => 'トーク申し込み',
+    page.metas => [
+        {
+            'http-equiv' => 'Refresh',
+            content => '5; ' _ c.uri_for('/event', event.id)
+        }
+    ]
+%]
+
+<div>受け付けました</div>
+
+[% END %]

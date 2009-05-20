@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt,
+    page.title => "セッション編集"
+%]
+
+[% IF (c.assert_user_roles( 'admin' )) %]
+<div><a href="[% c.uri_for('/event', event.id, 'session', session.id, 'accept') %]">[% IF (session.is_accepted) %]非承認にする[% ELSE %]承認する[% END %]</a></div>
+[% END %]
+
+[% form %]
+[% END %]

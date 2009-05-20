@@ -1,6 +1,7 @@
 
 package Pixis::API::EventSession;
 use Moose;
+use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
@@ -80,5 +81,23 @@ sub load_from_date {
 
     return $self->load_multi(@ids);
 }
+
+sub load_unaccepted {
+    my ($self, $args) = @_;
+
+    my @ids = map { $_->id } $self->resultset->search(
+        {
+            event_id => $args->{event_id},
+            is_accepted => 0,
+        },
+        {
+            select => [ qw(id) ]
+        }
+    );
+
+    return $self->load_multi(@ids);
+}
+
+__PACKAGE__->meta->make_immutable;
 
 1;

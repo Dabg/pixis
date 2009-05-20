@@ -1,0 +1,17 @@
+[% WRAPPER wrapper.tt,
+    page.title = "イベントセッション"
+%]
+
+[%# Foreach track, list the sessions %]
+
+[%# Foreach unaccepted sessions, list them %]
+[% IF (unaccepted.defined && unaccepted.size > 0) %]
+<h3>未承諾セッション</h3>
+[% FOREACH session IN unaccepted %]
+<div>
+    <div><a href="[% c.uri_for("/event", event.id, "session", session.id, "edit") %]">[% session.title %]</a></div>
+</div>
+[% END # FOREACH %]
+[% END # IF %]
+
+[% END %]

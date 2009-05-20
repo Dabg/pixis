@@ -1,0 +1,13 @@
+[% WRAPPER wrapper.tt,
+    page.title => 'セッション更新',
+    page.metas => [
+        {
+            'http-equiv' => 'Refresh',
+            content => '5; ' _ c.uri_for('/event', event.id, 'session', session.id, 'edit' )
+        }
+    ]
+%]
+
+<div>セッション内容を更新しました</div>
+
+[% END %]

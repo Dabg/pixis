@@ -202,4 +202,40 @@ sub done :Local {
 
 }
 
+sub cfp
+    :Chained('/event/load_event')
+    :Args
+    :FormConfig
+{
+    my ($self, $c) = @_;
+
+    return unless $c->forward('/auth/assert_logged_in');
+
+    my $form = $c->stash->{form};
+
+    if ($form->submitted_and_valid) {
+        my $event = $c->stash->{event};
+
+        # This session is created, but with the accept flag being off
+        $c->registry(api => 'EventSession')->create({
+            owner_id   => $c->user->id,
+            event_id    => $c->stash->{event}->id,
+            presenter   => $c->user->nickname,
+            title       => $form->param('title'),
+            description => $form->param('description'),
+            is_accepted => 0,
+            created_on  => \'NOW()',
+        });
+        $c->res->redirect($c->uri_for('/event', $event->id, 'cfp', 'submitted'));
+    }
+}
+
+sub cfp_submitted
+    :Chained('/event/load_event')
+    :PathPart('cfp/submitted')
+    :Args
+{
+}
+
+1;
 1;
