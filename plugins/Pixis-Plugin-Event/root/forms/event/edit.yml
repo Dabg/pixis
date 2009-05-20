@@ -33,6 +33,12 @@ elements:
       constraints:
         - Required
         - Integer
+    - type: Checkbox
+      name: is_cfp_open
+      label_loc: Call For Paper
+      constraints:
+        - Bool
+      value: 1
     - type: Submit
       name: submit
       value_loc: Edit

@@ -213,7 +213,7 @@ sub cfp
     return unless $c->forward('/auth/assert_logged_in');
 
     if (! $c->stash->{event}->is_cfp_open) {
-        $c->res->redirect( $c->uri_for('cfp/unavailable') );
+        $c->res->redirect( $c->uri_for('/event', $c->stash->{event}->id, 'cfp', 'unavailable') );
         return;
     }
 
