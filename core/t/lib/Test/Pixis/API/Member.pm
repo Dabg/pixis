@@ -85,15 +85,17 @@ sub expected_load_failure {
     ok( !@auth, "$suite non active member should not have their auth loaded");
 }
 
-sub create_member :Test :Plan(6) {
+sub create_member :Test :Plan(8) {
     my ($self, $which) = @_;
 
     lives_ok {
         my $api = Pixis::Registry->get(api => 'member');
         my $data = $self->members->[$which];
         my $member = $api->create($data);
+        ok($member, "member creation returns something");
+        isa_ok($member, "Pixis::Schema::Master::Result::Member", "object is a proper DBIx::Class object");
         $data->{id} = $member->id;
-    } "member creation";
+    } "member creation lives";
 
     # first time around is_active is false, so all these tests should fail
     lives_ok {
