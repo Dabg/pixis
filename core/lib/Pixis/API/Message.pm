@@ -19,21 +19,52 @@ sub send {
     return $message;
 }
 
-sub load_from_member {
-    my ( $self, $member, $where ) = @_;
+sub load_sent_from_member {
+    my ( $self, $args ) = @_;
 
-    $where ||= '';
+    my $member_id = $args->{member_id};
+
+    my @ids = map { $_->id } $self->resultset()->search(
+        { from_member_id => $member_id },
+        {
+            select => [ qw(id) ],
+        }
+    );
+    return $self->load_multi(@ids);
+}
+
+sub load_sent_to_member {
+    my ( $self, $args ) = @_;
+
+    my $member_id = $args->{member_id};
+
+    my @ids = map { $_->id } $self->resultset()->search(
+        { to_member_id => $member_id },
+        {
+            select => [ qw(id) ],
+        }
+    );
+    return $self->load_multi(@ids);
+}
+
+sub load_from_query {
+    my ( $self, $args ) = @_;
+
+    my $member_id = $args->{member_id};
+    my $q = $args->{query};
 
     my @ids = map { $_->id } $self->resultset()->search(
         {
             '-and' => [
                 '-or' => [
-                    { from_member_id => $member->id },
-                    { to_member_id => $member->id },
+                    { from_member_id => $member_id },
+                    { to_member_id => $member_id },
                 ],
+                # XXX - yawza! in the future, we should implement real
+                # full text search for this.
                 '-or' => [
-                    { body => { -like => '%'.$where.'%' } },
-                    { subject => { -like => '%'.$where.'%' } },
+                    { body => { -like => '%'.$q.'%' } },
+                    { subject => { -like => '%'.$q.'%' } },
                 ],
             ],
         },

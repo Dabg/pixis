@@ -11,12 +11,31 @@ sub auto :Private {
     return 1;
 }
 
-sub index :Local :Path('') :Args(0) :FormConfig {
+sub index
+    :Local
+    :Path('')
+    :Args(0)
+    :FormConfig('message/search')
+{
     my ( $self, $c ) = @_;
+
+    # By default, show messages received
     my @messages = $c->registry(api => 'Message')
-                     ->load_from_member(
-                         $c->user, 
-                         $c->stash->{form}->param_value('q'),
+        ->load_sent_to_member({ member_id => $c->user->id })
+    ;
+}
+
+sub search
+    :Local
+    :Args(0)
+    :FormConfig
+{
+    my ($self, $c) = @_;
+
+    my @messages = $c->registry(api => 'Message')
+                 ->load_from_query(
+                         member_id => $c->user->id, 
+                         query => $c->stash->{form}->param_value('q'),
                      );
     $c->stash->{messages} = \@messages;
     return;
