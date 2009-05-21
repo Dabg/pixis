@@ -11,6 +11,7 @@ MACRO run_widget(name, args) BLOCK;
     DEFAULT args.user = c.user;
     DEFAULT args.request = c.req;
     DEFAULT args.page    = page;
+    args.use_esi = c.config.use_esi;
 
     TRY;
         SET object = c.model('Widget').load(name);

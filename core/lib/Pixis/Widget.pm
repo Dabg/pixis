@@ -24,7 +24,7 @@ has template => (
     lazy_build => 1,
 );
 
-has is_esi => (
+has use_esi => (
     is => 'rw',
     isa => 'Bool',
     default => 0
@@ -49,8 +49,9 @@ has query_params => (
     isa => 'HashRef',
     default => sub { +{} },
     provides => {
-        set => 'query_params_set',
-        get => 'query_params_get',
+        set => 'query_param_set',
+        get => 'query_param_get',
+        exists => 'query_param_exists',
         clear => 'query_params_clear',
     }
 );
@@ -72,6 +73,7 @@ sub _build_esi_uri {
     $name =~ s/^Pixis::Widget:://;
     my @args = ('', 'widget' , map { $_ } split(/::/, $name) );
     my $uri  = URI->new(join('/', @args));
+    my $h    = $self->query_params;
     $uri->query_form($self->query_params);
     return $uri;
 }
@@ -91,12 +93,14 @@ sub run {
     my %args = $args ? %$args : {};
     $args{template} = $self->template->stringify;
 
-    if ($self->is_esi) {
-        $args{is_esi} = 1;
-        $args{esi_uri} = $self->esi_uri;
+    if ($self->use_esi || $args{use_esi}) {
+        $args{use_esi} = 1;
+        if ($args{user} && !$self->query_param_exists($args{user}->id)) {
+            $self->query_param_set(user_id => $args{user}->id);
+        }
     }
 
-    $self->query_params_set( referer => $args->{request}->uri);
+    $self->query_param_set( referer => $args->{request}->uri);
     if (my $referer = $args->{request}->param('referer')) {
         $args{referer} = $referer;
     }
