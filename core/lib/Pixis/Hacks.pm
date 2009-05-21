@@ -6,6 +6,7 @@ use warnings;
 use Carp qw(croak);
 use HTML::FormFu;
 use Catalyst::Controller::HTML::FormFu;
+use namespace::clean;
 
 BEGIN {
     # XXX - voodoo to make config values not choke on multibyte chars
