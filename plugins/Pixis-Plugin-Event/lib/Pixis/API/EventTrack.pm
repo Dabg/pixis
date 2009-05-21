@@ -6,8 +6,12 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-__PACKAGE__->txn_method(load_or_create_default_track => sub {
+sub load_or_create_default_track {
     my ($self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard = $schema->txn_scope_guard();
+
     my $rs = $self->resultset;
     my $track = $rs->search(
         { event_id => $args->{event_id} },
@@ -21,8 +25,10 @@ __PACKAGE__->txn_method(load_or_create_default_track => sub {
             }
         } );
     }
+    $guard->commit;
+
     return $track;
-});
+}
 
 sub load_from_event {
     my ($self, $event_id) = @_;

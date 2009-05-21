@@ -8,8 +8,11 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-around(__PACKAGE__->txn_method(create => sub {
+around create => sub {
     my ($next, $self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard = $schema->txn_scope_guard();
 
     my $event = $next->($self, $args);
     Pixis::Registry->get(api => 'EventTrack')->create({
@@ -27,11 +30,16 @@ around(__PACKAGE__->txn_method(create => sub {
         });
         $cur->add(days => 1);
     }
-    return $event;
-}));
+    $guard->commit;
 
-around(__PACKAGE__->txn_method(create_from_form => sub {
+    return $event;
+};
+
+around create_from_form => sub {
     my ($next, $self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard = $schema->txn_scope_guard();
 
     my $event = $next->($self, $args);
     Pixis::Registry->get(api => 'EventTrack')->create({
@@ -50,11 +58,17 @@ around(__PACKAGE__->txn_method(create_from_form => sub {
         });
         $cur->add(days => 1);
     }
-    return $event;
-}));
 
-__PACKAGE__->txn_method(add_session => sub {
+    $guard->commit;
+
+    return $event;
+};
+
+sub add_session {
     my ($self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard = $schema->txn_scope_guard();
 
     # If this event doesn't have a track, then create one.
     # The default track will just have a name Track 1
@@ -71,7 +85,10 @@ __PACKAGE__->txn_method(add_session => sub {
     $args{track_id} = $track->id;
 
     $track_api->add_session(\%args);
-});
+
+    $guard->commit;
+    return ();
+}
 
 sub load_tracks {
     my ($self, $args) = @_;
