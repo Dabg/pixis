@@ -49,23 +49,25 @@ sub unfollow {
     }
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( sub {
-        my ($self, $from, $to) = @_;
-        my $rs = $self->resultset();
 
-        my $here_to_there = $rs->find({ from_id => $from, to_id => $to });
-        if ($here_to_there) {
-            $here_to_there->delete;
-        }
+    my $guard  = $schema->txn_scope_guard;
+    my $rs = $self->resultset();
 
-        # Does the other person have a follow status to me? if so,
-        # I say we no longer have feelings for each other
-        my $there_to_here = $rs->find({from_id => $to, to_id => $from});
-        if ($there_to_here && $there_to_here->approved) {
-            $there_to_here->approved(0);
-            $there_to_here->update;
-        }
-    }, $self, $from, $to);
+    my $here_to_there = $rs->find({ from_id => $from, to_id => $to });
+    if ($here_to_there) {
+        $here_to_there->delete;
+    }
+
+    # Does the other person have a follow status to me? if so,
+    # I say we no longer have feelings for each other
+    my $there_to_here = $rs->find({from_id => $to, to_id => $from});
+    if ($there_to_here && $there_to_here->approved) {
+        $there_to_here->approved(0);
+        $there_to_here->update;
+    }
+
+    $guard->commit();
+    return ();
 }
 
 sub is_mutual {
@@ -91,17 +93,19 @@ sub break_all {
     }
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( sub {
-        my ($self, $from) = @_;
+    my $guard  = $schema->txn_scope_guard;
 
-        my $rs = $self->resultset();
-        $rs->search({
-            -or => {
-                from_id => $from,
-                to_id   => $from
-            }
-        })->delete;
-    }, $self, $from );
+    my $rs = $self->resultset();
+    $rs->search({
+        -or => {
+            from_id => $from,
+            to_id   => $from
+        }
+    })->delete;
+
+    $guard->commit;
+
+    return ();
 }
 
 __PACKAGE__->meta->make_immutable;

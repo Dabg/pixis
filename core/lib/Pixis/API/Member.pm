@@ -38,26 +38,26 @@ sub load_from_email {
     return $member ? $self->find($member->id) : ();
 }
 
-sub create {
-    my ($self, $args) = @_;
+around create => sub {
+    my ($next, $self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
 
-    my $member;
-    $schema->txn_do( sub {
-        my $schema = shift;
-        $args->{created_on} ||= \'NOW()';
+    my $guard = $schema->txn_scope_guard();
+    $args->{created_on} ||= \'NOW()';
+    $args->{is_active} = 0;
 
-        $member = $schema->resultset('Member')->create($args);
-        $schema->resultset('MemberAuth')->create({
-            member_id => $member->id,
-            auth_type => 'password',
-            auth_data => Digest::SHA1::sha1_hex(delete $args->{password}),
-            created_on => $args->{created_on}
-        });
-    }, $schema );
+    my $member = $next->($self, $args);
+    $schema->resultset('MemberAuth')->create({
+        member_id => $member->id,
+        auth_type => 'password',
+        auth_data => Digest::SHA1::sha1_hex(delete $args->{password}),
+        created_on => $args->{created_on}
+    });
+
+    $guard->commit;
     return $member;
-}
+};
 
 # returns member with activation_token
 sub forgot_password {
@@ -68,15 +68,17 @@ sub forgot_password {
     $member->is_active or return;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $member = $schema->txn_do( sub {
-            my $schema = shift;
-            $member->activation_token(Digest::SHA1::sha1_hex(time, rand, $$, {}, $self->cache_prefix, $member->id));
-            $member->update;
-            # delete the cache, just in case
-            $self->cache_del([ $self->cache_prefix, $member->id ]);
-            return $self->find($member->id);
-    }, $schema );
-    return $member;
+
+    my $guard = $schema->txn_scope_guard();
+
+    $member->activation_token(Digest::SHA1::sha1_hex(time, rand, $$, {}, $self->cache_prefix, $member->id));
+    $member->update;
+    # delete the cache, just in case
+    $self->cache_del([ $self->cache_prefix, $member->id ]);
+
+    $guard->commit;
+
+    return $self->find($member->id);
 }
 
 # returns member matching email and activation_token
@@ -92,15 +94,16 @@ sub reset_password {
     $member->activation_token eq $args->{token} or return;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    $member = $schema->txn_do( sub {
-            my $schema = shift;
-            $member->activation_token(undef);
-            $member->update;
-            # delete the cache, just in case
-            $self->cache_del([ $self->cache_prefix, $member->id ]);
-            return $self->find($member->id);
-    }, $schema );
-    return $member;
+    my $guard  = $schema->txn_scope_guard;
+
+    $member->activation_token(undef);
+    $member->update;
+    # delete the cache, just in case
+    $self->cache_del([ $self->cache_prefix, $member->id ]);
+
+    $guard->commit;
+
+    return $self->find($member->id);
 }
 
 sub activate {
@@ -110,24 +113,28 @@ sub activate {
     $args->{email} or die "no email";
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( sub {
-        my ($self, $args) = @_;
-        local $self->{resultset_constraints} = {};
-        my $member = $self->resultset()->search({
-            is_active => 0,
-            activation_token => $args->{token},
-            email => $args->{email},
-        })->single;
-        if ($member) {
-            $member->activation_token(undef);
-            $member->is_active(1);
-            $member->update;
-            # delete the cache, just in case
-            $self->cache_del([ $self->cache_prefix, $member->id ]);
-            return $self->find($member->id);
-        }
+
+    local $self->{resultset_constraints} = {};
+    my $member = $self->resultset()->search({
+        is_active => 0,
+        activation_token => $args->{token},
+        email => $args->{email},
+    })->single;
+
+    if (! $member) {
         return ();
-    }, $self, $args );
+    }
+
+    my $guard  = $schema->txn_scope_guard;
+    $member->activation_token(undef);
+    $member->is_active(1);
+    $member->update;
+    # delete the cache, just in case
+    $self->cache_del([ $self->cache_prefix, $member->id ]);
+
+    $guard->commit;
+
+    return $self->find($member->id);
 }
 
 sub search_members {
@@ -219,22 +226,22 @@ sub soft_delete {
     my ($self, $id) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( sub {
-        my ($self, $id) = @_;
+    my $guard  = $schema->txn_scope_guard;
 
-        # invalidate followings, followers
-        Pixis::Registry->get(api => 'MemberRelationship')->break_all($id);
+    # invalidate followings, followers
+    Pixis::Registry->get(api => 'MemberRelationship')->break_all($id);
 
-        $self->resultset->search(
-            {
-                id => $id
-            }
-        )->update(
-            {
-                is_active => 0 
-            }
-        );
-    }, $self, $id);
+    $guard->commit;
+
+    return $self->resultset->search(
+        {
+            id => $id
+        }
+    )->update(
+        {
+            is_active => 0 
+        }
+    );
 }
 
 sub load_recent_activity {

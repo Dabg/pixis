@@ -42,8 +42,8 @@ around create => sub {
     $next->($self, $args);
 };
 
-__PACKAGE__->txn_method(create_txn => sub {
-    my ($self, $args, $schema) = @_;
+sub create_txn {
+    my ($self, $args) = @_;
 
     my $txn_args = $args->{txn};
     my %args     = (
@@ -52,11 +52,19 @@ __PACKAGE__->txn_method(create_txn => sub {
         created_on => \'NOW()',
     );
 
-    $schema->resultset('PaymentTransaction')->create(\%args);
-});
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard;
+    my $txn    = $schema->resultset('PaymentTransaction')->create(\%args);
+    $guard->commit;
 
-sub __change_status {
-    my ($self, $schema, $args) = @_;
+    return $txn;
+}
+
+sub change_status {
+    my ($self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard();
 
     my $order = $self->find($args->{order_id});
     if (! $order) {
@@ -78,14 +86,10 @@ sub __change_status {
         order_id => $order->id,
         message => $message
     } );
+
+    $guard->commit;
+
     return ();
-}
-
-sub change_status {
-    my ($self, $args) = @_;
-
-    my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( \&__change_status, $self, $schema, $args );
 }
 
 sub log_action {
@@ -102,8 +106,11 @@ sub log_action {
     } );
 }
 
-sub __change_txn_status {
-    my ($self, $schema, $args) = @_;
+sub change_txn_status {
+    my ($self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard;
 
     my $txn = $schema->resultset('PaymentTransaction')->search(
         {
@@ -121,18 +128,17 @@ sub __change_txn_status {
         $txn->$field( $args->{$field} ) if exists $args->{$field};
     }
     $txn->update;
+
+    $guard->commit();
+
     return ();
 }
 
-sub change_txn_status {
+sub match_txn {
     my ($self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( \&__change_txn_status, $self, $schema, $args );
-}
-
-sub __match_txn {
-    my ($self, $schema, $args) = @_;
+    my $guard  = $schema->txn_scope_guard;
 
     my $txn = $schema->resultset('PaymentTransaction')->search({
             order_id => $args->{order_id},
@@ -145,14 +151,9 @@ sub __match_txn {
     if ($txn) {
         $order = $self->find($txn->order_id);
     }
+
+    $guard->commit;
     return $order || ();
-}
-
-sub match_txn {
-    my ($self, $args) = @_;
-
-    my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( \&__match_txn, $self, $schema, $args );
 }
 
 1;

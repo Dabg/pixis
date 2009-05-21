@@ -129,19 +129,22 @@ sub update {
 
     my $schema = Pixis::Registry->get('schema' => 'master');
 
-    my $row = $schema->txn_do(sub {
-        my ($self, $schema, $args) = @_;
-        my $pk = $self->primary_key();
-        my $rs = $self->resultset();
-        my $key = delete $args->{$pk};
-        my $row = $self->find($key);
-        if ($row) {
-            while (my ($field, $value) = each %$args) {
-                $row->$field( $value );
-            }
-            $row->update;
+    my $pk = $self->primary_key();
+    my $rs = $self->resultset();
+    my $key = delete $args->{$pk};
+
+    my $guard = $schema->txn_scope_guard;
+
+    my $row = $self->find($key);
+    if ($row) {
+        while (my ($field, $value) = each %$args) {
+            $row->$field( $value );
         }
-    }, $self, $schema, $args );
+        $row->update;
+    }
+
+    $guard->commit;
+
     return $row;
 }
 
@@ -149,45 +152,17 @@ sub delete {
     my ($self, $id) = @_;
 
     my $schema = Pixis::Registry->get('schema' => 'master');
-    return $schema->txn_do( sub {
-        my ($self, $schema, $id) = @_;
-        my $obj = $schema->resultset($self->resultset_moniker)->find($id);
-        if ($obj) {
-            $obj->delete;
-        }
 
-        my $cache_key = [$self->cache_prefix, $id ];
-        $self->cache_del($cache_key);
+    my $guard = $schema->txn_scope_guard;
+    my $obj = $schema->resultset($self->resultset_moniker)->find($id);
+    if ($obj) {
+        $obj->delete;
+    }
+
+    my $cache_key = [$self->cache_prefix, $id ];
+    $self->cache_del($cache_key);
     
-    }, $self, $schema, $id );
-}
-
-sub txn_method { ## no critic 
-    my $class = shift;
-    my $name  = shift;
-    my $schema_name;
-    if (! ref $_[0]) {
-        $schema_name = shift;
-    } else {
-        $schema_name = 'Master';
-    }
-    my $code   = shift;
-    my $wrapper = sub {
-        my $schema = Pixis::Registry->get(schema => $schema_name);
-        $schema->txn_do($code, @_, $schema);
-    };
-
-    my $method = Moose::Meta::Method->wrap(
-        body         => $wrapper,
-        package_name => $class,
-        name         => $name
-    );
-
-    if (! defined wantarray ) { # void context
-        $class->meta->add_method($name => $method);
-    } else {
-        return ($name => $wrapper);
-    }
+    $guard->commit;
     return ();
 }
 

@@ -15,21 +15,22 @@ sub change_status {
     my ($self, $args) = @_;
 
     my $schema = Pixis::Registry->get(schema => 'master');
-    return $schema->txn_do( sub {
-        my ($schema, $args) = @_;
 
-        my $txn = $self->find($args->{txn_id});
-        my $old = $txn->status;
-        my $new = $args->{status};
-        $txn->status( $new );
+    my $guard = $schema->txn_scope_guard;
 
-        $txn->create_related( 'logs', {
-            message    => "change status from $old to $new" .
-                ($args->{message} ? ": $args->{message}" : ''),
-            created_on => \'NOW()'
-        } );
+    my $txn = $self->find($args->{txn_id});
+    my $old = $txn->status;
+    my $new = $args->{status};
+    $txn->status( $new );
 
-    }, $schema, $args);
+    $txn->create_related( 'logs', {
+        message    => "change status from $old to $new" .
+            ($args->{message} ? ": $args->{message}" : ''),
+        created_on => \'NOW()'
+    } );
+
+    $guard->commit;
+    return ();
 }
 
 1;
