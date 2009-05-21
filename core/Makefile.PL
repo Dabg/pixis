@@ -2,12 +2,6 @@
 # expected.  you have been warned
 use inc::Module::Install;
 
-if (eval { require Apache::TestMM }) {
-    Apache::TestMM->import( qw(test clean) );
-    Apache::TestMM::filter_args();
-    Apache::TestMM::generate_script('t/TEST');
-}
-
 name 'Pixis-Web';
 all_from 'lib/Pixis/Web.pm';
 
@@ -64,7 +58,6 @@ requires 'Template::Provider::Encoding';
 
 recommends 'Catalyst::Engine::FastCGI';
 recommends 'Catalyst::Log::Log4perl';
-recommends 'Apache::Test';
 
 test_requires 'Test::More', '0.82';
 test_requires 'Test::FITesque';
