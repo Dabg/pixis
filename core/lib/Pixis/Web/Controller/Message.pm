@@ -23,6 +23,8 @@ sub index
     my @messages = $c->registry(api => 'Message')
         ->load_sent_to_member({ member_id => $c->user->id })
     ;
+    $c->stash->{messages} = \@messages;
+    return;
 }
 
 sub search
