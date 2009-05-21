@@ -7,7 +7,7 @@
 <li id="lnav_[% nav.id %]"><a href="[% nav.uri %]">[% loc(nav.text || 'Link') %]</a></li>
 [% END %]
 </ul>
-[% IF (args.submenu.size > 0) -%]
+[% IF (args.submenu.defined && args.submenu.size > 0) -%]
 <ul id="subnav"> 
   [% FOREACH smenu IN args.submenu -%]
 <li[% IF (smenu.id) %] id="[% id | html %]"[% END %]><a href="[% IF (smenu.uri.match('^https?://')) %][% smenu.uri | html %][% ELSE %][% c.uri_for(smenu.uri) %][% END %]">[% smenu.text | html %]</a></li>
