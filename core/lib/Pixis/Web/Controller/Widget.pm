@@ -1,5 +1,6 @@
 package Pixis::Web::Controller::Widget;
 use Moose;
+use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller' }
 

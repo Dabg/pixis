@@ -1,13 +1,9 @@
 <div id="header">
 <ul class="clearfix">
-[% IF args.user %]
-<li id="hnav_logout"><a href="/auth/logout">[% loc("Logout") %]</a></li>
-<li id="hnav_settings"><a href="/member/settings">[% loc("Member Settings") %]</a></li>
-<li><a href="/message/">[% loc('message') %]</a></li>
-<li><a href="/profile/">[% loc('profile') %]</a></li>
-<li id="hnav_username"><a href="/member/home">[% loc("x's Home", args.user.nickname) %]</a></li>
-[% ELSE %]
-<li id="hnav_login"><a href="/auth/login?next=[% args.referer || c.req.uri | uri %]">[% loc("Login") %]</a></li>
+[% FOREACH item IN args.items %]
+    [%- IF (item.require_user && ! args.user) %][% NEXT %][% END -%]
+    [%- IF (item.require_no_user && args.user) %][% NEXT %][% END -%]
+<li[% FOREACH pair IN item.attrs.pair %] [% pair.key | html %]="[% pair.value | html %]"[% END %]><a href="[% item.uri %]">[% loc(item.text) %]</a></li>
 [% END %]
 </ul>
 </div><!-- header -->
