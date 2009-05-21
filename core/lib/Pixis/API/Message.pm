@@ -5,19 +5,25 @@ use namespace::clean -exept => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-sub send {
-    my ( $self, $args ) = @_;
-    my $message = $self->resultset()->create(
-        {
-            from_member_id => $args->{from}->id,
-            to_member_id => $args->{to}->id,
-            subject => $args->{subject},
-            body => $args->{body},
-            created_on => \'NOW()',
-        }
+around create => sub {
+    my ( $next, $self, $args ) = @_;
+
+    local $Data::Dumper::Terse    = 1;
+    local $Data::Dumper::Sortkeys = 1;
+    local $Data::Dumper::Indent   = 1;
+
+    my %args = (
+        id => Digest::SHA1::sha1_hex($args, {}, time(), $$, rand()),
+        from_member_id => $args->{from}->id,
+        to_member_id   => $args->{to}->id,
+        subject        => $args->{subject},
+        body           => $args->{body},
+        created_on     => \'NOW()',
     );
-    return $message;
-}
+
+    return $next->($self, \%args)
+};
+*send = \&create;
 
 sub load_sent_from_member {
     my ( $self, $args ) = @_;
