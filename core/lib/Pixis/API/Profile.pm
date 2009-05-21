@@ -7,8 +7,40 @@ with 'Pixis::API::Base::DBIC';
 
 around create => sub {
     my ($next, $self, $args) = @_;
-    $args->{created_on} = \'NOW()';
-    return $next->($self, $args);
+
+    if (! $args->{id}) {
+        my $key;
+        my $attempt = 0;
+        my $schema = Pixis::Registry->get(schema => 'Master');
+        while (! $key ) {
+            $key = $schema->resultset('ProfileUniqueId')->search(
+                {
+                    taken_on => \'IS NULL',
+                },
+                {
+                    rows => 1
+                }
+            )->single;
+            
+            my $updated = $schema->resultset('ProfileUniqueId')->search(
+                {
+                    value => $key->value,
+                    taken_on => \'IS NULL'
+                }
+            )->update({ taken_on => \'NOW()' });
+            if (! $updated) {
+                $key = undef;
+            }
+            last if $attempt++ > 100;
+        }
+        if (! $key ) {
+            confess "Failed to get a unique key for order";
+        }
+        $args->{id} = $key->value;
+    }
+    $args->{created_on} ||= \'NOW()';
+
+    $next->($self, $args);
 };
 
 sub load_from_member {

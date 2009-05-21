@@ -7,10 +7,9 @@ __PACKAGE__->load_components("PK::Auto", "UTF8Columns", "InflateColumn::DateTime
 __PACKAGE__->table("pixis_profile");
 __PACKAGE__->add_columns(
     id => {
-        data_type => 'INTEGER',
-        is_auto_increment => 1,
+        data_type => 'CHAR',
         is_nullable => 0,
-        size => 32,
+        size => 10,
     },
     name => {
         data_type => "VARCHAR",
