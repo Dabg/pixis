@@ -1,0 +1,6 @@
+[% WRAPPER wrapper.tt title = 'メッセージの作成' %]
+<div id="content">
+[% form %]
+</div>
+[% END %]
+

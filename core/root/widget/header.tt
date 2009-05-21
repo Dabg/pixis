@@ -3,6 +3,7 @@
 [% IF args.user %]
 <li id="hnav_logout"><a href="/auth/logout">[% loc("Logout") %]</a></li>
 <li id="hnav_settings"><a href="/member/settings">[% loc("Member Settings") %]</a></li>
+<li><a href="/message/">[% loc('message') %]</a></li>
 <li><a href="/profile/">[% loc('profile') %]</a></li>
 <li id="hnav_username"><a href="/member/home">[% loc("x's Home", args.user.nickname) %]</a></li>
 [% ELSE %]
