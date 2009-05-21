@@ -193,6 +193,57 @@ sub date :Chained('load_event')
     return ();
 }
 
+sub sessions_default
+    :Chained('load_event')
+    :PathPart('sessions')
+    :Args
+{
+    my ($self, $c) = @_;
+
+    my $dt = $c->stash->{event}->start_on;
+    $c->res->redirect(
+        $c->uri_for('/event', $c->stash->{event}->id, 'sessions', $dt->strftime('%Y-%m-%d')));
+}
+
+sub sessions
+    :Chained('load_event')
+    :Args(1)
+{
+    my ($self, $c, $date) = @_;
+
+    # Make sure $date is parseable 
+    my $parser = DateTime::Format::Strptime->new(
+        pattern => '%Y-%m-%d',
+        time_zone => 'local',
+    );
+    my $dt = eval { $parser->parse_datetime($date) };
+    if ($@ || !$dt) {
+        Pixis::Web::Exception::FileNotFound->throw();
+    }
+
+    my $event = $c->stash->{event};
+    if ($dt < $event->start_on || $dt > $event->end_on) {
+        Pixis::Web::Exception::FileNotFound->throw();
+    }
+
+    $c->stash->{date} = $dt;
+
+    my @tracks = $c->registry(api => 'EventTrack')->load_from_event($event->id);
+    $c->stash->{tracks} = \@tracks;
+
+    my $session_api = $c->registry(api => 'EventSession');
+    my %sessions;
+    foreach my $track (@tracks) {
+        $sessions{$track->id} = $session_api->load_from_track({
+            event_id => $event->id,
+            track_id => $track->id,
+            date     => $date
+        });
+    }
+    $c->stash->{sessions} = \%sessions;
+
+}
+
 # XXX this sucks. later!
 sub send_confirmation : Private {
     my ($self, $c) = @_;

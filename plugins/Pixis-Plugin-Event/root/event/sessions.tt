@@ -1,0 +1,23 @@
+[% WRAPPER wrapper.tt,
+    page.title => event.title _ 'スケジュール ' _ date.strftime('%Y-%m-%d')
+%]
+
+<table>
+<th>
+    <td>&nbsp;</td>
+[% FOREACH track IN tracks %]
+    <td>[% track.title | html %]</td>
+[% END %]
+</th>
+
+</table>
+[% FOREACH track IN tracks %]
+<div>[% track.title %]</div>
+[% FOREACH session IN sessions.item(track.id) %]
+<div><a href="[% c.uri_for('/event', event.id, 'session', session.id) %]">[% session.title %]</a></div>
+[% END %]
+[% END %]
+
+
+
+[% END %]

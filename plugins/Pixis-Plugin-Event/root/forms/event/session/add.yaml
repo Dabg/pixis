@@ -22,8 +22,6 @@ elements:
     - type: Text
       label_loc: Presenter
       name: presenter
-      constraints:
-        - Required
       filters:
         - HTMLScrubber
     - type: Text
@@ -36,6 +34,12 @@ elements:
         - type: DateTime
           parser:
             strptime: '%Y/%m/%d %H:%M'
+    - type: Select
+      label_loc: Language
+      name: language
+      options: # How do we localize THIS?
+        - [ 'english', 'English' ]
+        - [ 'japanese', 'Japanese' ]
     - type: Text
       label_loc: Duration
       name: duration

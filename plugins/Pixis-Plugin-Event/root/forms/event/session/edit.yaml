@@ -46,6 +46,12 @@ elements:
         - [ 40, "Medium Talk (40 min)" ]
         - [ 20, "Short Talk (20 min)" ]
         - [  5, "Lightning Talk (5 min)" ]
+    - type: Select
+      label_loc: Language
+      name: language
+      options: # How do we localize THIS?
+        - [ 'english', 'English' ]
+        - [ 'japanese', 'Japanese' ]
     - type: Textarea
       label_loc: Description
       name: description

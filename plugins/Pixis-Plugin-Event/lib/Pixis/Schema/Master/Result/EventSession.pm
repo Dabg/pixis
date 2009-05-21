@@ -40,6 +40,11 @@ __PACKAGE__->add_columns(
         data_type => "TEXT",
         is_nullable => 0
     },
+    language => {
+        data_type => "TEXT",
+        is_nullable => 0,
+        default_value => "english",
+    },
     start_on => {
         data_type => "DATETIME",
         is_nullable => 1,

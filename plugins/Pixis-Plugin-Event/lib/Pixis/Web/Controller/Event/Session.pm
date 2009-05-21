@@ -30,14 +30,24 @@ sub add :Chained('/event/track/load_track')
 {
     my ($self, $c) = @_;
 
+    $c->forward('/auth/assert_user_roles', [ 'admin' ]) or return;
+
     my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
-        $form->add_valid(event_id => $c->stash->{event}->id);
-        $form->add_valid(track_id      => $c->stash->{track}->id);
-        $form->add_valid(end_on        => $form->param('start_on') + DateTime::Duration->new(minutes => $form->param('duration')) );
-        $form->add_valid(created_on    => \'NOW()');
         eval {
-            $c->registry(api => 'EventSession')->create_from_form($form);
+            $c->registry(api => 'EventSession')->create({
+                owner_id    => $c->user->id,
+                event_id    => $c->stash->{event}->id,
+                track_id    => $c->stash->{track}->id,
+                language    => $form->param('language'),
+                title       => $form->param('title'),
+                description => $form->param('description'),
+                presenter   => $form->param('presenter') || $c->user->nickname,
+                start_on    => $form->param('start_on'),
+                end_on      => $form->param('start_on') + DateTime::Duration->new(minutes => $form->param('duration')),
+                created_on  => \'NOW()',
+                is_accepted => 1,
+            });
         };
         if (my $e = $@) {
             if ($e =~ /Selected timeslot conflicts with another session/) {

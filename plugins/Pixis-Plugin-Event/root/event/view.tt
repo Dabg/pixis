@@ -86,6 +86,7 @@ ELSE %][% start_on_str %] - [% end_on_str %][% END %]
 
 </div><!-- section --> 
 
+[% IF (event.event_type == 'seminar') %][%# one day event (XXX need to do better check) %]
 <div id="sessions" class="section">
     <h2>[% loc("Event Sessions") %]</h2>
 [%
@@ -108,25 +109,9 @@ ELSE %][% start_on_str %] - [% end_on_str %][% END %]
         END; # IF
         CALL cur.add(days => 1); %]
 </ul>
-[%    END; # WHILE
-%]
+[%    END; # WHILE %]
 </div><!-- sessions -->
+[% END; # IF %]
 
-[% IF (can_edit || tracks.size > 1) %]
-<div id="tracks" class="section">
-    <h2>[% loc("Event Tracks") %]</h2>
-    [% IF (can_edit) %]
-    <div>[<a href="[% c.uri_for( "/event", event.id, "track", "add" ) %]">[% loc("Add track") %]</a>]</div>
-    [% END %]
-
-    <ul>
-    [% FOREACH track IN tracks %]
-        <li><a href="[% c.uri_for('/event', event.id, 'track', track.id) %]">[% track.title | html %]</a>
-[% IF can_edit %][<a href="[% c.uri_for('/event', event.id, 'track', track.id, 'session', 'add' ) %]">[% loc("Add session") %]</a>][% END %]
-        </li>
-    [% END %]
-    </ul>
-</div><!-- tracks -->
-[% END %]
 </div><!-- content -->
 [% END # WRAPPER %]
