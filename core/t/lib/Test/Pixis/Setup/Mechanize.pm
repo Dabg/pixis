@@ -54,6 +54,22 @@ sub reset_mech {
     return $self->mech;
 }
 
+sub logged_in_mech {
+    my ($self, $user) = @_;
+    my $mech = $self->reset_mech;
+    $mech->get('/');
+    $mech->follow_link(text => 'ログイン');
+    $mech->submit_form(
+        form_number => 1,
+        fields => {
+            email => $user->{email} || '',
+            password => $user->{password} || '',
+        },
+        button => 'submit',
+    );
+    return $self->mech;
+}
+
 sub setup_web :Test :Plan(1) {
     my ($self) = @_;
     if (my $server = $self->apache_test_server()) {

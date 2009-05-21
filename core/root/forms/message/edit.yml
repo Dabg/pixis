@@ -1,0 +1,28 @@
+---
+auto_fieldset: 1
+method: POST
+indicator: submit
+
+elements:
+    - type: Hidden
+      name: id
+    - type: Hidden
+      name: to_profile_id
+    - type: Hidden
+      name: to_member_id
+    - type: Text
+      name: subject
+      label_loc: Subject
+      constraints:
+        - Required
+    - type: Textarea
+      name: body
+      label_loc: Body
+      attributes:
+        cols: 60
+        rows: 10
+      constraints:
+        - Required
+    - type: Submit
+      name: submit
+      value_loc: Send

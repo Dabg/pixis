@@ -97,3 +97,5 @@ sub activate_with_invalid_token : Test :Plan(3) {
 }
 
 __PACKAGE__->meta->make_immutable;
+
+1;

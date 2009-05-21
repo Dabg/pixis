@@ -1,0 +1,13 @@
+[% WRAPPER wrapper.tt title = 'メッセージ' %]
+<div id="content">
+[% SET api = c.registry('api', 'Message') %]
+<p>[% api.is_in_message(message, c.user) ? 'From:' : 'To:' %] [% api.opponent(message, c.user).nickname %]</p>
+<p>Subject: [% message.subject %]</p>
+<p>Date: [% message.created_on.strftime('%F %R') %]</p>
+<p>Body: [% message.body | html | html_line_break %]</p>
+[% IF api.is_in_message(message, c.user) %]
+<a href="[% c.uri_for('create', {to_member_id => message.from_member_id }) %]">[% loc('reply') %]</a>
+[% END %]
+</div>
+[% END %]
+

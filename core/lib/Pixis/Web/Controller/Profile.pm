@@ -5,10 +5,6 @@ use utf8;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
-__PACKAGE__->config(
-    params_ignore_underscore => 1,
-);
-
 sub auto :Private {
     my ( $self, $c ) = @_;
     $c->forward('/auth/assert_logged_in') or return;

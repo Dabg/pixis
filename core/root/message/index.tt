@@ -1,0 +1,11 @@
+[% WRAPPER wrapper.tt title = 'メッセージ' %]
+[% SET api = c.registry('api', 'message') %]
+<div id="content">
+[% form %]
+<ul class="clearfix">
+[% FOR m IN messages %]
+<li>[% api.is_in_message(m, c.user) ? '←' : '→' %]<a href="[% c.uri_for(m.id) %]">[% m.subject %]</a> [% api.opponent(m, c.user).nickname %], [% m.created_on.ymd %]</li>
+[% END %]
+</ul>
+</div>
+[% END %]
