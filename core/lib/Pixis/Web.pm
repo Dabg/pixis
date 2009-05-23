@@ -122,16 +122,17 @@ sub registry { ## no critic
     return $REGISTRY->get(@_);
 }
 
-if (HAVE_LOG4PERL) {
-    after setup_log => sub {
-        my $self = shift;
-        $self->log(
-            Catalyst::Log::Log4perl->new(
-                $self->path_to('Log4perl.conf')->stringify,
-                (autoflush => 1, watch_delay => 5, override_cspecs => 1)
-            )
-        );
-    };
+sub setup_log {
+    my $self = shift;
+    if (! HAVE_LOG4PERL) {
+        $self->SUPER::setup_log(@_);
+    }
+    $self->log(
+        Catalyst::Log::Log4perl->new(
+            $self->path_to('Log4perl.conf')->stringify,
+            (autoflush => 1, watch_delay => 5, override_cspecs => 1)
+        )
+    );
 }
 
 sub setup_finalize {
