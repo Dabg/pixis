@@ -7,6 +7,11 @@ use namespace::clean -except => qw(meta);
 # is where the initialization gets triggered
 use Catalyst;
 
+use Module::Pluggable::Object;
+
+our $VERSION = '0.01';
+
+
 # if you have Log4perl installed, you get colored messages. Yey!
 use constant HAVE_LOG4PERL => eval {
     require Catalyst::Log::Log4perl;
@@ -18,6 +23,7 @@ use Template::Stash::ForceUTF8;
 
 use Pixis::Hacks;
 use Pixis::Registry;
+use Pixis::Web::Exception;
 use Catalyst::Runtime '5.80';
 our $REGISTRY;
 
@@ -26,90 +32,140 @@ BEGIN {
     extends 'Catalyst';
 }
 
-__PACKAGE__->config(
-    name => 'Pixis::Web',
-    default_view => 'TT',
-    static => {
-        dirs => [ 'static' ]
-    },
-    'Controller::HTML::FormFu' => {
-        languages_from_context  => 1,
-        localize_from_context  => 1,
-        constructor => {
-            render_method => 'tt',
-            tt_args => {
-                COMPILE_DIR  => __PACKAGE__->path_to('tt2'),
-                INCLUDE_PATH => __PACKAGE__->path_to('root', 'forms')->stringify,
-            }
-        }
-    },
-    'Plugin::Authentication' => {
-        use_session => 1,
-        default_realm => 'members',
-        realms => {
-            members => {
-                credential => {
-                    class => 'Password',
-                    password_field => 'password',
-                    password_type  => 'hashed',
-                    password_hash_type => 'SHA-1',
-                },
-                store => {
-                    class => 'DBIx::Class',
-                    id_field => 'email',
-                    role_column => 'roles',
-                    user_class => 'DBIC::Member',
-                }
-            },
-            members_internal => {
-                credential => {
-                    class => 'Password',
-                    password_field => 'password',
-                    password_type  => 'clear',
-                },
-                store => {
-                    class => 'DBIx::Class',
-                    id_field => 'email',
-                    role_column => 'roles',
-                    user_class => 'DBIC::Member',
-                }
-            }
-        }
-    },
-    'View::JSON' => {
-        expose_stash => 'json'
-    },
-    'View::TT' => {
-        PRE_PROCESS => 'preprocess.tt',
-        PROVIDERS => [
-            { name => 'Encoding',
-              args => {
-                INCLUDE_PATH => [ __PACKAGE__->path_to('root') ],
-                COMPILE_DIR  => __PACKAGE__->path_to('tt2'),
-              }
-            }
-        ],
-        STASH   => Template::Stash::ForceUTF8->new,
+sub setup {
+    my $class = shift;
+    $class->SUPER::setup(qw/
+        Unicode
+        Authentication
+        Authorization::Roles
+        ConfigLoader
+        Data::Localize
+        Session
+        Session::Store::File
+        Session::State::Cookie
+        Static::Simple
+    /);
+}
+
+
+sub setup_components {
+    my $class = shift;
+    if ($class eq 'Pixis::Web') {
+        return $class->SUPER::setup_components(@_);
     }
-);
-__PACKAGE__->setup(qw/
-    Unicode
-    Authentication
-    Authorization::Roles
-    ConfigLoader
-    Data::Localize
-    Session
-    Session::Store::File
-    Session::State::Cookie
-    Static::Simple
-/ );
 
+    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
+    my $config  = $class->config->{ setup_components };
+    my $extra   = delete $config->{ search_extra } || [];
 
-use Module::Pluggable::Object;
-use Pixis::Web::Exception;
+    push @paths, @$extra;
 
-our $VERSION = '0.01';
+    my $locator = Module::Pluggable::Object->new(
+        search_path => [ 'Pixis::Web' ],
+        %$config
+    );
 
+    my @comps = sort { length $a <=> length $b } $locator->plugins;
+    my %comps = map { $_ => 1 } @comps;
+
+    foreach my $comp (@comps) {
+        my $base = $comp;
+        $comp =~ s/^Pixis::Web/$class/;
+print "Declaring $comp as a subclass of $base\n";
+        my $meta =
+            Moose::Meta::Class->create($comp, superclasses => [ $base ]);
+        my $module = $class->setup_component($comp);
+        my %modules = (
+            $comp => $module,
+            map {
+                $_ => $class->setup_component($_)
+            } grep {
+                not exists $comps{$_}
+            } Devel::InnerPackage::list_packages( $comp )
+        );
+
+        for my $key ( keys %modules ) {
+            $class->components->{ $key } = $modules{ $key };
+        }
+    }
+    return ();
+}
+
+sub setup_config {
+    my $class = shift;
+    $class->SUPER::config(
+        name => $class,
+        default_view => 'TT',
+        static => {
+            dirs => [ 'static' ]
+        },
+        'Controller::HTML::FormFu' => {
+            languages_from_context  => 1,
+            localize_from_context  => 1,
+            constructor => {
+                render_method => 'tt',
+                tt_args => {
+                    COMPILE_DIR  => $class->path_to('tt2'),
+                    INCLUDE_PATH => $class->path_to('root', 'forms')->stringify,
+                }
+            }
+        },
+        'Plugin::Authentication' => {
+            use_session => 1,
+            default_realm => 'members',
+            realms => {
+                members => {
+                    credential => {
+                        class => 'Password',
+                        password_field => 'password',
+                        password_type  => 'hashed',
+                        password_hash_type => 'SHA-1',
+                    },
+                    store => {
+                        class => 'DBIx::Class',
+                        id_field => 'email',
+                        role_column => 'roles',
+                        user_class => 'DBIC::Member',
+                    }
+                },
+                members_internal => {
+                    credential => {
+                        class => 'Password',
+                        password_field => 'password',
+                        password_type  => 'clear',
+                    },
+                    store => {
+                        class => 'DBIx::Class',
+                        id_field => 'email',
+                        role_column => 'roles',
+                        user_class => 'DBIC::Member',
+                    }
+                }
+            }
+        },
+        'View::JSON' => {
+            expose_stash => 'json'
+        },
+        'View::TT' => {
+            PRE_PROCESS => 'preprocess.tt',
+            PROVIDERS => [
+                { name => 'Encoding',
+                  args => {
+                    INCLUDE_PATH => [ $class->path_to('root') ],
+                    COMPILE_DIR  => $class->path_to('tt2'),
+                  }
+                }
+            ],
+            STASH   => Template::Stash::ForceUTF8->new,
+        }
+    );
+}
+
+if (caller() eq 'main') {
+    __PACKAGE__->setup_config();
+    __PACKAGE__->setup() ;
+}
+    
 # mk_classdata is overkill for these.
 my %REGISTERED_PLUGINS = ();
 my %TT_ARGS            = ();
@@ -249,8 +305,12 @@ sub add_translation_path {
     # type in the localizer
     my $localize = $self->model('Data::Localize');
     my ($localizer) = $localize->find_localizers(isa => 'Data::Localize::Gettext');
+    if (! $localizer) {
+        $self->log->warn("No localizer available?!");
+    } else {
+        $localizer->path_add( $_ ) for @paths;
+    }
 
-    $localizer->path_add( $_ ) for @paths;
     return ();
 }
 
