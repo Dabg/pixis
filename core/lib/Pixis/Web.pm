@@ -26,67 +26,8 @@ BEGIN {
     extends 'Catalyst';
 }
 
-sub setup {
-    my $class = shift;
-    $class->SUPER::setup(qw/
-        Unicode
-        Authentication
-        Authorization::Roles
-        ConfigLoader
-        Data::Localize
-        Session
-        Session::Store::File
-        Session::State::Cookie
-        Static::Simple
-    /);
-}
-
-
-sub setup_components {
-    my $class = shift;
-    if ($class eq 'Pixis::Web') {
-        return $class->SUPER::setup_components(@_);
-    }
-
-    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
-    my $config  = $class->config->{ setup_components };
-    my $extra   = delete $config->{ search_extra } || [];
-
-    push @paths, @$extra;
-
-    my $locator = Module::Pluggable::Object->new(
-        search_path => [ 'Pixis::Web' ],
-        %$config
-    );
-
-    my @comps = sort { length $a <=> length $b } $locator->plugins;
-    my %comps = map { $_ => 1 } @comps;
-
-    foreach my $comp (@comps) {
-        my $base = $comp;
-        $comp =~ s/^Pixis::Web/$class/;
-print "Declaring $comp as a subclass of $base\n";
-        my $meta =
-            Moose::Meta::Class->create($comp, superclasses => [ $base ]);
-        my $module = $class->setup_component($comp);
-        my %modules = (
-            $comp => $module,
-            map {
-                $_ => $class->setup_component($_)
-            } grep {
-                not exists $comps{$_}
-            } Devel::InnerPackage::list_packages( $comp )
-        );
-
-        for my $key ( keys %modules ) {
-            $class->components->{ $key } = $modules{ $key };
-        }
-    }
-    return ();
-}
-
 __PACKAGE__->config(
-    name => __PACKAGE__,
+    name => 'Pixis::Web',
     default_view => 'TT',
     static => {
         dirs => [ 'static' ]
@@ -151,7 +92,17 @@ __PACKAGE__->config(
         STASH   => Template::Stash::ForceUTF8->new,
     }
 );
-__PACKAGE__->setup() if caller() eq 'main';
+__PACKAGE__->setup(qw/
+    Unicode
+    Authentication
+    Authorization::Roles
+    ConfigLoader
+    Data::Localize
+    Session
+    Session::Store::File
+    Session::State::Cookie
+    Static::Simple
+/ );
 
 
 use Module::Pluggable::Object;
@@ -298,11 +249,7 @@ sub add_translation_path {
     my $localize = $self->model('Data::Localize');
     my ($localizer) = $localize->find_localizers(isa => 'Data::Localize::Gettext');
 
-    if (! $localizer) {
-        $self->log->warn("No localizer available?!");
-    } else {
-        $localizer->path_add( $_ ) for @paths;
-    }
+    $localizer->path_add( $_ ) for @paths;
     return ();
 }
 
