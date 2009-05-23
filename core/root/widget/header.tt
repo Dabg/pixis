@@ -1,9 +1,0 @@
-<div id="header">
-<ul class="clearfix">
-[% FOREACH item IN args.items %]
-    [%- IF (item.require_user && ! args.user) %][% NEXT %][% END -%]
-    [%- IF (item.require_no_user && args.user) %][% NEXT %][% END -%]
-<li[% FOREACH pair IN item.attrs.pair %] [% pair.key | html %]="[% pair.value | html %]"[% END %]><a href="[% item.uri %]">[% loc(item.text) %]</a></li>
-[% END %]
-</ul>
-</div><!-- header -->
