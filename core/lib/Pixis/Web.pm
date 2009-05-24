@@ -7,8 +7,6 @@ use namespace::clean -except => qw(meta);
 # is where the initialization gets triggered
 use Catalyst;
 
-use Module::Pluggable::Object;
-
 our $VERSION = '0.01';
 
 
@@ -20,7 +18,8 @@ use constant HAVE_LOG4PERL => eval {
 
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
-
+use Module::Pluggable::Object;
+use Pixis;
 use Pixis::Hacks;
 use Pixis::Registry;
 use Pixis::Web::Exception;
@@ -71,6 +70,11 @@ sub setup_components {
     foreach my $comp (@comps) {
         my $base = $comp;
         $comp =~ s/^Pixis::Web/$class/;
+
+        eval { Class::MOP::load_class($comp) };
+        if (! $@) {
+            next;
+        }
 print "Declaring $comp as a subclass of $base\n";
         my $meta =
             Moose::Meta::Class->create($comp, superclasses => [ $base ]);
@@ -93,6 +97,46 @@ print "Declaring $comp as a subclass of $base\n";
 
 sub setup_config {
     my $class = shift;
+
+    my @localizers;
+    my @modules = ($class, 'Pixis');
+    foreach my $module (@modules) {
+warn "Looking for $module";
+        my $modpath = $module;
+        $modpath =~ s/::/\//g;
+        $modpath .= '.pm';
+        my $path = $INC{ $modpath };
+
+        $path =~ s/\.pm$//;
+
+        # find in MyApp::I18N, and possibly (for those of us using a setup
+        # like MyApp::Catalyst or MyApp::Web), one level above
+        my @paths = # map { File::Spec->canonpath($_) } (
+(
+            File::Spec->catdir($path, 'I18N'),
+            File::Spec->catdir($path, File::Spec->updir(), 'I18N'),
+        );
+        foreach my $curpath (@paths) {
+            next unless -d $curpath;
+            my $gettext = File::Spec->catfile($curpath, '*.po');
+            # Huh, why isn't this working?
+#            if (defined glob($gettext)) {
+                push @localizers, {
+                    class => 'Gettext',
+                    paths => [ $gettext ]
+                };
+#            }
+
+            my $namespace = File::Spec->catfile($path, '*.pm');
+            if (defined glob($namespace)) {
+                push @localizers, {
+                    class => 'Namespace',
+                    namespaces => [ join('::', $module, 'I18N' ) ]
+                }
+            }
+        }
+    }
+
     $class->SUPER::config(
         name => $class,
         default_view => 'TT',
@@ -109,6 +153,9 @@ sub setup_config {
                     INCLUDE_PATH => $class->path_to('root', 'forms')->stringify,
                 }
             }
+        },
+        'Model::Data::Localize' => {
+            localizers => \@localizers
         },
         'Plugin::Authentication' => {
             use_session => 1,
@@ -180,15 +227,17 @@ sub registry { ## no critic
 
 sub setup_log {
     my $self = shift;
-    if (! HAVE_LOG4PERL) {
+    my $file = $self->path_to('Log4perl.conf');
+    if (! HAVE_LOG4PERL || ! -f $file) {
         $self->SUPER::setup_log(@_);
+    } else {
+        $self->log(
+            Catalyst::Log::Log4perl->new(
+                $file->stringify,
+                (autoflush => 1, watch_delay => 5, override_cspecs => 1)
+            )
+        );
     }
-    $self->log(
-        Catalyst::Log::Log4perl->new(
-            $self->path_to('Log4perl.conf')->stringify,
-            (autoflush => 1, watch_delay => 5, override_cspecs => 1)
-        )
-    );
 }
 
 sub setup_finalize {
