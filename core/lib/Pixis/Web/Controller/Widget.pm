@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller' }
 sub load_widget :Chained('/') :PathPart('widget') :CaptureArgs(1) {
     my ($self, $c, $type) = @_;
     $c->stash->{widget} = ucfirst $type;
+    $c->stash->{page} ||= $c->config->{page};
     return ();
 }
 
@@ -18,6 +19,7 @@ sub run :Chained('load_widget') :PathPart('') :Args {
         user => $c->user,
         request => $c->req,
         referer => $c->req->param('referer'),
+        page => $c->stash->{page},
     });
     $c->res->body(
         $c->view('TT')->render($c, $args->{template}, { args => $args }) );

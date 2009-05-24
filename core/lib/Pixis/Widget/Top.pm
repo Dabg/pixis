@@ -1,8 +1,20 @@
-package Pixis::Widget::Header;
+package Pixis::Widget::Top;
 use Moose;
 use namespace::clean -except => qw(meta);
 
 with 'Pixis::Widget';
+
+=head1 NAME
+
+Pixis::Widget::Top
+
+=head1 DESCRIPTION
+
+Widget to deliver the top of the page (usually a topnav)
+
+=head1 METHODS
+
+=cut
 
 has items => (
     metaclass => 'Collection::Array',
