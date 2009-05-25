@@ -8,7 +8,11 @@ use namespace::clean -except => qw(meta);
 use Catalyst;
 
 our $VERSION = '0.01';
-
+# mk_classdata is overkill for these.
+my %REGISTERED_PLUGINS = ();
+my %TT_ARGS            = ();
+my @PLUGINS            = ();
+my %VIRTUAL_COMPONENTS = ();
 
 # if you have Log4perl installed, you get colored messages. Yey!
 use constant HAVE_LOG4PERL => eval {
@@ -33,7 +37,7 @@ BEGIN {
 
 sub setup {
     my $class = shift;
-    return $class->SUPER::setup(qw/
+    $class->SUPER::setup(qw/
         Unicode
         Authentication
         Authorization::Roles
@@ -44,6 +48,14 @@ sub setup {
         Session::State::Cookie
         Static::Simple
     /);
+
+    # Apply hooks AFTER!
+    $class->meta->add_before_method_modifier(finalize => sub {
+        my $c = shift;
+        $c->handle_exception if @{ $c->error };
+    });
+
+    return ();
 }
 
 
@@ -53,6 +65,16 @@ sub setup_components {
         return $class->SUPER::setup_components(@_);
     }
 
+    $class->setup_virtual_components();
+    $class->setup_concrete_components();
+
+    return ();
+}
+
+sub setup_virtual_components {
+    my $class   = shift;
+
+    %VIRTUAL_COMPONENTS = ();
     my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
     my $config  = $class->config->{ setup_components };
     my $extra   = delete $config->{ search_extra } || [];
@@ -75,9 +97,9 @@ sub setup_components {
         if (! $@) {
             next;
         }
-print "Declaring $comp as a subclass of $base\n";
         my $meta =
             Moose::Meta::Class->create($comp, superclasses => [ $base ]);
+        $VIRTUAL_COMPONENTS{$comp}++;
         my $module = $class->setup_component($comp);
         my %modules = (
             $comp => $module,
@@ -92,6 +114,58 @@ print "Declaring $comp as a subclass of $base\n";
             $class->components->{ $key } = $modules{ $key };
         }
     }
+    return ();
+}
+
+sub setup_concrete_components {
+    my $class = shift;
+
+    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
+    my $config  = $class->config->{ setup_components };
+    my $extra   = delete $config->{ search_extra } || [];
+
+    push @paths, @$extra;
+
+    my $locator = Module::Pluggable::Object->new(
+        search_path => [ map { s/^(?=::)/$class/; $_; } @paths ],
+        %$config
+    );
+
+    my @comps =
+        sort { length $a <=> length $b } 
+        grep { ! $VIRTUAL_COMPONENTS{$_} }
+        $locator->plugins;
+    my %comps = map { $_ => 1 } @comps;
+
+    my $deprecated_component_names = grep { /::[CMV]::/ } @comps;
+    $class->log->warn(qq{Your application is using the deprecated ::[MVC]:: type naming scheme.\n}.
+        qq{Please switch your class names to ::Model::, ::View:: and ::Controller: as appropriate.\n}
+    ) if $deprecated_component_names;
+
+    for my $component ( @comps ) {
+
+        # We pass ignore_loaded here so that overlay files for (e.g.)
+        # Model::DBI::Schema sub-classes are loaded - if it's in @comps
+        # we know M::P::O found a file on disk so this is safe
+
+        Catalyst::Utils::ensure_class_loaded( $component, { ignore_loaded => 1 } );
+        #Class::MOP::load_class($component);
+
+        my $module  = $class->setup_component( $component );
+        my %modules = (
+            $component => $module,
+            map {
+                $_ => $class->setup_component( $_ )
+            } grep {
+              not exists $comps{$_}
+            } Devel::InnerPackage::list_packages( $component )
+        );
+
+        for my $key ( keys %modules ) {
+            $class->components->{ $key } = $modules{ $key };
+        }
+    }
+
     return ();
 }
 
@@ -214,11 +288,6 @@ if ($caller eq 'main' || $ENV{HARNESS_ACTIVE}) {
     __PACKAGE__->setup() ;
 }
     
-# mk_classdata is overkill for these.
-my %REGISTERED_PLUGINS = ();
-my %TT_ARGS            = ();
-my @PLUGINS            = ();
-
 sub registry { ## no critic
     shift;
     # XXX the initialization code is currently at Model::API. Should this
@@ -272,7 +341,7 @@ sub setup_pixis_plugins {
         require => 0,
         search_path => [
             'Pixis::Plugin',
-            'Pixis::Web::Plugin'
+            'Pixis::Web::Plugin',
         ],
         %$config,
     );
@@ -386,10 +455,6 @@ sub add_formfu_path {
     return ();
 }
 
-before finalize => sub {
-    my $c = shift;
-    $c->handle_exception if @{ $c->error };
-};
 
 sub handle_exception {
     my( $c )  = @_;
