@@ -142,7 +142,7 @@ sub register {
 #        $c->add_navigation($_) for @{$self->navigation};
 #    }
     foreach my $api ($self->extra_api) {
-        $c->log->debug("Registering API $api") if $c->log->is_debug;
+        $c->log->debug("Registering API $api") if $c->debug;
         my $pkg = blessed($api) or confess "API is not blessed?!";
         $pkg =~ s/^Pixis::API:://;
         $registry->set(api => split(/::/, $pkg), $api);

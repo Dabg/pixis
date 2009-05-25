@@ -1,5 +1,6 @@
 package Test::Pixis::Setup::Mechanize;
 use Moose::Role;
+use utf8;
 use parent 'Test::FITesque::Fixture';
 use Test::More;
 use Test::WWW::Mechanize::Catalyst;
@@ -58,7 +59,7 @@ sub logged_in_mech {
     my ($self, $user) = @_;
     my $mech = $self->reset_mech;
     $mech->get('/');
-    $mech->follow_link(text => 'ログイン');
+    $mech->follow_link(url_regex => qr{login});
     $mech->submit_form(
         form_number => 1,
         fields => {

@@ -18,7 +18,7 @@ sub assert_logged_in :Private {
         return ();
     }
     $c->log->debug("user " . $c->user->email . " asserted")
-        if $c->log->is_debug;
+        if $c->debug;
     return 1;
 }
 
@@ -71,7 +71,7 @@ sub authenticate :Private {
         email => $email,
         auth_type => 'password'
     });
-    $c->log->debug("Loaded auth information for $email (" . ($auth || ('null')) . ")") if $c->log->is_debug;
+    $c->log->debug("Loaded auth information for $email (" . ($auth || ('null')) . ")") if $c->debug;
 
     # if no auth, then you're no good
     if ($auth) {
@@ -83,7 +83,7 @@ sub authenticate :Private {
             $member->password($auth->auth_data);
             my $dummy = Pixis::AuthWorkAround->new($member);
 
-            $c->log->debug("Authenticating against user $member") if $c->log->is_debug;
+            $c->log->debug("Authenticating against user $member") if $c->debug;
             return $c->authenticate({ password => $password, dbix_class => { resultset => $dummy } }, $realm);
         }
     }
