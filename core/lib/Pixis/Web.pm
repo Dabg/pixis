@@ -127,7 +127,11 @@ sub setup_concrete_components {
     push @paths, @$extra;
 
     my $locator = Module::Pluggable::Object->new(
-        search_path => [ map { s/^(?=::)/$class/; $_; } @paths ],
+        search_path => [ map { 
+            my $x = $_;
+            $x =~ s/^(?=::)/$class/;
+            $x;
+        } @paths ],
         %$config
     );
 
