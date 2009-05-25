@@ -54,9 +54,13 @@ if ( $debug ) {
 
 # This is require instead of use so that the above environment
 # variables can be set at runtime.
-require Pixis::Web;
+my $app = $ENV{ PIXIS_APP } || 'Pixis::Web';
+eval "require $app";
+if ($@) {
+    die "Could not load $app: $@";
+}
 
-Pixis::Web->run( $port, $host, {
+$app->run( $port, $host, {
     argv              => \@argv,
     'fork'            => $fork,
     keepalive         => $keepalive,
