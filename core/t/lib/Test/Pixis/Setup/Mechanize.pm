@@ -95,6 +95,7 @@ sub spider {
 
 sub _build_apache_test_server {
     my ($self) = @_;
+    return ''; #for now
     if (eval { require Apache::TestMM }) {
         my $baseurl = Apache::TestRequest::resolve_url('/');
         if (LWP::Simple::get($baseurl)) {
