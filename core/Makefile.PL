@@ -72,6 +72,11 @@ catalyst;
 
 tests("t/*.t t/*/*.t");
 install_script glob('script/*.pl');
+
+if(! -d "t/logs") {
+    mkdir("t/logs");
+}
+
 #auto_include;
 auto_install;
 WriteAll;
