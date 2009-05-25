@@ -208,7 +208,8 @@ warn "Looking for $module";
     );
 }
 
-if (caller() eq 'main') {
+my $caller = caller();
+if ($caller eq 'main' || $caller =~ /^Test::Pixis/) {
     __PACKAGE__->setup_config();
     __PACKAGE__->setup() ;
 }
