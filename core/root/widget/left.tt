@@ -1,6 +1,9 @@
 <!-- START left -->
 <div id="side">
-<div id="logo"><a href="/jpa"><img src="[% c.uri_for('/static', 'img', 'logo.jpg') %]" alt="Japan Perl Association" /></a></div>
+[% IF (args.logo.defined && args.logo.keys.size > 0) %]
+<div id="[% args.logo.id %]">
+<a href="[% c.uri_for(args.logo.uri) %]"><img src="[% c.uri_for(args.logo.image_uri) %]" alt="[% args.logo.alt %]" /></a></div>
+[% END %]
 <div id="lnav_container">
 <ul id="lnav">
 [% FOREACH nav IN args.items %]

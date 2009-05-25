@@ -6,6 +6,17 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::Widget';
 
+has logo => (
+    metaclass => 'Collection::Hash',
+    is => 'ro',
+    isa => 'HashRef',
+    default => sub { +{} },
+    provides => {
+        set => 'logo_set',
+        get => 'logo_get',
+    }
+);
+
 subtype 'Pixis::Widget::LeftNavigation::Item'
     => as 'HashRef'
     => where {
@@ -47,6 +58,9 @@ around run => sub {
     if ($self->submenu_count > 0) {
         $args->{submenu} = [ $self->all_submenus ];
     }
+
+    $args->{logo} = $self->logo;
+
     return $args;
 };
 
