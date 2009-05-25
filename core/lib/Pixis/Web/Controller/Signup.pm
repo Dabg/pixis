@@ -5,6 +5,10 @@ use MooseX::AttributeHelpers;
 use utf8;
 use namespace::clean -except => qw(meta);
 
+# README
+#
+# steps: the sequence of actions to handle signup state
+
 BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession) }
 
 has steps => (
@@ -20,12 +24,17 @@ has steps => (
 
 
 sub _build_steps {
-    return ['experience', 'commit', 'send_activate', 'activate' ]
+    return ['start', 'experience', 'commit', 'send_activate', 'activate' ]
+}
+
+sub index :Index :Args(0) :Path {
+    my ($self, $c) = @_;
+    $self->next_step($c);
 }
 
 # Ask things like name, and email address
-sub start :Index :Path :Args(0) :FormConfig {
-    my ($self, $c) = @_;
+sub start :Local :Args(1) :FormConfig {
+    my ($self, $c, $subsession) = @_;
 
     my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
@@ -42,43 +51,45 @@ sub start :Index :Path :Args(0) :FormConfig {
 
         my $params = $form->params;
         delete $params->{password_check}; # no need to include it here
-        delete $params->{current_step};
-        my $subsession = $self->new_subsession($c, $params);
-        return $c->forward('next_step', [$subsession]);
+        $params->{current_step} = 'start';
+        $self->set_subsession($c, $subsession, $params);
+        return $self->next_step($c, $subsession);
     }
     return ();
 }
 
 sub next_step :Private {
     my ($self, $c, $subsession) = @_;
-    my $p = $self->get_subsession($c, $subsession);
+
+    my $p;
+    if ($subsession) {
+        $p = $self->get_subsession($c, $subsession);
+    } else {
+        $p = {};
+        $subsession = $self->new_subsession($c);
+    }
 
     my $step;
-    if (! exists $p->{current_step} ) {
-        $step = $self->steps->[0];
-    } else {
-        # find the step with the same name
-        my $cur   = $p->{current_step};
-        my $steps = $self->steps;
-        foreach my $i (0..$#{$steps}) {
-            if ($steps->[$i] eq $cur) {
-                if ($i == $#{$steps}) {
-                    $step = 'done';
-                } else {
-                    $step = $steps->[$i + 1];
-                }
+
+    my $path = $c->action->name;
+    # find the step with the same name
+    my $steps = $self->steps;
+    foreach my $i (0..$#{$steps}) {
+        if ($steps->[$i] eq $path) {
+            if ($i == $#{$steps}) {
+                $step = 'done';
+            } else {
+               $step = $steps->[$i + 1];
             }
         }
     }
 
     if (! $step) {
-        $self->delete_subsession($c, $subsession);
-        $c->detach('/default');
+        $step = $steps->[0];
     }
-    $p->{current_step} = $step;
     $self->set_subsession($c, $subsession, $p);
 
-    my $uri = $c->uri_for($step, $subsession );
+    my $uri = $c->uri_for($step, $subsession);
     $c->log->debug("Next step is forwading to $uri") if $c->debug;
     $c->res->redirect( $uri );
     $c->finalize();
