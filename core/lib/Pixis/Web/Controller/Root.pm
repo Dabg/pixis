@@ -12,9 +12,52 @@ has site_index => (
     predicate => 'has_site_index',
 );
 
+has page => (
+    # page variable will contain everything pertinent to the page.
+    is => 'ro',
+    isa => 'HashRef',
+    required => 1,
+);
+
+sub BUILDARGS {
+    my $class = shift;
+    my $args = $class->SUPER::BUILDARGS(@_);
+
+    my $given = $args->{page} || {};
+    my $h = Catalyst::Utils::merge_hashes( {
+        title => "Pixis - Default Installation",
+        base_scripts => [
+            '/static/js/jquery-1.3.1.js',
+            '/static/js/jquery-ui-1.6rc6.min.js',
+            '/static/js/jquery.dump.js',
+        ],
+        heading => [
+            tag => "h1",
+            content => "Pixis - Default Installation",
+            enabled => 1,
+            id => "pagetitle",
+        ],
+        base_styles => [
+            '/static/css/import.css',
+            '/static/js/theme/ui.all.css',
+        ],
+#    scripts:
+#        -
+#    styles:
+#        -
+#    metas:
+#        -
+#    feeds:
+#        -
+    }, $given);
+
+    $args->{page} = $h;
+    return $args;
+}
+
 sub begin :Private {
     my ($self, $c) = @_;
-    $c->stash->{page} = $c->config->{page};
+    $c->stash->{page} = $self->page;
     return ();
 }
 
