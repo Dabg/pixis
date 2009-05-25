@@ -13,8 +13,9 @@ has site_index => (
 );
 
 sub begin :Private {
-    my ($self, $c) = (@_);
+    my ($self, $c) = @_;
     $c->stash->{page} = $c->config->{page};
+    return ();
 }
 
 sub index :Path :Args(0) {

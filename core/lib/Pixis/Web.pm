@@ -33,7 +33,7 @@ BEGIN {
 
 sub setup {
     my $class = shift;
-    $class->SUPER::setup(qw/
+    return $class->SUPER::setup(qw/
         Unicode
         Authentication
         Authorization::Roles
@@ -101,11 +101,11 @@ sub setup_config {
     my @localizers;
     my @modules = ($class, 'Pixis');
     foreach my $module (@modules) {
-warn "Looking for $module";
         my $modpath = $module;
         $modpath =~ s/::/\//g;
         $modpath .= '.pm';
         my $path = $INC{ $modpath };
+        next unless $path;
 
         $path =~ s/\.pm$//;
 
@@ -137,7 +137,7 @@ warn "Looking for $module";
         }
     }
 
-    $class->SUPER::config(
+    return $class->SUPER::config(
         name => $class,
         default_view => 'TT',
         static => {
@@ -239,6 +239,7 @@ sub setup_log {
             )
         );
     }
+    return();
 }
 
 sub setup_finalize {
