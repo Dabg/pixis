@@ -11,7 +11,7 @@ BEGIN {
     ;
 }
 
-sub create : Test : Plan(7) {
+sub create : Test : Plan(6) {
     my ($self, $args) = @_;
     my $mech = $self->mech;
     $mech->get_ok('/member/settings');
@@ -24,13 +24,11 @@ sub create : Test : Plan(7) {
         }
     );
     like $mech->uri->path, qr{/profile/\d+};
-#    $mech->title_is("$args->{name} - Pixis");
-    $mech->title_is("メンバーホーム");
     $mech->content_like(qr{$args->{bio}});
     ok $mech->find_link(text_regex => qr{$args->{name}});
 }
 
-sub edit : Test : Plan(8) {
+sub edit : Test : Plan(7) {
     my ($self, $prev, $next) = @_;
     my $mech = $self->mech;
     $mech->get_ok('/member/settings');
@@ -49,8 +47,6 @@ sub edit : Test : Plan(8) {
         }
     );
     like $mech->uri->path, qr{/profile/\d+};
-#    $mech->title_is("$next->{name} - Pixis");
-    $mech->title_is("メンバーホーム");
     $mech->content_like(qr{$next->{bio}});
     ok $mech->find_link(text_regex => qr{$next->{name}});
 }
