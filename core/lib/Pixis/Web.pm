@@ -350,7 +350,8 @@ sub setup_pixis_plugins {
         %$config,
     );
 
-    my @plugins = $mpo->plugins;
+    my @plugins = grep { $_ ne 'Pixis::Plugin::Core' } $mpo->plugins;
+    unshift @plugins, 'Pixis::Plugin::Core';
 
     foreach my $plugin (@plugins) {
         my $pkg = $plugin;
