@@ -24,8 +24,8 @@ sub create : Test : Plan(6) {
         }
     );
     like $mech->uri->path, qr{/profile/\d+};
-    $mech->title_is("$args->{name} - Pixis");
     $mech->content_like(qr{$args->{bio}});
+    ok $mech->find_link(text_regex => qr{$args->{name}});
 }
 
 sub edit : Test : Plan(7) {
@@ -47,8 +47,8 @@ sub edit : Test : Plan(7) {
         }
     );
     like $mech->uri->path, qr{/profile/\d+};
-    $mech->title_is("$next->{name} - Pixis");
     $mech->content_like(qr{$next->{bio}});
+    ok $mech->find_link(text_regex => qr{$next->{name}});
 }
 
 1;

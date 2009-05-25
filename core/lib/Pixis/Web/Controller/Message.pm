@@ -57,6 +57,7 @@ sub create :Local :Path('create') :Args(0) :FormConfig('message/edit') {
             $to = $c->registry(api => 'Member')
                 ->find($form->param_value('to_member_id'));
         }
+        warn $to->nickname;
         my $message = $c->registry(api => 'Message')->send(
             {
                 from => $c->user,

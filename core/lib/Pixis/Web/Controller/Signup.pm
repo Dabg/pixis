@@ -79,7 +79,7 @@ sub next_step :Private {
     $self->set_subsession($c, $subsession, $p);
 
     my $uri = $c->uri_for($step, $subsession );
-    $c->log->debug("Next step is forwading to $uri") if $c->log->is_debug;
+    $c->log->debug("Next step is forwading to $uri") if $c->debug;
     $c->res->redirect( $uri );
     $c->finalize();
     return ();

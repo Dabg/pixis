@@ -356,7 +356,7 @@ sub setup_pixis_plugins {
         my $pkg = $plugin;
         my $args = $self->config->{plugins}->{config}->{$plugin} || {} ;
         $self->log->debug("[Pixis Plugin]: Loading plugin $pkg")
-            if $self->log->is_debug;
+            if $self->debug;
         eval {
             Class::MOP::load_class($pkg);
         };
@@ -367,7 +367,7 @@ sub setup_pixis_plugins {
         $plugin = $pkg->new(%$args);
         if (! $plugin->registered && !($REGISTERED_PLUGINS{ $pkg }++) ){
             $self->log->debug("[Pixis Plugin]: Registering $pkg")
-                if $self->log->is_debug;
+                if $self->debug;
             eval {
                 $plugin->register($self);
             };
