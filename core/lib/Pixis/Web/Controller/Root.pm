@@ -57,7 +57,7 @@ sub BUILDARGS {
 
 sub begin :Private {
     my ($self, $c) = @_;
-    $c->stash->{page} = $self->page;
+    $c->stash->{page} = { %{$self->page} }; # get a copy
     return ();
 }
 
