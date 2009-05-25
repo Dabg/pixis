@@ -1,5 +1,6 @@
 package Pixis::Web::Controller::Root;
 use Moose;
+use Storable ();
 use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller' };
@@ -57,7 +58,7 @@ sub BUILDARGS {
 
 sub begin :Private {
     my ($self, $c) = @_;
-    $c->stash->{page} = { %{$self->page} }; # get a copy
+    $c->stash->{page} = Storable::dclone($self->page); # get a copy
     return ();
 }
 
