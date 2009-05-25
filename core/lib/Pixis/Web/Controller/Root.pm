@@ -31,12 +31,12 @@ sub BUILDARGS {
             '/static/js/jquery-ui-1.6rc6.min.js',
             '/static/js/jquery.dump.js',
         ],
-        heading => [
+        heading => {
             tag => "h1",
             content => "Pixis - Default Installation",
             enabled => 1,
             id => "pagetitle",
-        ],
+        },
         base_styles => [
             '/static/css/import.css',
             '/static/js/theme/ui.all.css',
