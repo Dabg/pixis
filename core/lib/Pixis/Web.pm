@@ -209,7 +209,7 @@ sub setup_config {
 }
 
 my $caller = caller();
-if ($caller eq 'main' || $caller =~ /^Test::Pixis/) {
+if ($caller eq 'main' || $ENV{HARNESS_ACTIVE}) {
     __PACKAGE__->setup_config();
     __PACKAGE__->setup() ;
 }
