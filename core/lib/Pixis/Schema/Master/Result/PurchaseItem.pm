@@ -1,9 +1,10 @@
 
 package Pixis::Schema::Master::Result::PurchaseItem;
-use strict;
-use warnings;
-use base qw(Pixis::Schema::Base::MySQL);
+use Moose;
+use namespace::clean -except => qw(meta);
 use DateTime;
+
+extends 'Pixis::Schema::Master::Result';
 
 __PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "Core");
 __PACKAGE__->table("pixis_purchase_item");

@@ -1,8 +1,8 @@
 
 package Pixis::Schema::Master::Result::MemberNotice;
-use strict;
-use warnings;
-use base qw(Pixis::Schema::Base::MySQL);
+use Moose;
+
+extends 'Pixis::Schema::Master::Result';
 
 __PACKAGE__->load_components("PK::Auto", "Core");
 __PACKAGE__->table("pixis_member_notice");

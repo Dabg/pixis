@@ -1,8 +1,9 @@
 
 package Pixis::Schema::Master::Result::MemberActivity;
-use strict;
-use warnings;
-use base qw(Pixis::Schema::Base::MySQL);
+use Moose;
+use namespace::clean -except => qw(meta);
+
+extends 'Pixis::Schema::Master::Result';
 
 __PACKAGE__->load_components("PK::Auto", "Core");
 __PACKAGE__->table("pixis_member_actiity");

@@ -1,13 +1,16 @@
 package Pixis::Schema::Master;
 use Moose;
+use MooseX::NonMoose;
 use namespace::clean -except => qw(meta);
+use Pixis::Schema::Master::Result;
+use Pixis::Schema::Master::ResultSet;
 
 extends 'DBIx::Class::Schema';
 
 __PACKAGE__->load_namespaces(
     result_namespace => [ qw(+Pixis::Schema::Master::Result) ],
     resultset_namespace => [ qw(+Pixis::Schema::Master::ResultSet) ],
-    default_resultset_class => 'ResultSet'
+    default_resultset_class => 'ResultSet',
 );
 
 sub connection {

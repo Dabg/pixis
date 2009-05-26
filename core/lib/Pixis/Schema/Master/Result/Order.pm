@@ -1,8 +1,9 @@
 
 package Pixis::Schema::Master::Result::Order;
-use strict;
-use warnings;
-use base qw(Pixis::Schema::Base::MySQL);
+use Moose;
+use namespace::clean -except => qw(meta);
+
+extends 'Pixis::Schema::Master::Result';
 
 use constant ST_DONE           => 0;
 use constant ST_INIT           => 1;
