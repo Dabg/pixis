@@ -1,7 +1,7 @@
 [% WRAPPER wrapper.tt, 
-    page.title = event.title,
+    page.title = 'イベント情報 - ' _ event.title,
     page.heading.tag = 'p',
-    page.heading.content = 'イベント情報',
+    page.heading.content = 'イベント情報 - ' _ event.title,
 %]
 [% 
     SET can_edit = c.check_user_roles('admin');

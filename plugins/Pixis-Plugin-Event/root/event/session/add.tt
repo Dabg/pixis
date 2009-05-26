@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = loc("Add new session") %]
+[% WRAPPER wrapper.tt, 
+    page.title = loc("Add new session"),
+    page.heading.content = loc("Add new session") %]
 
 <div id="content">
 <div class="section clearfix">
