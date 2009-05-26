@@ -228,7 +228,10 @@ sub setup_config {
                 render_method => 'tt',
                 tt_args => {
                     COMPILE_DIR  => $class->path_to('tt2'),
-                    INCLUDE_PATH => $class->path_to('root', 'forms')->stringify,
+                    INCLUDE_PATH => [
+                        $class->path_to('root', 'forms')->stringify,
+                        __PACKAGE__->path_to('root', 'forms')->stringify,
+                    ]
                 }
             }
         },
@@ -440,6 +443,7 @@ sub add_translation_path {
 sub add_formfu_path {
     my ($self, @paths) = @_;
 
+    @paths = map { File::Spec->canonpath($_) } @paths;
     foreach my $controller (map { $self->controller($_) } $self->controllers) {
         my $code = $controller->can('_html_formfu_config');
         next unless $code;
@@ -455,6 +459,8 @@ sub add_formfu_path {
             push @$orig, $path;
         }
     }
+warn "@paths";
+
     return ();
 }
 
