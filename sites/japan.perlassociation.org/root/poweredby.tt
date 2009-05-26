@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = 'Powered By' %]
+[% WRAPPER wrapper.tt, 
+    page.title = 'Powered By',
+    page.heading.content = 'Powered By' %]
 
 <div id="content">
 <div class="section">

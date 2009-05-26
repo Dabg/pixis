@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = '賛同企業' %]
+[% WRAPPER wrapper.tt, 
+    page.title = '賛同企業',
+    page.heading.content = '賛同企業' %]
 
 <div id="content">
 <div id="platinum" class="section">
