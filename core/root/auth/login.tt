@@ -1,4 +1,7 @@
-[% WRAPPER wrapper.tt, title = loc("Login") %]
+[% WRAPPER wrapper.tt, 
+    page.title = loc("Login"),
+    page.heading.content = loc("Login"),
+%]
 
 <div id="content">
 <div id="login" class="form_full section">

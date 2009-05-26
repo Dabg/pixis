@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = loc("Pixis Member Signup") _ "（デベロッパ情報）" %]
+[% WRAPPER wrapper.tt, 
+    page.title = loc("Pixis Member Signup") _ "（デベロッパ情報）",
+    page.heading.content = loc("Pixis Member Signup") _ "（デベロッパ情報）" %]
 
 <div id="content">
 <div class="form_full section">

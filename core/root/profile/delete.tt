@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt title = 'プロフィールの削除', no_pagetitle = 1 %]
+[% WRAPPER wrapper.tt 
+    page.title = 'プロフィールの削除', 
+    page.content.enabled = 0 %]
 [% INCLUDE 'profile/menu.tt' %]
 <div id="content">
 [% form %]

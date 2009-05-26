@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = "登録情報確認" %]
+[% WRAPPER wrapper.tt, 
+    page.title = "登録情報確認",
+    page.heading.content = "登録情報確認" %]
 
 [% SET fields = [
     { field => "lastname", label => "Last Name" },

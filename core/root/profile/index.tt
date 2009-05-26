@@ -1,4 +1,7 @@
-[% WRAPPER wrapper.tt title = 'プロフィール検索' %]
+[% WRAPPER wrapper.tt 
+    page.title = 'プロフィール検索',
+    page.heading.content = 'プロフィール検索'
+%]
 <div id="content">
 [% form %]
 <ul class="clearfix">

@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt title = 'メッセージの作成' %]
+[% WRAPPER wrapper.tt
+    page.title = 'メッセージの作成',
+    page.heading.content = 'メッセージの作成' %]
 <div id="content">
 [% form %]
 </div>

@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt title = 'ユーザー設定' %]
+[% WRAPPER wrapper.tt 
+    page.title = 'ユーザー設定',
+    page.heading.content = 'ユーザー設定' %]
 
 <div id="content">
 <div class="form_full section">

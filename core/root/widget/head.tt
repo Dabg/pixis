@@ -1,4 +1,3 @@
-[%- page  = args.page -%]
 <title>[% page.title | html %]</title>
 [% FOREACH meta IN page.metas -%]<meta[% FOREACH pair IN meta.pairs %] [% pair.key | html %]="[% pair.value | htm
 l %]"[% END %] />

@@ -11,7 +11,7 @@
 <div id="title">
 <[% page.heading.tag %]
     [%- IF page.heading.id %] id="[% page.heading.id %]"[% END %]>
-[%- IF page.heading.content %][% page.heading.content %][% ELSE %][% title %][% END -%]
+[%- IF page.heading.content %][% page.heading.content %][% ELSE %][% page.title %][% END -%]
 </[% page.heading.tag %]>
 </div><!-- title -->
 [%- END -%]

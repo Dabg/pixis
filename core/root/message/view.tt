@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt title = 'メッセージ' %]
+[% WRAPPER wrapper.tt 
+    page.title = 'メッセージ',
+    page.heading.content = 'メッセージ' %]
 <div id="content">
 [% SET api = c.registry('api', 'Message') %]
 <p>[% api.is_in_message(message, c.user) ? 'From:' : 'To:' %] [% api.opponent(message, c.user).nickname %]</p>
