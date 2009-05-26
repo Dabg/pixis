@@ -1,4 +1,6 @@
-[% WRAPPER wrapper.tt, title = '理事会' %]
+[% WRAPPER wrapper.tt, 
+    page.title = '理事会',
+    page.heading.content = '理事会' %]
 
 <div id="board_content">
 

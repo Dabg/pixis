@@ -1,9 +1,6 @@
 [% WRAPPER wrapper.tt, 
-    pagetitle = {
-        tag     => 'h1',
-        id      => 'h1_jpa',
-        content => '<span>一般社団法人</span><br />Japan Perl Association',
-    },
+    page.heading.id => 'h1_jpa',
+    page.heading.content =>'<span>一般社団法人</span><br />Japan Perl Association',
     feeds   => [
        { type => 'atom', uri => 'http://japan.perlassociation.org/news/atom.xml' },
     ]
