@@ -1,0 +1,14 @@
+[% WRAPPER wrapper.tt, title = "Pixisエンジン登録完了", pagetitle = {
+    content => 'Pixisエンジン登録が完了しました',
+} %]
+
+<div id="content">
+<div class="section">
+<p>Pixisエンジンに登録が完了しましたので、今後本サイト上で提供するサービス等に、ご登録いただいたIDとパスワードで参加することができます。</p>
+</div><!-- section -->
+<div class="section">
+<h2>引き続きJPAに会員登録するには</h2>
+<p>JPA会員登録は<a href="[% c.uri_for("/jpa/signup") %]">こちらから行ってください</a>。</p>
+</div><!-- section -->
+</div><!-- content -->
+[% END %]

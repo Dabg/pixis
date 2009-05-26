@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt, title = "登録アクティベーション" %]
+
+<div id="content">
+<div class="form_full section">
+<p>仮登録を終了しました。登録されたメールアドレスに登録手続きを続けるための
+情報を載せたメールをお送りしましたので、ご確認ください。</p>
+[% form %]
+</div><!-- section -->
+</div><!-- content -->
+[% END %]

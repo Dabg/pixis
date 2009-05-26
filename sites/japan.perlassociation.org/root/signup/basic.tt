@@ -1,0 +1,8 @@
+[% WRAPPER wrapper.tt, title = "JPA 会員登録" %]
+
+<div id="content">
+<div id="signup_basic" class="form_full section">
+[% form %]
+</div><!-- section -->
+</div><!-- content -->
+[% END # WRAPPER %]

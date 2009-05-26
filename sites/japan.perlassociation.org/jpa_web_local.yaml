@@ -1,0 +1,12 @@
+Controller::Root:
+    page:
+        title: Japan Perl Association
+Schema::Master:
+    table_prefix: jpa
+    connect_info:
+        - dbi:mysql:dbname=pixis 
+        - root
+        -
+        - RaiseError: 1
+          AutoCommit: 1
+

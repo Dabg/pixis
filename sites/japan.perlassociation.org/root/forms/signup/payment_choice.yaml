@@ -1,0 +1,18 @@
+---
+auto_fieldset: 1
+indicator: submit
+elements:
+    - type: Radiogroup
+      name: payment
+      options:
+        - [ 'paypal', 'Paypalで支払う' ]
+        - [ 'bank', '銀行振り込みで支払う' ]
+      constraints:
+        - Required
+        - type: Regex
+          regex: '^(?:paypal|bank)$'
+      label_loc: お支払い方法
+    - type: Submit
+      name: submit
+      value_loc: Submit
+
