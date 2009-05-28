@@ -47,17 +47,25 @@ sub create :Local :Path('create') :Args(0) :FormConfig('message/edit') {
     my ( $self, $c ) = @_;
 
     my $form = $c->stash->{form};
+for (@{$form->get_all_elements}) {
+    $c->log->debug(ref $_ );
+}
+    my $select = $form->get_elemente({type => 'Select', name => 'from_profile_id'});
+    $c->log->_dump($form->get_element({type => 'Text', name => 'subject'}));
+#    $c->registry(api => 'Profile')->load_to_profile_select(
+#        {
+#            member_id => $c->user->id,
+#            select => $select,
+#        }
+#    );
+    $form->process;
     if ($form->submitted_and_valid) {
         my $to;
         if ($form->param_value('to_profile_id')) {
             $to = $c->registry(api => 'Profile')
                 ->find($form->param_value('to_profile_id'))
-                ->member;
-        } elsif ($form->param_value('to_member_id')) {
-            $to = $c->registry(api => 'Member')
-                ->find($form->param_value('to_member_id'));
         }
-        warn $to->nickname;
+        $to or return $c->res->redirect( $c->uri_for('/member/home') );
         my $message = $c->registry(api => 'Message')->send(
             {
                 from => $c->user,

@@ -8,8 +8,12 @@ elements:
       name: id
     - type: Hidden
       name: to_profile_id
-    - type: Hidden
-      name: to_member_id
+    - type: Select
+      name: from_profile_id
+      label_loc: from_profile
+      options: 
+        - [ 1, hoge ]
+        - [ 2, fuga ]
     - type: Text
       name: subject
       label_loc: Subject

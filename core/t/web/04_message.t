@@ -16,7 +16,7 @@ for (qw(alice bob carol)) {
     };
 }
 
-my $mail = {
+$mail = {
     subject => 'GOOD PRICE VIAGRA',
     body => 'hehehe',
 };

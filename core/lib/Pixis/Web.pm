@@ -459,7 +459,6 @@ sub add_formfu_path {
             push @$orig, $path;
         }
     }
-warn "@paths";
 
     return ();
 }

@@ -69,6 +69,12 @@ sub update_from_form {
     return $profile;
 }
 
+sub load_to_profile_select {
+    my ($self, $args) = @_;
+    my @list = map {[ $_->id, $_->name ]} $self->load_from_member({member_id => $args->{member_id}});
+    $args->{select}->options(\@list);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
