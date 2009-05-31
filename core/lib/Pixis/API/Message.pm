@@ -103,6 +103,12 @@ sub is_in_message {
     return $message->to_profile->member->id == $member->id;
 }
 
+sub is_viewable {
+    my ($self, $message, $member ) = @_;
+    return $message->from_profile->member->id eq $member->id ||
+        $message->to_profile->member->id eq $member->id
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

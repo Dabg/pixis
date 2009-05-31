@@ -25,7 +25,8 @@ sub create : Test : Plan(6) {
     );
     like $mech->uri->path, qr{/profile/\d+};
     $mech->content_like(qr{$args->{bio}});
-    ok $mech->find_link(text_regex => qr{$args->{name}});
+
+    ok $mech->find_link(text_regex => qr|$args->{display_name}|);
 }
 
 sub edit : Test : Plan(7) {
@@ -34,7 +35,7 @@ sub edit : Test : Plan(7) {
     $mech->get_ok('/member/settings');
     $mech->follow_link_ok(
         {
-            text => $prev->{name},
+            text => $prev->{display_name},
             url_regex => qr{/profile/\d+/edit},
         }
     );
@@ -47,8 +48,8 @@ sub edit : Test : Plan(7) {
         }
     );
     like $mech->uri->path, qr{/profile/\d+};
-    $mech->content_like(qr{$next->{bio}});
-    ok $mech->find_link(text_regex => qr{$next->{name}});
+    $mech->content_like(qr|$next->{bio}|);
+    ok $mech->find_link(text_regex => qr|$next->{display_name}|);
 }
 
 1;

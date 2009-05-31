@@ -45,7 +45,12 @@ sub search
     return;
 }
 
-sub create :Local :Path('create') :Args(0) :FormMethod('load_form') {
+sub create
+    :Local
+    :Path('create')
+    :Args(0)
+    :FormMethod('load_form')
+{
     my ( $self, $c ) = @_;
 
     my $form = $c->stash->{form};
@@ -66,14 +71,10 @@ sub create :Local :Path('create') :Args(0) :FormMethod('load_form') {
 
 sub load_message :Chained :PathPart('message') :CaptureArgs(1) {
     my ( $self, $c, $id ) = @_;
-    my $message = $c->registry(api => 'Message')->find($id);
-    if (
-        (!$message) || (
-            $message->from_profile->member->id != $c->user->id &&
-            $message->to_profile->member->id != $c->user->id
-        )
-    ) {
-        return $c->res->redirect($c->uri_for('/message'));
+    my $api = $c->registry(api => 'Message');
+    my $message = $api->find($id);
+    if (! $message ) {
+        Pixis::Web::Exception::FileNotFound->throw();
     }
     $c->stash->{message} = $message;
     return;
@@ -81,6 +82,11 @@ sub load_message :Chained :PathPart('message') :CaptureArgs(1) {
 
 sub view :Chained('load_message') :PathPart('') :Args(0) {
     my ( $self, $c ) = @_;
+
+    if (! $c->registry(api => 'Message')->is_viewable($c->stash->{message}, $c->user)) {
+        Pixis::Web::Exception::FileNotFound->throw();
+    }
+
     return;
 }
 
@@ -91,10 +97,10 @@ sub load_form {
         hash => sub {
             my ( $visitor, $value ) = @_;
             if ($value->{name} && ($value->{name} eq 'from_profile_id')) {
-                $value->{options} = [ map {[$_->id, $_->name]} 
-                        $c->registry(api => 'Profile')->load_from_member( {
-                                member_id => $c->user->id,
-                            } ) 
+                $value->{options} = [ map {[$_->id, $_->profile_type_id]} 
+                    $c->registry(api => 'Profile')->load_from_member( {
+                        member_id => $c->user->id,
+                    } ) 
                 ];
             }
             return $value;

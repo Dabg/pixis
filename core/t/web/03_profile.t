@@ -10,12 +10,12 @@ my $user = {
 };
 
 my $profile = {
-    name => 'キャベツ星人',
+    display_name => 'キャベツ星人',
     bio => 'キャベツは特別！',
 };
 
 my $profile2 = {
-    name => 'foobar',
+    display_name => 'foobar',
     bio => 'hoge',
 };
 

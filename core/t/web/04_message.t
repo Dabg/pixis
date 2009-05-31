@@ -11,7 +11,7 @@ for (qw(alice bob carol)) {
         lastname => 'Smith',
     };
     $profiles->{$_} = {
-        name => $_,
+        display_name => $_,
         bio  => "Hi! I am $_",
     };
 }

@@ -3,6 +3,7 @@
     page.heading.enabled = 0 %]
 [% INCLUDE 'profile/menu.tt' %]
 <div id="content">
+<p>[% profile.display_name %]</p>
 <p>[% profile.bio | html | html_line_break %]</p>
 </div>
 [% END %]
