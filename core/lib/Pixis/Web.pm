@@ -36,8 +36,7 @@ BEGIN {
 }
 
 sub setup {
-    my $class = shift;
-    my %plugin_config = @_;
+    my ($class, %plugin_config) = @_;
 
     my @plugins = qw/
         Unicode
@@ -181,8 +180,7 @@ sub setup_concrete_components {
 }
 
 sub setup_config {
-    my $class = shift;
-    my %plugin_config = @_;
+    my ($class, %plugin_config) = @_;
 
     my @localizers;
     my @modules = ($class, 'Pixis');

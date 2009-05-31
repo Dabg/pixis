@@ -30,6 +30,7 @@ sub _build_steps {
 sub index :Index :Args(0) :Path {
     my ($self, $c) = @_;
     $self->next_step($c);
+    return ();
 }
 
 # Ask things like name, and email address
