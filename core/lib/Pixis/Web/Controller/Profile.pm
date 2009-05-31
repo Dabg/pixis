@@ -2,6 +2,8 @@ package Pixis::Web::Controller::Profile;
 use Moose;
 use namespace::clean -except => qw(meta);
 use utf8;
+use YAML::Syck ();
+use Data::Visitor::Callback;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
@@ -25,7 +27,7 @@ sub index : Local :Path('') :Args(0) :FormConfig {
     return ();
 }
 
-sub create : Local :Args(0) :FormConfig('profile/edit') {
+sub create : Local :Args(0) :FormMethod('load_form') {
     my ( $self, $c ) = @_;
 
     my $form = $c->stash->{form};
@@ -59,7 +61,7 @@ sub view : Chained('load_profile') : PathPart('') Args(0) {
     return ();
 }
 
-sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
+sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormMethod('load_form') {
     my ( $self, $c ) = @_;
 
     $c->stash->{profile}->member_id == $c->user->id
@@ -87,6 +89,24 @@ sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
         $c->res->redirect($c->uri_for('/member/settings'));
     }
     return ();
+}
+
+sub load_form {
+    my ( $self, $c ) = @_;
+    my $hash = YAML::Syck::LoadFile($c->path_to(qw(root forms profile edit.yml)));
+    my $v = Data::Visitor::Callback->new(
+        hash => sub {
+            my ($visitor, $value) = @_;
+            if ($value->{name} && ($value->{name} eq 'profile_type_id')) {
+                $value->{options} = [ map {[$_->id, $_->name]}
+                    $c->registry(api => 'ProfileType')->load_all
+                ];
+            }
+            return $value;
+        }
+    );
+    $v->visit($hash);
+    return $hash;
 }
 
 1;

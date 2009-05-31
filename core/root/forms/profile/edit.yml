@@ -6,6 +6,9 @@ indicator: submit
 elements:
     - type: Hidden
       name: id
+    - type: Select
+      name: profile_type_id
+      label_loc: Profile Type
     - type: Text
       name: name
       label_loc: Name

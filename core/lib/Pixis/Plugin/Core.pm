@@ -20,7 +20,7 @@ before register => sub {
     }
 
     my @list;
-    foreach my $name qw(Member MemberAuth MemberRelationship MemberNotice Order Payment::Paypal Payment::Transaction PurchaseItem Profile Message) {
+    foreach my $name qw(Member MemberAuth MemberRelationship MemberNotice Order Payment::Paypal Payment::Transaction PurchaseItem Profile ProfileType Message) {
         my $api_config = $config->{"API::$name"} || {};
         my $module     = "Pixis::API::$name";
         eval {
