@@ -12,15 +12,15 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 40,
     },
-    from_member_id => {
-        data_type => 'INTEGER',
+    from_profile_id => {
+        data_type => 'CHAR',
         is_nullable => 0,
-        size => 32,
+        size => 10,
     },
-    to_member_id => {
-        data_type => 'INTEGER',
+    to_profile_id => {
+        data_type => 'CHAR',
         is_nullable => 0,
-        size => 32,
+        size => 10,
     },
     subject => {
         data_type => 'VARCHAR',
@@ -38,5 +38,15 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->utf8_columns('subject','body');
+__PACKAGE__->belongs_to(
+    'from_profile',
+    'Pixis::Schema::Master::Result::Profile',
+    'from_profile_id'
+);
+__PACKAGE__->belongs_to(
+    'to_profile',
+    'Pixis::Schema::Master::Result::Profile',
+    'to_profile_id'
+);
 
 1;

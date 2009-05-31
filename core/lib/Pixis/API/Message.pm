@@ -14,8 +14,8 @@ around create => sub {
 
     my %args = (
         id => Digest::SHA1::sha1_hex($args, {}, time(), $$, rand()),
-        from_member_id => $args->{from}->id,
-        to_member_id   => $args->{to}->id,
+        from_profile_id => $args->{from}->id,
+        to_profile_id   => $args->{to}->id,
         subject        => $args->{subject},
         body           => $args->{body},
         created_on     => \'NOW()',
@@ -28,10 +28,11 @@ around create => sub {
 sub load_sent_from_member {
     my ( $self, $args ) = @_;
 
-    my $member_id = $args->{member_id};
+    my @profile_id = map {$_->id } Pixis::Registry->get(api => 'Profile')
+        ->load_from_member({member_id => $args->{member_id}});
 
     my @ids = map { $_->id } $self->resultset()->search(
-        { from_member_id => $member_id },
+        { from_profile_id => \@profile_id },
         {
             select => [ qw(id) ],
         }
@@ -42,10 +43,11 @@ sub load_sent_from_member {
 sub load_sent_to_member {
     my ( $self, $args ) = @_;
 
-    my $member_id = $args->{member_id};
+    my @profile_id = map {$_->id} Pixis::Registry->get(api => 'Profile')
+        ->load_from_member({member_id => $args->{member_id}});
 
     my @ids = map { $_->id } $self->resultset()->search(
-        { to_member_id => $member_id },
+        { to_profile_id => \@profile_id },
         {
             select => [ qw(id) ],
         }
@@ -84,22 +86,22 @@ sub load_from_query {
 sub opponent {
     my ( $self, $message, $member ) = @_;
     my $id;
-    $id = $message->from_member_id if $self->is_in_message($message, $member);
-    $id = $message->to_member_id if $self->is_out_message($message, $member);
+    $id = $message->from_profile_id if $self->is_in_message($message, $member);
+    $id = $message->to_profile_id if $self->is_out_message($message, $member);
     $id or return;
     return Pixis::Registry->get(schema => 'master')
-        ->resultset('Member')
+        ->resultset('Profile')
         ->find($id);
 }
 
 sub is_out_message {
     my ( $self, $message, $member ) = @_;
-    return $message->from_member_id == $member->id;
+    return $message->from_profile->member->id == $member->id;
 }
 
 sub is_in_message {
     my ( $self, $message, $member ) = @_;
-    return $message->to_member_id == $member->id;
+    return $message->to_profile->member->id == $member->id;
 }
 
 __PACKAGE__->meta->make_immutable;

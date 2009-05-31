@@ -2,6 +2,8 @@ package Pixis::Web::Controller::Message;
 use Moose;
 use namespace::clean -except => qw(meta);
 use utf8;
+use YAML::Syck ();
+use Data::Visitor::Callback;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' };
 
@@ -43,33 +45,16 @@ sub search
     return;
 }
 
-sub create :Local :Path('create') :Args(0) :FormConfig('message/edit') {
+sub create :Local :Path('create') :Args(0) :FormMethod('load_form') {
     my ( $self, $c ) = @_;
 
     my $form = $c->stash->{form};
-for (@{$form->get_all_elements}) {
-    $c->log->debug(ref $_ );
-}
-    my $select = $form->get_elemente({type => 'Select', name => 'from_profile_id'});
-    $c->log->_dump($form->get_element({type => 'Text', name => 'subject'}));
-#    $c->registry(api => 'Profile')->load_to_profile_select(
-#        {
-#            member_id => $c->user->id,
-#            select => $select,
-#        }
-#    );
-    $form->process;
     if ($form->submitted_and_valid) {
-        my $to;
-        if ($form->param_value('to_profile_id')) {
-            $to = $c->registry(api => 'Profile')
-                ->find($form->param_value('to_profile_id'))
-        }
-        $to or return $c->res->redirect( $c->uri_for('/member/home') );
+        my $papi = $c->registry(api => 'Profile');
         my $message = $c->registry(api => 'Message')->send(
             {
-                from => $c->user,
-                to => $to,
+                from => $papi->find($form->param_value('from_profile_id')),
+                to => $papi->find($form->param_value('to_profile_id')),
                 subject => $form->param_value('subject'),
                 body => $form->param_value('body'),
             }
@@ -84,8 +69,8 @@ sub load_message :Chained :PathPart('message') :CaptureArgs(1) {
     my $message = $c->registry(api => 'Message')->find($id);
     if (
         (!$message) || (
-            $message->from_member_id != $c->user->id &&
-            $message->to_member_id != $c->user->id
+            $message->from_profile->member->id != $c->user->id &&
+            $message->to_profile->member->id != $c->user->id
         )
     ) {
         return $c->res->redirect($c->uri_for('/message'));
@@ -97,6 +82,26 @@ sub load_message :Chained :PathPart('message') :CaptureArgs(1) {
 sub view :Chained('load_message') :PathPart('') :Args(0) {
     my ( $self, $c ) = @_;
     return;
+}
+
+sub load_form {
+    my ($self, $c) = @_;
+    my $hash = YAML::Syck::LoadFile($c->path_to(qw(root forms message edit.yml)));
+    my $v = Data::Visitor::Callback->new(
+        hash => sub {
+            my ( $visitor, $value ) = @_;
+            if ($value->{name} && ($value->{name} eq 'from_profile_id')) {
+                $value->{options} = [ map {[$_->id, $_->name]} 
+                        $c->registry(api => 'Profile')->load_from_member( {
+                                member_id => $c->user->id,
+                            } ) 
+                ];
+            }
+            return $value;
+        }
+    );
+    $v->visit($hash);
+    return $hash;
 }
 
 1;
