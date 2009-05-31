@@ -38,7 +38,6 @@ around create => sub {
         }
         $args->{id} = $key->value;
     }
-    $args->{created_on} ||= \'NOW()';
 
     $next->($self, $args);
 };

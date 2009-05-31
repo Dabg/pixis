@@ -6,7 +6,7 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "VirtualColumns", "InflateColumn::DateTime", "Core");
+__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "VirtualColumns", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_member");
 __PACKAGE__->add_columns(
     "id" => {
@@ -96,11 +96,13 @@ __PACKAGE__->add_columns(
     modified_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
-        default_value => \'NOW()',
+        set_on_create => 1,
+        set_on_update => 1,
     },
     created_on => {
         data_type => "DATETIME",
         is_nullable => 0,
+        set_on_create => 1,
     },
 );
 __PACKAGE__->add_virtual_columns('password');
@@ -134,8 +136,8 @@ sub populate_initial_data {
     my ($self, $schema) = @_;
     $schema->populate(
         Member => [
-            [ qw(email nickname firstname lastname is_active roles created_on) ],
-            [ qw(me@example.jp admin Admin Admin 1), join('|', qw(admin)), DateTime->now ],
+            [ qw(email nickname firstname lastname is_active roles) ],
+            [ qw(me@example.jp admin Admin Admin 1), join('|', qw(admin)) ],
         ],
     );
     return ();

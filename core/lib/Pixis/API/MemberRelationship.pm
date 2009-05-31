@@ -28,7 +28,6 @@ sub follow {
         from_id  => $from,
         to_id    => $to,
         approved => $there_to_here ? 1 : 0,
-        created_on => \'NOW()',
     );
     if ($there_to_here && ! $there_to_here->approved) {
         $there_to_here->approved(1);

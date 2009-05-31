@@ -5,7 +5,8 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "InflateColumn::DateTime", "Core");
+__PACKAGE__->load_components(
+    "PK::Auto", "UTF8Columns", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_profile_type");
 __PACKAGE__->add_columns(
     id => {
@@ -22,6 +23,7 @@ __PACKAGE__->add_columns(
     created_on => {
         data_type => "DATETIME",
         is_nullable => 0,
+        set_on_create => 1,
     },
 );
 __PACKAGE__->set_primary_key('id');
@@ -30,12 +32,11 @@ __PACKAGE__->has_many(profiles => 'Pixis::Schema::Master::Result::Profile' => 'p
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
-    my $now = DateTime->now;
     $schema->populate(
         ProfileType => [
-            [qw(name created_on)],
-            ['public',$now],
-            ['private', $now],
+            [qw(name)],
+            ['public'],
+            ['private'],
         ],
     );
     return;

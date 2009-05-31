@@ -6,7 +6,7 @@ use DateTime;
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "Core");
+__PACKAGE__->load_components("PK::Auto", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_payment_transaction");
 __PACKAGE__->add_columns(
     "id" => {
@@ -43,11 +43,13 @@ __PACKAGE__->add_columns(
     modified_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
-        default_value => \'NOW()',
+        set_on_create => 1,
+        set_on_update => 1,
     },
     created_on => {
         data_type => "DATETIME",
         is_nullable => 0,
+        set_on_create => 1,
     },
 );
 __PACKAGE__->set_primary_key("id");

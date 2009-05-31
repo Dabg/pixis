@@ -44,7 +44,6 @@ around create => sub {
     my $schema = Pixis::Registry->get(schema => 'master');
 
     my $guard = $schema->txn_scope_guard();
-    $args->{created_on} ||= \'NOW()';
     $args->{is_active} = 0;
 
     my $member = $next->($self, $args);

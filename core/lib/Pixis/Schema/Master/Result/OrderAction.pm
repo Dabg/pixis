@@ -5,7 +5,7 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "Core");
+__PACKAGE__->load_components("PK::Auto", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_order_action");
 __PACKAGE__->add_columns(
     "id" => {
@@ -26,7 +26,7 @@ __PACKAGE__->add_columns(
     created_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
-        default_value => \"NOW()"
+        set_on_create => 1,
     },
 );
 

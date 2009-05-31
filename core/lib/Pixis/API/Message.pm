@@ -18,7 +18,6 @@ around create => sub {
         to_profile_id   => $args->{to}->id,
         subject        => $args->{subject},
         body           => $args->{body},
-        created_on     => \'NOW()',
     );
 
     return $next->($self, \%args)

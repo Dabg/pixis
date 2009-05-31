@@ -38,6 +38,7 @@ requires 'DateTime::Format::Strptime';
 requires 'DBD::mysql';
 requires 'DBIx::Class' => '0.08100'; # TxnScopeGuard
 requires 'DBIx::Class::VirtualColumns';
+requires 'DBIx::Class::TimeStamp';
 requires 'Digest::SHA1';
 requires 'Exception::Class';
 requires 'MooseX::Getopt';

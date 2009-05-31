@@ -7,7 +7,7 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "InflateColumn::DateTime", "Core");
+__PACKAGE__->load_components("PK::Auto", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_member_auth");
 __PACKAGE__->add_columns(
     "id" => {
@@ -38,11 +38,13 @@ __PACKAGE__->add_columns(
     modified_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
-        default_value => \'NOW()',
+        set_on_create => 1,
+        set_on_update => 1,
     },
     created_on => {
         data_type => "DATETIME",
         is_nullable => 0,
+        set_on_create => 1,
     },
 
 );
@@ -63,8 +65,8 @@ sub populate_initial_data {
     my ($self, $schema) = @_;
     $schema->populate(
         MemberAuth => [
-            [ qw(member_id auth_type auth_data created_on) ],
-            [ qw(1 password), sha1_hex('admin'), DateTime->now ],
+            [ qw(member_id auth_type auth_data) ],
+            [ qw(1 password), sha1_hex('admin') ],
         ],
     );
     return ();

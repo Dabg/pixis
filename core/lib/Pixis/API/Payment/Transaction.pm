@@ -26,7 +26,6 @@ sub change_status {
     $txn->create_related( 'logs', {
         message    => "change status from $old to $new" .
             ($args->{message} ? ": $args->{message}" : ''),
-        created_on => \'NOW()'
     } );
 
     $guard->commit;

@@ -31,7 +31,6 @@ sub create_purchase_item :Test :Plan(1) {
         $args->{name}        ||= "Cnady";
         $args->{price}       ||= 1000;
         $args->{description} ||= "甘〜い飴ちゃんだよ！";
-        $args->{created_on}  ||= \'NOW()';
         my $api = $registry->get(api => 'purchaseitem');
         $api->create($args);
     } "Created item";

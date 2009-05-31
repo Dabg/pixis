@@ -49,7 +49,6 @@ sub create_txn {
     my %args     = (
         %$txn_args, 
         order_id => $args->{order_id},
-        created_on => \'NOW()',
     );
 
     my $schema = Pixis::Registry->get(schema => 'master');
