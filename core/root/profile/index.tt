@@ -6,7 +6,7 @@
 [% form %]
 <ul class="clearfix">
 [% FOR p IN profiles %]
-<li><a href="[% c.uri_for(p.id) %]">[% p.name %]</a></li>
+<li><a href="[% c.uri_for(p.id) %]">[% p.display_name %]</a></li>
 [% END %]
 </li>
 </div>

@@ -17,15 +17,14 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 32,
     },
-    name => {
-        data_type => "VARCHAR",
-        is_nullable => 0,
-        size => 256
-    },
     member_id => {
         data_type => 'INTEGER',
         is_nullable => 0,
         size => 32,
+    },
+    display_name => {
+        data_type => 'TEXT',
+        is_nullable => 0,
     },
     bio => {
         data_type => 'TEXT',
@@ -45,7 +44,7 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(member => 'Pixis::Schema::Master::Result::Member' => 'member_id');
-__PACKAGE__->utf8_columns(qw(bio name));
+__PACKAGE__->utf8_columns(qw(display_name bio));
 __PACKAGE__->belongs_to(profile_type => 'Pixis::Schema::Master::Result::ProfileType' => 'profile_type_id');
 
 1;

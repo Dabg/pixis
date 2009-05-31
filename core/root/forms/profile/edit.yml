@@ -9,9 +9,11 @@ elements:
     - type: Select
       name: profile_type_id
       label_loc: Profile Type
+      constraints:
+        - Required
     - type: Text
-      name: name
-      label_loc: Name
+      name: display_name
+      label_loc: Display Name
       constraints:
         - Required
     - type: Textarea

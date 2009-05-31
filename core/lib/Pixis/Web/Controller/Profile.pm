@@ -17,10 +17,13 @@ sub index : Local :Path('') :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
     my $form = $c->stash->{form};
     if ( $form->submitted_and_valid ) {
+        my @fields = qw(display_name bio);
+
+        my $like = '%'.$form->param_value('q').'%';
         my @profiles = $c->registry(api => 'Profile')->search(
-            {
-                name => {like => '%'.$form->param_value('q').'%'}
-            }
+            [
+                map { ($_ => { -like => $like }) } @fields
+            ]
         );
         $c->stash->{profiles} = \@profiles;
     }
