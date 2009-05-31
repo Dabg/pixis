@@ -37,7 +37,9 @@ BEGIN {
 
 sub setup {
     my $class = shift;
-    $class->SUPER::setup(qw/
+    my %plugin_config = @_;
+
+    my @plugins = qw/
         Unicode
         Authentication
         Authorization::Roles
@@ -47,7 +49,12 @@ sub setup {
         Session::Store::File
         Session::State::Cookie
         Static::Simple
-    /);
+        /;
+
+    $plugin_config{plugins} and
+        push @plugins, $_ foreach @{$plugin_config{plugins}};
+
+    $class->SUPER::setup(@plugins);
 
     # Apply hooks AFTER!
     $class->meta->add_before_method_modifier(finalize => sub {
@@ -175,6 +182,7 @@ sub setup_concrete_components {
 
 sub setup_config {
     my $class = shift;
+    my %plugin_config = @_;
 
     my @localizers;
     my @modules = ($class, 'Pixis');
@@ -215,7 +223,7 @@ sub setup_config {
         }
     }
 
-    return $class->SUPER::config(
+    my $config = {
         name => $class,
         default_view => 'TT',
         static => {
@@ -286,7 +294,12 @@ sub setup_config {
             ],
             STASH   => Template::Stash::ForceUTF8->new,
         }
-    );
+    };
+
+    %plugin_config and
+        $config = Catalyst::Utils::merge_hashes($config, \%plugin_config);
+
+    return $class->SUPER::config($config);
 }
 
 my $caller = caller();
@@ -479,6 +492,7 @@ sub handle_exception {
         return;
     }
 
+    # handle debug-mode forced-debug from RenderView
     $c->clear_errors;
 
     if ( $error->is_error ) {
