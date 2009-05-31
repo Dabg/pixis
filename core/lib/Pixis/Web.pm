@@ -365,8 +365,9 @@ sub setup_pixis_plugins {
             Class::MOP::load_class($pkg);
         };
         if ($@) {
-            $self->log->error("[Pixis Plugin]: Failed to load $plugin: $@");
-            confess("Initialization failed during plugin load for $plugin: $@");
+            my $err = $@;
+            $self->log->error("[Pixis Plugin]: Failed to load $plugin: '$err'");
+            confess("Initialization failed during plugin load for $plugin: '$err'");
         }
         $plugin = $pkg->new(%$args);
         if (! $plugin->registered && !($REGISTERED_PLUGINS{ $pkg }++) ){
@@ -376,8 +377,9 @@ sub setup_pixis_plugins {
                 $plugin->register($self);
             };
             if ($@) {
-                $self->log->error("[Pixis Plugin]: Failed to register $plugin: $@");
-                confess("Initialization failed during plugin registration for $plugin: $@");
+                my $err = $@;
+                $self->log->error("[Pixis Plugin]: Failed to register $plugin: '$err'");
+                confess("Initialization failed during plugin registration for $plugin: '$err'");
             }
             $plugin->registered(1);
             push @PLUGINS, $plugin;
