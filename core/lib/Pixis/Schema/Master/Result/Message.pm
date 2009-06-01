@@ -17,11 +17,6 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 10,
     },
-    to_profile_id => {
-        data_type => 'CHAR',
-        is_nullable => 0,
-        size => 10,
-    },
     subject => {
         data_type => 'VARCHAR',
         is_nullable => 0,
@@ -44,10 +39,10 @@ __PACKAGE__->belongs_to(
     'Pixis::Schema::Master::Result::Profile',
     'from_profile_id'
 );
-__PACKAGE__->belongs_to(
-    'to_profile',
-    'Pixis::Schema::Master::Result::Profile',
-    'to_profile_id'
+__PACKAGE__->has_many(
+    'recipients',
+    'Pixis::Schema::Master::Result::MessageRecipient',
+    'message_id',
 );
 
 1;

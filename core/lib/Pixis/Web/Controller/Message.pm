@@ -29,6 +29,23 @@ sub index
     return;
 }
 
+sub sent
+    :Local
+    :Args(0)
+    :FormConfig('message/search')
+{
+    my ( $self, $c ) = @_;
+    my @messages = $c->registry(api => 'Message')
+        ->load_sent_from_member({ member_id => $c->user->id })
+    ;
+    $c->stash(
+        messages => \@messages,
+        mailbox => 'SENT',
+        template => 'message/index.tt', 
+    );
+    return;
+}
+
 sub search
     :Local
     :Args(0)
@@ -97,7 +114,7 @@ sub load_form {
         hash => sub {
             my ( $visitor, $value ) = @_;
             if ($value->{name} && ($value->{name} eq 'from_profile_id')) {
-                $value->{options} = [ map {[$_->id, $_->profile_type_id]} 
+                $value->{options} = [ map {[$_->id, $_->profile_type->name]} 
                     $c->registry(api => 'Profile')->load_from_member( {
                         member_id => $c->user->id,
                     } ) 

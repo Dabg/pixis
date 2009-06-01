@@ -15,13 +15,19 @@ around create => sub {
     my %args = (
         id => Digest::SHA1::sha1_hex($args, {}, time(), $$, rand()),
         from_profile_id => $args->{from}->id,
-        to_profile_id   => $args->{to}->id,
         subject        => $args->{subject},
         body           => $args->{body},
     );
 
-    return $next->($self, \%args)
+    my $message = $next->($self, \%args);
+    $message->add_to_recipients(
+        {
+            to_profile_id => $args->{to}->id
+        }
+    );
+    return $message;
 };
+
 *send = \&create;
 
 sub load_sent_from_member {
@@ -34,6 +40,7 @@ sub load_sent_from_member {
         { from_profile_id => \@profile_id },
         {
             select => [ qw(id) ],
+            order_by => 'created_on desc',
         }
     );
     return $self->load_multi(@ids);
@@ -45,12 +52,11 @@ sub load_sent_to_member {
     my @profile_id = map {$_->id} Pixis::Registry->get(api => 'Profile')
         ->load_from_member({member_id => $args->{member_id}});
 
-    my @ids = map { $_->id } $self->resultset()->search(
-        { to_profile_id => \@profile_id },
-        {
-            select => [ qw(id) ],
-        }
-    );
+    my @ids = map { $_->message_id } Pixis::Registry->get(api => 'MessageRecipient')
+        ->search(
+            {to_profile_id => \@profile_id}, 
+            { order_by => 'id desc' }
+        );
     return $self->load_multi(@ids);
 }
 
@@ -86,7 +92,7 @@ sub opponent {
     my ( $self, $message, $member ) = @_;
     my $id;
     $id = $message->from_profile_id if $self->is_in_message($message, $member);
-    $id = $message->to_profile_id if $self->is_out_message($message, $member);
+#    $id = $message->to_profile_id if $self->is_out_message($message, $member);
     $id or return;
     return Pixis::Registry->get(schema => 'master')
         ->resultset('Profile')
@@ -100,13 +106,21 @@ sub is_out_message {
 
 sub is_in_message {
     my ( $self, $message, $member ) = @_;
-    return $message->to_profile->member->id == $member->id;
+    my @profile_id = map {$_->id } Pixis::Registry->get(api => 'Profile')
+        ->load_from_member({member_id => $member->id});
+    my $found = Pixis::Registry->get(api => 'MessageRecipient')
+        ->search(
+            {
+                message_id => $message->id,
+                to_profile_id => \@profile_id,
+            }
+        );
+    scalar @$found ? 1 : 0;
 }
 
 sub is_viewable {
     my ($self, $message, $member ) = @_;
-    return $message->from_profile->member->id eq $member->id ||
-        $message->to_profile->member->id eq $member->id
+    return $self->is_out_message($message, $member) || $self->is_in_message($message, $member);
 }
 
 __PACKAGE__->meta->make_immutable;

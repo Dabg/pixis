@@ -1,0 +1,9 @@
+<div id="title" class="clearfix">
+<div id="info">
+<h1>messages</h1>
+<ul id="member_menu" class="clearfix">
+<li><a href="[% c.uri_for('') %]">inbox</a></li>
+<li><a href="[% c.uri_for('sent') %]">sent</a></li>
+</ul>
+</div>
+</div>

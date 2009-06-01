@@ -3,7 +3,10 @@
     page.heading.content = 'メッセージ' %]
 <div id="content">
 [% SET api = c.registry('api', 'Message') %]
-<p>[% api.is_in_message(message, c.user) ? 'From:' : 'To:' %] [% api.opponent(message, c.user).display_name %]</p>
+<p>From: [% message.from_profile.display_name %]</p>
+<p>To: [% FOR r IN message.recipients %]
+[% r.to_profile.display_name %]
+[% END %]</p>
 <p>Subject: [% message.subject %]</p>
 <p>Date: [% message.created_on.strftime('%F %R') %]</p>
 <p>Body: [% message.body | html | html_line_break %]</p>
