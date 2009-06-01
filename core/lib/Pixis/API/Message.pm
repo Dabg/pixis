@@ -115,7 +115,7 @@ sub is_in_message {
                 to_profile_id => \@profile_id,
             }
         );
-    scalar @$found ? 1 : 0;
+    return scalar @$found ? 1 : 0;
 }
 
 sub is_viewable {

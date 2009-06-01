@@ -44,6 +44,7 @@ sub setup :Test :Plan(3) {
     $registry->set(api => 'memberrelationship' => $self->api('MemberRelationship'));
     $registry->set(api => 'memberauth' => $self->api('MemberAuth'));
     $registry->set(api => 'member' => $self->api('Member'));
+    $registry->set(api => 'profile' => $self->api('Profile'));
 
     # make sure these don't exist at cleanup
     lives_ok {
