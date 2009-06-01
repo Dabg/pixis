@@ -54,7 +54,7 @@ sub api {
     my ($self, $type) = @_;
 
     my $class = "Pixis::API::$type";
-    my $config_key = "Schema::$type";
+    my $config_key = "API::$type";
 
     my $config = $self->config;
     Class::MOP::load_class($class);
