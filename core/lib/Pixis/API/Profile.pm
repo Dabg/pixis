@@ -8,10 +8,17 @@ with 'Pixis::API::Base::DBIC';
 around create => sub {
     my ($next, $self, $args) = @_;
 
+    my $schema = Pixis::Registry->get(schema => 'Master');
+    $args->{profile_type_id} ||= 
+        $schema->resultset('ProfileType')
+            ->search({ name => 'public' })
+            ->single
+            ->id
+    ;
+
     if (! $args->{id}) {
         my $key;
         my $attempt = 0;
-        my $schema = Pixis::Registry->get(schema => 'Master');
         while (! $key ) {
             $key = $schema->resultset('ProfileUniqueId')->search(
                 {

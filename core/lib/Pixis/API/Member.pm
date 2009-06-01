@@ -47,12 +47,16 @@ around create => sub {
     $args->{is_active} = 0;
 
     my $member = $next->($self, $args);
+
+    # Create an auth
     $schema->resultset('MemberAuth')->create({
         member_id => $member->id,
         auth_type => 'password',
         auth_data => Digest::SHA1::sha1_hex(delete $args->{password}),
-        created_on => $args->{created_on}
     });
+
+    # Also a public profile
+    Pixis::Registry->get(api => 'profile')->create({ member_id => $member->id, display_name => $member->nickname });
 
     $guard->commit;
     return $member;
