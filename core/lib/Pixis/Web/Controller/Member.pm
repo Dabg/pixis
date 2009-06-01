@@ -91,9 +91,13 @@ sub settings :Local :Args(0) {
     $form->load_config_filestem('member/settings_auth');
     $c->stash->{form_password} = $form;
     {
-        my $api = $c->registry(api => 'Profile');
-        $c->stash->{profiles} = 
-            [ $api->load_from_member({ member_id => $c->user->id }) ];
+        my @profiles = $c->registry(api => 'Profile')
+            ->load_from_member({ member_id => $c->user->id });
+            for my $type (qw(public private)) {
+                $c->stash->{"${type}_profile"} = [ 
+                    grep {$_->profile_type->name eq $type} @profiles 
+                ]->[0];
+            }
     }
     return ();
 }

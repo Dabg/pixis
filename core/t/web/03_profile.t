@@ -7,6 +7,7 @@ my $user = {
     password => 'precuredaisuki',
     firstname => 'main',
     lastname => 'hiiragi',
+    nickname => 'cooking idol main!',
 };
 
 my $profile = {

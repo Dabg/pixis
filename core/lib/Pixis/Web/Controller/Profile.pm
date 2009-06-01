@@ -30,8 +30,8 @@ sub index : Local :Path('') :Args(0) :FormConfig {
     return ();
 }
 
-sub create : Local :Args(0) :FormMethod('load_form') {
-    my ( $self, $c ) = @_;
+sub create : Local :Args(1) :FormConfig('profile/edit') {
+    my ( $self, $c, $type ) = @_;
 
     my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
@@ -39,6 +39,7 @@ sub create : Local :Args(0) :FormMethod('load_form') {
         my $args = $form->params;
         delete $args->{submit};
         delete $args->{id};
+        $args->{profile_type_id} = $type;
         $args->{member_id} = $c->user->id;
         my $profile = $api->create($args);
         $c->res->redirect($c->uri_for($profile->id));
@@ -64,7 +65,7 @@ sub view : Chained('load_profile') : PathPart('') Args(0) {
     return ();
 }
 
-sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormMethod('load_form') {
+sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
 
     $c->stash->{profile}->member_id == $c->user->id
@@ -92,24 +93,6 @@ sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
         $c->res->redirect($c->uri_for('/member/settings'));
     }
     return ();
-}
-
-sub load_form {
-    my ( $self, $c ) = @_;
-    my $hash = YAML::Syck::LoadFile($c->path_to(qw(root forms profile edit.yml)));
-    my $v = Data::Visitor::Callback->new(
-        hash => sub {
-            my ($visitor, $value) = @_;
-            if ($value->{name} && ($value->{name} eq 'profile_type_id')) {
-                $value->{options} = [ map {[$_->id, $_->name]}
-                    $c->registry(api => 'ProfileType')->load_all
-                ];
-            }
-            return $value;
-        }
-    );
-    $v->visit($hash);
-    return $hash;
 }
 
 1;
