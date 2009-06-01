@@ -258,6 +258,24 @@ sub load_recent_activity {
     return wantarray ? @list : [@list];
 }
 
+around delete => sub {
+    my ($next, $self, $id) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard();
+
+    $schema->resultset('Profile')->search(
+        {
+            member_id => $id
+        }
+    )->delete;
+
+    $next->($self, $id);
+
+    $guard->commit();
+    return ();
+};
+
 
 __PACKAGE__->meta->make_immutable;
 
