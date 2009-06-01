@@ -26,7 +26,7 @@ __PACKAGE__->add_columns(
     opened_on => {
         data_type => 'DATETIME',
         is_nullable => 1,
-        set_on_update => 1,
+#        set_on_update => 1,
     },
 );
 __PACKAGE__->set_primary_key('id');

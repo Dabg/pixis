@@ -2,7 +2,7 @@
     page.title = 'メッセージ', 
     page.heading.enabled = 0 %]
 [% INCLUDE 'message/menu.tt' %]
-[% SET api = c.registry('api', 'message') %]
+[% SET api = c.registry('api', 'Message') %]
 <div id="content">
 
 [% form %]
@@ -10,7 +10,21 @@
 <h2>[% mailbox || 'INBOX' %]</h2>
 <ul class="clearfix">
 [% FOR m IN messages %]
-<li>[% api.is_in_message(m, c.user) ? '←' : '→' %]<a href="[% c.uri_for(m.id) %]">[% m.subject %]</a> [% api.opponent(m, c.user).nickname %], [% m.created_on.ymd %]</li>
+[% SET is_in_message = api.is_in_message(m, c.user) %]
+<li>
+    [% IF is_in_message %]
+        [% '☆' UNLESS c.registry('api', 'MessageRecipient').search_with_member(m, c.user).opened_on %]
+    [% END %]
+    <a href="[% c.uri_for(m.id) %]">[% m.subject %]</a> 
+    [% IF is_in_message %]
+        [% m.from_profile.display_name %],
+    [% ELSE %]
+        [% FOR r IN m.recipients %]
+            [% r.to_profile.display_name %],
+        [% END %]
+    [% END %]
+    [% m.created_on.ymd %]
+</li>
 [% END %]
 </ul>
 </div>

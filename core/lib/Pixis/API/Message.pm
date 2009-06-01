@@ -106,16 +106,8 @@ sub is_out_message {
 
 sub is_in_message {
     my ( $self, $message, $member ) = @_;
-    my @profile_id = map {$_->id } Pixis::Registry->get(api => 'Profile')
-        ->load_from_member({member_id => $member->id});
-    my $found = Pixis::Registry->get(api => 'MessageRecipient')
-        ->search(
-            {
-                message_id => $message->id,
-                to_profile_id => \@profile_id,
-            }
-        );
-    return scalar @$found ? 1 : 0;
+    my $found = Pixis::Registry->get(api => 'MessageRecipient')->search_with_member($message, $member);
+    return $found ? 1 : 0;
 }
 
 sub is_viewable {

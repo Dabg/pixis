@@ -103,7 +103,7 @@ sub view :Chained('load_message') :PathPart('') :Args(0) {
     if (! $c->registry(api => 'Message')->is_viewable($c->stash->{message}, $c->user)) {
         Pixis::Web::Exception::FileNotFound->throw();
     }
-
+    $c->registry(api => 'MessageRecipient')->set_read($c->stash->{message}, $c->user);
     return;
 }
 
