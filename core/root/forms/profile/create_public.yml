@@ -1,0 +1,18 @@
+---
+auto_fieldset: 1
+
+elements:
+    - type: Text
+      name: display_name
+      label_loc: Display Name
+      constraints: 
+        - Required
+    - type: Textarea
+      name: bio
+      rows: 10
+      cols: 50
+      label_loc: Biography
+    - type: Submit
+      name: submit
+      value_loc: Submit
+      

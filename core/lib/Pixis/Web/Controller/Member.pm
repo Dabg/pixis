@@ -5,6 +5,17 @@ use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
 
+has settings_elements => (
+    is => 'ro',
+    auto_deref => 1,
+    isa => 'ArrayRef',
+    default => sub { +[
+        \&prepare_profiles,
+        \&prepare_basic_settings,
+        \&prepare_auth_settings,
+    ] }
+);
+
 use utf8;
 use Digest::SHA1 ();
 
@@ -78,7 +89,35 @@ sub unfollow :Chained('load_member') :Args(0) {
     return ();
 }
 
-sub settings :Local :Args(0) {
+sub settings
+    :Local
+    :Args(0)
+{
+    my ($self, $c) = @_;
+
+    # Let plugins configure elements that goes in the member settings
+    foreach my $element ($self->settings_elements) {
+        # XXX FIXME I just randomly chose this method name
+        # need to rethink how this is done.
+        if (ref $element eq 'CODE') {
+            $element->($self, $c);
+        } elsif (blessed $element) {
+            $element->prepare($self, $c);
+        }
+    }
+}
+
+sub prepare_profiles { # XXX Refactor this to profile later
+    my ($self, $c) = @_;
+
+    my @profiles = $c->registry(api => 'Profile')
+        ->load_from_member({ member_id => $c->user->id });
+
+    $c->stash->{"profiles"} = [ @profiles ];
+    return ();
+}
+
+sub prepare_basic_settings {
     my ($self, $c) = @_;
 
     my $form = $self->form;
@@ -86,19 +125,14 @@ sub settings :Local :Args(0) {
     my $user = $c->registry(api => 'Member')->find($c->user->id);
     $form->model->default_values($user);
     $c->stash->{form} = $form;
+    return ();
+}
 
-    $form = $self->form();
+sub prepare_auth_settings {
+    my ($self, $c) = @_;
+    my $form = $self->form();
     $form->load_config_filestem('member/settings_auth');
     $c->stash->{form_password} = $form;
-    {
-        my @profiles = $c->registry(api => 'Profile')
-            ->load_from_member({ member_id => $c->user->id });
-            for my $type (qw(public private)) {
-                $c->stash->{"${type}_profile"} = [ 
-                    grep {$_->profile_type->name eq $type} @profiles 
-                ]->[0];
-            }
-    }
     return ();
 }
 

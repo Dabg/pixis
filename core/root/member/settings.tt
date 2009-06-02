@@ -5,18 +5,17 @@
 <div id="content">
 <div class="form_full section">
 [%#<h2><a href="/member/settings/basic">%][%# loc("Basic Settings") %][%#</a></h2>%]
-<h2>[% loc("profiles") %]</h2>
+<h2>[% loc("Profiles") %]</h2>
+
 <ul>
-<li>[% IF public_profile %]
-<a href="[% c.uri_for('/profile', public_profile.id, 'edit') %]">[% public_profile.display_name %]</a>
-[% ELSE %]
-<a href="[% c.uri_for('/profile/create', c.registry('api', 'ProfileType').search({'name' => 'public'}).first.id ) %]">create public profile</a>
-[% END %]</li>
-<li>[% IF private_profile %]
-<a href="[% c.uri_for('/profile', private_profile.id, 'edit') %]">[% private_profile.display_name %]</a>
-[% ELSE %]
-<a href="[% c.uri_for('/profile/create',  c.registry('api', 'ProfileType').search({'name' => 'private'}).first.id ) %]">create private profile</a>
-[% END %]</li>
+[% FOREACH profile IN profiles %]
+<li>
+    <a href="[% c.uri_for('/profile', profile.id, 'edit') %]">[% profile.display_name | html %]</a>
+</li>
+[% END %]
+<li>
+    <a href="[% c.uri_for('/profile/create' ) %]">[% loc("Create Profile") %]</a>
+</li>
 </ul>
 
 <h2>[% loc("Basic Settings") %]</h2>

@@ -1,0 +1,18 @@
+[% WRAPPER wrapper.tt %]
+
+<table>
+<tr>
+    <td>[% loc("Display Name") %]</td>
+    <td>[% profile.display_name | html %]</td>
+</tr>
+<tr>
+    <td>[% loc("Biography") %]</td>
+    <td>[% profile.bio | html %]</td>
+</tr>
+</table>
+<div>
+    <a href="[% c.uri_for("type", profile_type, "create", "commit", subsession) %]">[% loc("Create") %]</a>
+    <a href="javascript:void(0)" onclick="history.back(); return false">戻る</a>
+</div>
+
+[% END # WRAPPER %]

@@ -5,7 +5,7 @@ use utf8;
 use YAML::Syck ();
 use Data::Visitor::Callback;
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession) }
 
 sub auto :Private {
     my ( $self, $c ) = @_;
@@ -30,21 +30,74 @@ sub index : Local :Path('') :Args(0) :FormConfig {
     return ();
 }
 
-sub create : Local :Args(1) :FormConfig('profile/edit') {
-    my ( $self, $c, $type ) = @_;
-
-    my $form = $c->stash->{form};
-    if ($form->submitted_and_valid) {
-        my $api = $c->registry(api => 'Profile');
-        my $args = $form->params;
-        delete $args->{submit};
-        delete $args->{id};
-        $args->{profile_type_id} = $type;
-        $args->{member_id} = $c->user->id;
-        my $profile = $api->create($args);
-        $c->res->redirect($c->uri_for($profile->id));
+sub profile_type
+    :Chained
+    :PathPart('profile/type')
+    :CaptureArgs(1)
+{
+    my ($self, $c, $type) = @_;
+    # Make sure this is allowed
+    my $api = $c->registry(api => 'Profile');
+    if (! $api->is_supported( $type )) {
+        $c->detach('/default');
+        return;
     }
-    return ();
+
+    $c->stash->{profile_type} = $type;
+}
+
+sub create
+    :Chained('profile_type')
+    :Args(0)
+{
+    my ( $self, $c ) = @_;
+
+    my $type = $c->stash->{profile_type};
+
+    # ok, attempt to load the form
+    my $form = $self->form;
+    $form->load_config_filestem("root/forms/profile/create_$type");
+    $form->action($c->uri_for('type', $type, 'create'));
+    $form->process;
+
+    $c->stash->{form} = $form;
+
+    if ($form->submitted_and_valid) {
+        my $p = $form->params;
+        delete $p->{submit};
+        my $subsession = $self->new_subsession($c, $p);
+        $c->res->redirect($c->uri_for('type', $type, 'create', 'confirm', $subsession) );
+    }
+    return;
+}
+
+sub create_confirm
+    :Chained('profile_type')
+    :PathPart('create/confirm')
+    :Args(1)
+{
+    my ($self, $c, $subsession) = @_;
+
+    my $type = $c->stash->{profile_type};
+    $c->stash->{template} = "profile/confirm_$type.tt";
+    $c->stash->{subsession} = $subsession;
+    $c->stash->{profile}  = $self->get_subsession($c, $subsession);
+}
+
+sub create_commit
+    :Chained('profile_type')
+    :PathPart('create/commit')
+    :Args(1)
+{
+    my ($self, $c, $subsession) = @_;
+
+    my $type = $c->stash->{profile_type};
+    my $api = $c->registry(api => 'Profile');
+    my $hash = $self->get_subsession($c, $subsession);
+    my $profile = $api->create_type( $type, $hash );
+    $self->delete_subsession($c, $subsession);
+
+    return $c->res->redirect($c->uri_for($profile->id));
 }
 
 sub load_profile : Chained : PathPart('profile') : CaptureArgs(1) {
