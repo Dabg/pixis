@@ -38,7 +38,8 @@ sub run {
     my $options = { RaiseError => 1, AutoCommit => 1 };
     if ($self->dsn =~ /^dbi:mysql:/i) {
         $options->{on_connect_do} = [
-            'SET sql_mode = "STRICT_TRANS_TABLES"'
+            'SET sql_mode = "STRICT_TRANS_TABLES"',
+            'SET NAMES utf8',
         ];
     }
     my $schema = Pixis::Schema::Master->connection(
@@ -52,7 +53,11 @@ sub run {
         add_drop_table => $self->drop
     });
 
-    foreach my $source ($schema->sources) {
+    # remove these known tables, and rearrange them
+    my @sources = grep { !/ProfileType$/ } $schema->sources;
+    unshift @sources, 'ProfileType';
+
+    foreach my $source (@sources) {
         my $class = $schema->class($source);
         if (my $code = $class->can('populate_initial_data')) {
             eval {
