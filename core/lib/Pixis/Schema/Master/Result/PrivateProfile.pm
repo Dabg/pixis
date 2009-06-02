@@ -44,7 +44,7 @@ __PACKAGE__->utf8_columns(qw(display_name bio));
 sub populate_initial_data {
     my ($self, $schema) = @_;
     $schema->populate(
-        Profile => [
+        PrivateProfile => [
             [ qw(id member_id display_name bio created_on) ],
             [ qw(4649464900 1 管理者 システム管理者 0000-00-00) ],
         ],
