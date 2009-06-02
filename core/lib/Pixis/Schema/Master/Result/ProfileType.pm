@@ -28,7 +28,6 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->utf8_columns(qw(name));
-__PACKAGE__->has_many(profiles => 'Pixis::Schema::Master::Result::Profile' => 'profile_type_id');
 
 sub populate_initial_data {
     my ($self, $schema) = @_;

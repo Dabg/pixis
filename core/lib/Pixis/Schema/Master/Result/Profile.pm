@@ -12,11 +12,6 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         size => 10,
     },
-    profile_type_id => {
-        data_type => 'INTEGER',
-        is_nullable => 0,
-        size => 32,
-    },
     member_id => {
         data_type => 'INTEGER',
         is_nullable => 0,
@@ -45,14 +40,13 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(member => 'Pixis::Schema::Master::Result::Member' => 'member_id');
 __PACKAGE__->utf8_columns(qw(display_name bio));
-__PACKAGE__->belongs_to(profile_type => 'Pixis::Schema::Master::Result::ProfileType' => 'profile_type_id');
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
     $schema->populate(
         Profile => [
-            [ qw(id member_id profile_type_id display_name bio created_on) ],
-            [ qw(4649464900 1 1 管理者 システム管理者 0000-00-00) ],
+            [ qw(id member_id display_name bio created_on) ],
+            [ qw(4649464900 1 管理者 システム管理者 0000-00-00) ],
         ],
     );
     return ();
