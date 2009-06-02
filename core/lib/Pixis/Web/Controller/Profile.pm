@@ -54,6 +54,21 @@ sub create
 
     my $type = $c->stash->{profile_type};
 
+    my $profile = $c->registry(api => 'Profile')->load_from_member({
+        member_id => $c->user->id,
+        type      => $type
+    });
+    if ($profile) {
+        $c->stash(
+            template => 'error.tt',
+            error    => {
+                safe_message => 1,
+                message => "You already have a $type profile"
+            }
+        );
+        return;
+    }
+
     # ok, attempt to load the form
     my $form = $self->form;
     $form->load_config_filestem("root/forms/profile/create_$type");
@@ -94,6 +109,8 @@ sub create_commit
     my $type = $c->stash->{profile_type};
     my $api = $c->registry(api => 'Profile');
     my $hash = $self->get_subsession($c, $subsession);
+    $hash->{member_id} = $c->user->id;
+
     my $profile = $api->create_type( $type, $hash );
     $self->delete_subsession($c, $subsession);
 

@@ -89,8 +89,13 @@ sub create_type {
 sub load_from_member {
     my ($self, $args) = @_;
 
-    my @list = $self->resultset->search(
-        { member_id => $args->{member_id} },
+    my %where = ( member_id => $args->{member_id} );
+    my $type = $args->{type} || 'public';
+
+    my $p = $self->profile_type_get($type);
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my @list = $schema->resultset($p->moniker)->search(
+        \%where,
         { order_by => 'id DESC' }
     );
     return wantarray ? @list : \@list;
