@@ -1,7 +1,9 @@
-[% WRAPPER wrapper.tt %]
+[% WRAPPER wrapper.tt,
+    page.heading.content => "エラー " _ error.status
+%]
 
-<h1>エラー [% error.status %]</h1>
-
+<div id="content">
 <p>[% IF (error.safe_message) %][% loc(error.message) %][% ELSE %][% loc(error.public_message) %][% END %]</p>
+</div>
 
 [% END %]
