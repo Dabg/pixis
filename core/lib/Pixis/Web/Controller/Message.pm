@@ -65,24 +65,40 @@ sub search
 sub create
     :Local
     :Path('create')
-    :Args(0)
+    :Args(1)
     :FormMethod('load_form')
 {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $to_profile_id ) = @_;
 
     my $form = $c->stash->{form};
+
+    my $papi = $c->registry(api => 'Profile');
+    my $recipient = $papi->find($to_profile_id);
+    $c->stash->{recipient} = $recipient;
+
     if ($form->submitted_and_valid) {
-        my $papi = $c->registry(api => 'Profile');
         my $message = $c->registry(api => 'Message')->send(
             {
                 from => $papi->find($form->param_value('from_profile_id')),
-                to => $papi->find($form->param_value('to_profile_id')),
+                to => $recipient,
                 subject => $form->param_value('subject'),
                 body => $form->param_value('body'),
             }
         );
         return $c->res->redirect( $c->uri_for($message->id) );
     }
+
+    my $from_field = $form->get_all_element({ name => 'from_profile_id' } );
+    $from_field->parent->insert_before(
+        $form->element({ 
+            type => 'Text',
+            label_loc => "Recipient",
+            attrs => { readonly => 'readonly' },
+            value => $recipient->display_name
+        }),
+        $from_field
+    );
+
     return;
 }
 

@@ -7,7 +7,7 @@
 <li><a href="[% c.uri_for(profile.id, 'edit') %]">[% loc('edit') %]</a></li>
 <li><a href="[% c.uri_for(profile.id, 'delete') %]">[% loc('delete') %]</a></li>
 [% ELSE %]
-<li><a href="[% c.uri_for('/message/create', { to_profile_id => profile.id } ) %]">[% loc('send message') %]</a></li>
+<li><a href="[% c.uri_for('/message/create', profile.id ) %]">[% loc('Send Message') %]</a></li>
 [% END %]
 </ul>
 </div>

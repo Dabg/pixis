@@ -6,11 +6,11 @@ indicator: submit
 elements:
     - type: Hidden
       name: id
-    - type: Hidden
-      name: to_profile_id
     - type: Select
       name: from_profile_id
       label_loc: From
+      constraints:
+        - Required
     - type: Text
       name: subject
       label_loc: Subject
