@@ -129,3 +129,6 @@ msgstr "件名"
 
 msgid "Body"
 msgstr "本文"
+
+msgid "Send Message"
+msgstr "メッセージを送る"

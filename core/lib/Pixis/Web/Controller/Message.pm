@@ -5,7 +5,7 @@ use utf8;
 use YAML::Syck ();
 use Data::Visitor::Callback;
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' };
+BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession ) };
 
 sub auto :Private {
     my ( $self, $c ) = @_;
@@ -65,25 +65,80 @@ sub search
 sub create
     :Local
     :Path('create')
-    :Args(0)
+    :Args(1)
     :FormMethod('load_form')
 {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $to_profile_id ) = @_;
 
     my $form = $c->stash->{form};
+
     if ($form->submitted_and_valid) {
-        my $papi = $c->registry(api => 'Profile');
-        my $message = $c->registry(api => 'Message')->send(
-            {
-                from => $papi->find($form->param_value('from_profile_id')),
-                to => $papi->find($form->param_value('to_profile_id')),
-                subject => $form->param_value('subject'),
-                body => $form->param_value('body'),
-            }
-        );
-        return $c->res->redirect( $c->uri_for($message->id) );
+        my $subsession = $self->new_subsession($c, {
+            from    => $form->param_value('from_profile_id'),
+            to      => $to_profile_id,
+            subject => $form->param_value('subject'),
+            body    => $form->param_value('body'),
+        });
+        return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) );
     }
+
+    my $papi = $c->registry(api => 'Profile');
+    my $recipient = $papi->find($to_profile_id);
+
+    my $from_field = $form->get_all_element({ name => 'from_profile_id' } );
+    $from_field->parent->insert_before(
+        $form->element({ 
+            type => 'Text',
+            label_loc => "Recipient",
+            attrs => { readonly => 'readonly' },
+            value => $recipient->display_name
+        }),
+        $from_field
+    );
+
     return;
+}
+
+sub create_confirm
+    :Path('create/confirm')
+    :Args(1)
+    :FormMethod('load_form')
+{
+    my ($self, $c, $subsession) = @_;
+
+    my $hash = $self->get_subsession($c, $subsession);
+    if (! $hash ) {
+        $c->detach('/default');
+        return ();
+    }
+
+    my $papi = $c->registry(api => 'Profile');
+    $c->stash(
+        subsession => $subsession,
+        message    => {
+            %$hash,
+            from_profile => $papi->find($hash->{from}),
+            to_profile => $papi->find($hash->{to}),
+        }
+    );
+}
+
+sub create_commit
+    :Path('create/commit')
+    :Args(1)
+{
+    my ($self, $c, $subsession) = @_;
+
+    my $hash = $self->get_subsession($c, $subsession);
+    if (! $hash ) {
+        $c->detach('/default');
+        return ();
+    }
+
+    my $message = $c->registry(api => 'Message')->send( $hash );
+    $self->delete_subsession( $c, $subsession );
+
+    return $c->res->redirect( $c->uri_for( $message->id ) );
 }
 
 sub load_message :Chained :PathPart('message') :CaptureArgs(1) {

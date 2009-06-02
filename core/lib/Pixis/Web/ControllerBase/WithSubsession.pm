@@ -4,8 +4,19 @@ use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Catalyst::Controller' }
 
+has subsession_expires => (
+    is => 'ro',
+    isa => 'Int',
+    default => 900
+);
+
 sub new_subsession {
     my ($self, $c, $value) = @_;
+
+    if (! $value || ref $value ne 'HASH') {
+        die "subsession must be a hash";
+    }
+
     my $subsession = $c->generate_session_id;
     $self->set_subsession($c, $subsession, $value);
     return $subsession;
@@ -13,12 +24,28 @@ sub new_subsession {
 
 sub get_subsession {
     my ($self, $c, $subsession) = @_;
-    return $c->session->{__subsessions}->{$subsession} || {};
+    my $container = $c->session->{__subsessions}->{$subsession};
+    return $container ? $container->{data} : ();
 }
 
 sub set_subsession {
     my ($self, $c, $subsession, $value) = @_;
-    return $c->session->{__subsessions}->{$subsession} = $value;
+
+    my $x = $c->session->{__subsessions};
+    my $time = time();
+    foreach my $k (keys %$x) {
+        my $v = $x->{$k};
+        if (!defined $v->{__subsession_expires} || $v->{__subsession_expires} <= $time) {
+            delete $x->{$k};
+        }
+    }
+
+    my $item = {
+        expires => time() + $self->subsession_expires,
+        data    => $value
+    };
+
+    return $c->session->{__subsessions}->{$subsession} = $item;
 }
 
 sub delete_subsession {

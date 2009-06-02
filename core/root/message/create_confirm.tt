@@ -1,0 +1,17 @@
+[% WRAPPER wrapper.tt 
+    page.title = 'メッセージ',
+    page.heading.content = 'メッセージ' %]
+<div id="content">
+<p>From: [% message.from_profile.display_name %]</p>
+<p>To: [% message.to_profile.display_name %]</p>
+<p>Subject: [% message.subject %]</p>
+<p>Body: [% message.body | html | html_line_break %]</p>
+
+<div>
+    <a href="[% c.uri_for("/message/create/commit", subsession) %]">send</a>
+    <a href="javascript:void(0)" onclick="history.back(); return false">戻る</a>
+</div>
+
+</div>
+[% END %]
+
