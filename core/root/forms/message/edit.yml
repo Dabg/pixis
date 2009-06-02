@@ -10,7 +10,7 @@ elements:
       name: to_profile_id
     - type: Select
       name: from_profile_id
-      label_loc: from_profile
+      label_loc: From
     - type: Text
       name: subject
       label_loc: Subject

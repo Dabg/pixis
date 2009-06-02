@@ -111,3 +111,21 @@ msgstr "Github ID (任意)"
 
 msgid "Pixis Member Signup"
 msgstr "メンバー登録"
+
+msgid "Message Inbox"
+msgstr "メッセージ受信箱"
+
+msgid "Sent Messages"
+msgstr "送信済みメッセージ"
+
+msgid "Create Message"
+msgstr "メッセージ作成"
+
+msgid "From"
+msgstr "送信者"
+
+msgid "Subject"
+msgstr "件名"
+
+msgid "Body"
+msgstr "本文"

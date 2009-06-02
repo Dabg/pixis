@@ -113,13 +113,21 @@ sub load_form {
     my $v = Data::Visitor::Callback->new(
         hash => sub {
             my ( $visitor, $value ) = @_;
-            if ($value->{name} && ($value->{name} eq 'from_profile_id')) {
-                $value->{options} = [ map {[$_->id, $_->profile_type->name]} 
-                    $c->registry(api => 'Profile')->load_from_member( {
-                        member_id => $c->user->id,
-                    } ) 
-                ];
-            }
+
+            return $value unless $value->{name};
+            return $value unless $value->{name} eq 'from_profile_id';
+
+            my @profiles = $c->registry(api => 'Profile')->load_from_member( {
+                member_id => $c->user->id,
+            } ) ;
+
+            $value->{options} = [
+                map { [
+                    $_->id, 
+                    $_->display_name,
+#                    sprintf( '%s (%s)', $_->display_name, $_->profile_type->name )
+                ] } @profiles
+            ];
             return $value;
         }
     );
