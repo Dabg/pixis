@@ -8,13 +8,17 @@ with 'Pixis::API::Base::DBIC';
 around create => sub {
     my ( $next, $self, $args ) = @_;
 
-    local $Data::Dumper::Terse    = 1;
-    local $Data::Dumper::Sortkeys = 1;
-    local $Data::Dumper::Indent   = 1;
+    my ($from, $to) = ( $args->{from}, $args->{to} );
+    if (! blessed $to) {
+        $to = Pixis::Registry->get(api => 'Profile')->find($to) or die "Could not find Profile by ID $to";
+    }
+    if (! blessed $from) {
+        $from = Pixis::Registry->get(api => 'Profile')->find($from) or die;
+    }
 
     my %args = (
         id => Digest::SHA1::sha1_hex($args, {}, time(), $$, rand()),
-        from_profile_id => $args->{from}->id,
+        from_profile_id => $from->id,
         subject        => $args->{subject},
         body           => $args->{body},
     );
@@ -22,7 +26,7 @@ around create => sub {
     my $message = $next->($self, \%args);
     $message->add_to_recipients(
         {
-            to_profile_id => $args->{to}->id
+            to_profile_id => $to->id
         }
     );
     return $message;
