@@ -97,8 +97,14 @@ sub setup_virtual_components {
 
     foreach my $comp (@comps) {
         my $base = $comp;
+        # uh-uh, no no, no controller base
+        next if $comp =~ /^Pixis::Web::ControllerBase/;
+
         $comp =~ s/^Pixis::Web/$class/;
 
+
+        $class->log->debug( "Setting up virtual class $comp" )
+            if $class->debug;
         eval { Class::MOP::load_class($comp) };
         if (! $@) {
             next;
@@ -337,7 +343,7 @@ sub setup_finalize {
     $self->setup_pixis_plugins();
     return;
 };
-
+sub debug { 1 }
 sub setup_pixis_plugins {
     my $self = shift;
 
