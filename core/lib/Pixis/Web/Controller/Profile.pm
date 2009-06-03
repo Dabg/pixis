@@ -160,8 +160,12 @@ sub edit
     if ($form->submitted_and_valid) {
         my $args = $form->params;
         delete $args->{submit};
-        my $profile = $api->update( $args );
-        $c->res->redirect($c->uri_for($profile->id));
+        my $profile = $api->update( {
+            %$args,
+            member_id => $c->user->id,
+            id => $c->stash->{profile}->id
+        } );
+        $c->res->redirect($c->uri_for($c->stash->{profile}->id));
     }
     return ();
 }

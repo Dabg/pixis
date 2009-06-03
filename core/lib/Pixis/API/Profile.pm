@@ -143,6 +143,31 @@ sub load_from_member {
     return wantarray ? @list : \@list;
 }
 
+sub update {
+    my ($self, $args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'Master');
+    my $guard  = $schema->txn_scope_guard;
+
+    my $id = delete $args->{id};
+    my $link = $schema->resultset('MemberToProfile')->search(
+        {
+            member_id  => $args->{member_id},
+            profile_id => $id,
+        }
+    )->single;
+
+    $schema->resultset( $link->moniker )->search(
+        {
+            id => $id,
+        }
+    )->update(
+        $args
+    );
+
+    $guard->commit;
+}
+
 sub update_from_form {
     my ($self, $user, $form) = @_;
     my $schema = Pixis::Registry->get(schema => 'master');
