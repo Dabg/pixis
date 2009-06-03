@@ -14,9 +14,10 @@ __PACKAGE__->add_columns(
         size => 32,
     },
     profile_id => {
-        data_type => 'INTEGER',
+    id => {
+        data_type => 'CHAR',
         is_nullable => 0,
-        size => 32,
+        size => 10,
     },
     moniker => {
         data_type => "VARCHAR",
