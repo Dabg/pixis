@@ -70,6 +70,21 @@ sub _get_unique_id {
     return $key->value;
 }
 
+sub find {
+    my ($self, $id) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+
+    # XXX use join?
+    my $link  = $schema->resultset('MemberToProfile')->search( { profile_id => $id } )->single;
+    my $profile;
+    if ($link) {
+        $profile = $schema->resultset( $link->moniker )->find($id);
+    }
+
+    return $profile ? $profile : ();
+}
+
 sub create_type {
     my ($self, $type, $args) = @_;
 
@@ -79,7 +94,18 @@ sub create_type {
     my $guard = $schema->txn_scope_guard();
 
     $args->{id} = $self->_get_unique_id($schema);
+
+    # need to create the actual profile, then the mapping from
+    # member -> profile
     my $profile = $schema->resultset( $p->moniker )->create( $args );
+
+    $schema->resultset('MemberToProfile')->create(
+        {
+            member_id => $args->{member_id},
+            profile_id => $profile->id,
+            moniker => $p->moniker,
+        }
+    );
 
     $guard->commit;
 
@@ -90,14 +116,29 @@ sub load_from_member {
     my ($self, $args) = @_;
 
     my %where = ( member_id => $args->{member_id} );
-    my $type = $args->{type} || 'public';
+    if (my $type = $args->{type}) {
+        my $p = $self->profile_type_get($type);
+        $where{moniker} = $p->moniker;
+    }
 
-    my $p = $self->profile_type_get($type);
     my $schema = Pixis::Registry->get(schema => 'master');
-    my @list = $schema->resultset($p->moniker)->search(
+
+    my @links = $schema->resultset('MemberToProfile')->search(
         \%where,
-        { order_by => 'id DESC' }
+        { order_by => 'moniker' }
     );
+    my %moniker2ids;
+    foreach my $link (@links) {
+        $moniker2ids{ $link->moniker } ||= [];
+        push @{ $moniker2ids{ $link->moniker } }, $link->profile_id;
+    }
+
+    my @list;
+    while (my($moniker, $ids) = each %moniker2ids) {
+        push @list, $schema->resultset($moniker)->search(
+            { id => { -in => $ids } },
+        );
+    }
     return wantarray ? @list : \@list;
 }
 

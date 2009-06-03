@@ -55,7 +55,7 @@ sub create
 
     my $type = $c->stash->{profile_type};
 
-    my $profile = $c->registry(api => 'Profile')->load_from_member({
+    my ($profile) = $c->registry(api => 'Profile')->load_from_member({
         member_id => $c->user->id,
         type      => $type
     });

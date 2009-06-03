@@ -13,9 +13,12 @@
     <a href="[% c.uri_for('/profile', profile.id, 'edit') %]">[% profile.display_name | html %]</a>
 </li>
 [% END %]
+
+[% FOREACH profile IN c.registry('api', 'Profile').all_profile_types %]
 <li>
-    <a href="[% c.uri_for('/profile/create' ) %]">[% loc("Create Profile") %]</a>
+    <a href="[% c.uri_for('/profile/type', profile.name, 'create' ) %]">[% loc("Create [_1] Profile", profile.name) %]</a>
 </li>
+[% END %]
 </ul>
 
 <h2>[% loc("Basic Settings") %]</h2>
