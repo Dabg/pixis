@@ -11,7 +11,7 @@ __PACKAGE__->add_columns(
     value => {
         data_type => "CHAR",
         is_nullable => 0,
-        size => 8,
+        size => 10,
     },
     taken_on => {
         data_type => "DATETIME",
@@ -36,7 +36,7 @@ sub create_unique_keys {
     $schema->populate(
         ProfileUniqueId => [
             [ qw(value) ],
-            map { [ $self->create_unique_key(8) ] }
+            map { [ $self->create_unique_key(10) ] }
                 1..$howmany
         ],
     );
