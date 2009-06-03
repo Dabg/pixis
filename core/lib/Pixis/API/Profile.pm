@@ -130,14 +130,15 @@ sub load_from_member {
     my %moniker2ids;
     foreach my $link (@links) {
         $moniker2ids{ $link->moniker } ||= [];
-        push @{ $moniker2ids{ $link->moniker } }, $link->profile_id;
+        push @{ $moniker2ids{ $link->moniker } }, sprintf('%010d', $link->profile_id);
     }
 
     my @list;
     while (my($moniker, $ids) = each %moniker2ids) {
-        push @list, $schema->resultset($moniker)->search(
+        my @profiles, $schema->resultset($moniker)->search(
             { id => { -in => $ids } },
-        );
+        )->all;
+        push @list, @profiles;
     }
     return wantarray ? @list : \@list;
 }
