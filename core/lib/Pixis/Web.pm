@@ -16,6 +16,7 @@ my %VIRTUAL_COMPONENTS = ();
 
 # if you have Log4perl installed, you get colored messages. Yey!
 use constant HAVE_LOG4PERL => eval {
+    return;
     require Catalyst::Log::Log4perl;
     1;
 };
