@@ -3,7 +3,7 @@ package Pixis::Web::Controller::Payment::Paypal;
 use Moose;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase) }
 
 has complete_url => (
     is => 'rw',
