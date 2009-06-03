@@ -5,7 +5,7 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components(qw(Core TimeStamp));
+__PACKAGE__->load_components(qw(TimeStamp Core));
 __PACKAGE__->table("pixis_member_to_profile");
 __PACKAGE__->add_columns(
     member_id => {
@@ -14,7 +14,6 @@ __PACKAGE__->add_columns(
         size => 32,
     },
     profile_id => {
-    id => {
         data_type => 'CHAR',
         is_nullable => 0,
         size => 10,
