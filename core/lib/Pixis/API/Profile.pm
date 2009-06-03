@@ -135,7 +135,7 @@ sub load_from_member {
 
     my @list;
     while (my($moniker, $ids) = each %moniker2ids) {
-        my @profiles, $schema->resultset($moniker)->search(
+        my @profiles = $schema->resultset($moniker)->search(
             { id => { -in => $ids } },
         )->all;
         push @list, @profiles;
