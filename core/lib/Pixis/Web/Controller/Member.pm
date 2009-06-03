@@ -2,8 +2,12 @@
 package Pixis::Web::Controller::Member;
 use Moose;
 use namespace::clean -except => qw(meta);
+use utf8;
+use Digest::SHA1 ();
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+BEGIN {
+    extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
+}
 
 has settings_elements => (
     is => 'ro',
@@ -16,18 +20,13 @@ has settings_elements => (
     ] }
 );
 
-use utf8;
-use Digest::SHA1 ();
+has '+default_auth' => ( default => 1 );
 
-sub auto :Private {
-    my ($self, $c) = @_;
-
-    if ( $c->action->reverse =~ m{^member/(?:forgot|reset)_password$} ) {
-        return 1;
-    } else {
-        $c->forward('/auth/assert_logged_in') or return;
+sub _build_auth_info {
+    return {
+        forgot_password => 0,
+        reset_password => 0,
     }
-    return 1;
 }
 
 sub load_member :Chained :PathPart('member') CaptureArgs(1) {
@@ -75,7 +74,6 @@ sub view :Chained('load_member') :PathPart('') Args(0) {
 sub follow :Chained('load_member') :Args(0) {
     my ($self, $c) = @_;
 
-    $c->forward('/auth/assert_logged_in') or return;
     $c->registry(api => 'MemberRelationship')->follow($c->user, $c->stash->{member});
     $c->res->redirect($c->uri_for($c->stash->{member}->id));
     return ();
@@ -83,7 +81,6 @@ sub follow :Chained('load_member') :Args(0) {
 
 sub unfollow :Chained('load_member') :Args(0) {
     my ($self, $c) = @_;
-    $c->forward('/auth/assert_logged_in') or return;
     $c->registry(api => 'MemberRelationship')->unfollow($c->user, $c->stash->{member});
     $c->res->redirect($c->uri_for($c->stash->{member}->id));
     return ();

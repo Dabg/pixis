@@ -5,13 +5,14 @@ use utf8;
 use YAML::Syck ();
 use Data::Visitor::Callback;
 
-BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession) }
-
-sub auto :Private {
-    my ( $self, $c ) = @_;
-    $c->forward('/auth/assert_logged_in') or return;
-    return 1;
+BEGIN { 
+    extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
+    with 'Pixis::Web::ControllerBase::WithSubsession';
 }
+
+has '+default_auth' => (
+    default => 1
+);
 
 sub index : Local :Path('') :Args(0) :FormConfig {
     my ( $self, $c ) = @_;
@@ -135,11 +136,23 @@ sub view : Chained('load_profile') : PathPart('') Args(0) {
     return ();
 }
 
-sub edit :Chained('load_profile') : PathPart('edit') :Args(0) :FormConfig {
+sub is_owner {
+    my ($self, $c) = @_;
+    my $profile = $c->stash->{profile};
+    return $profile->member_id == $c->user->id
+}
+
+sub edit
+    :Chained('load_profile')
+    :PathPart('edit')
+    :Args(0)
+    :FormConfig
+{
     my ( $self, $c ) = @_;
 
-    $c->stash->{profile}->member_id == $c->user->id
-        or return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+    if (! $self->is_owner($c)) {
+        return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+    }
 
     my $form = $c->stash->{form};
     $form->model->default_values($c->stash->{profile});

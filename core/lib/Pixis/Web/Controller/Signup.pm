@@ -9,7 +9,10 @@ use namespace::clean -except => qw(meta);
 #
 # steps: the sequence of actions to handle signup state
 
-BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession) }
+BEGIN {
+    extends 'Catalyst::Controller::HTML::FormFu';
+    with 'Pixis::Web::ControllerBase::WithSubsession';
+}
 
 has steps => (
     metaclass => 'Collection::Array',

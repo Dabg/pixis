@@ -5,13 +5,12 @@ use utf8;
 use YAML::Syck ();
 use Data::Visitor::Callback;
 
-BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase::WithSubsession ) };
-
-sub auto :Private {
-    my ( $self, $c ) = @_;
-    $c->forward('/auth/assert_logged_in') or return;
-    return 1;
+BEGIN {
+    extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
+    with 'Pixis::Web::ControllerBase::WithSubsession';
 }
+
+has '+default_auth' => (default => 1);
 
 sub index
     :Local

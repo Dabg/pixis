@@ -20,11 +20,7 @@ has cancel_url => (
     default => 'cancel'
 );
 
-sub auto :Private {
-    my ($self, $c) = @_;
-    $c->forward('/auth/assert_logged_in');
-    return ();
-}
+has '+default_auth' => (default => 1);
 
 sub initiate_purchase :Private {
     my ($self, $c) = @_;

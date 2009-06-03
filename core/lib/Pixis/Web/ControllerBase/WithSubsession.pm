@@ -1,8 +1,6 @@
 package Pixis::Web::ControllerBase::WithSubsession;
-use Moose;
+use Moose::Role;
 use namespace::clean -except => qw(meta);
-
-BEGIN { extends 'Catalyst::Controller' }
 
 has subsession_expires => (
     is => 'ro',
@@ -52,8 +50,6 @@ sub delete_subsession {
     my ($self, $c, $subsession, $value) = @_;
     return delete $c->session->{__subsessions}->{$subsession};
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
