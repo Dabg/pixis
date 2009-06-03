@@ -149,7 +149,7 @@ sub update {
     my $schema = Pixis::Registry->get(schema => 'Master');
     my $guard  = $schema->txn_scope_guard;
 
-    my $id = delete $args->{id};
+    my $id = delete $args->{profile_id};
     my $link = $schema->resultset('MemberToProfile')->search(
         {
             member_id  => $args->{member_id},
@@ -168,20 +168,28 @@ sub update {
     $guard->commit;
 }
 
-sub update_from_form {
-    my ($self, $user, $form) = @_;
-    my $schema = Pixis::Registry->get(schema => 'master');
-    my $rs = $schema->resultset('Profile');
-    my %args = (
-        bio => $form->param('bio') || undef,
-        member_id => $user->id,
-    );
-    if ( $form->param('id') ) {
-        $args{id} = $form->param('id');
-    }
+sub delete {
+    my ($self, $args) = @_;
 
-    my $profile = $rs->update_or_create(\%args);
-    return $profile;
+    my $schema = Pixis::Registry->get(schema => 'Master');
+    my $guard  = $schema->txn_scope_guard;
+
+    my $id = delete $args->{profile_id};
+    my $link = $schema->resultset('MemberToProfile')->search(
+        {
+            member_id  => $args->{member_id},
+            profile_id => $id,
+        }
+    )->single;
+
+    $schema->resultset( $link->moniker )->search(
+        {
+            id => $id,
+        }
+    )->delete();
+    $link->delete;
+
+    $guard->commit;
 }
 
 __PACKAGE__->meta->make_immutable;

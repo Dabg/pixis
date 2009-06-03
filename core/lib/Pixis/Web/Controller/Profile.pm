@@ -163,20 +163,30 @@ sub edit
         my $profile = $api->update( {
             %$args,
             member_id => $c->user->id,
-            id => $c->stash->{profile}->id
+            profile_id => $c->stash->{profile}->id
         } );
         $c->res->redirect($c->uri_for($c->stash->{profile}->id));
     }
     return ();
 }
 
-sub delete : Chained('load_profile') :PathPart('delete') :Args(0) :FormConfig {
+sub delete
+    :Chained('load_profile')
+    :PathPart('delete')
+    :Args(0)
+    :FormConfig
+{
     my ( $self, $c ) = @_;
 
-    $c->stash->{profile}->member_id == $c->user->id
-        or return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+    if (! $self->is_owner($c)) {
+        return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+    }
+
     if ($c->stash->{form}->submitted_and_valid) {
-        $c->registry(api => 'Profile')->delete($c->stash->{profile}->id);
+        $c->registry(api => 'Profile')->delete({
+            member_id => $c->user->id,
+            profile_id => $c->stash->{profile}->id
+        });
         $c->res->redirect($c->uri_for('/member/settings'));
     }
     return ();
