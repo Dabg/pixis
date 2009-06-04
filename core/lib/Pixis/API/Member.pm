@@ -56,7 +56,7 @@ around create => sub {
     });
 
     # Also a public profile
-    Pixis::Registry->get(api => 'Profile')->create({ member_id => $member->id, display_name => $member->nickname });
+    Pixis::Registry->get(api => 'Profile')->create_type("private", { member_id => $member->id, display_name => $member->nickname });
 
     $guard->commit;
     return $member;
@@ -264,11 +264,20 @@ around delete => sub {
     my $schema = Pixis::Registry->get(schema => 'master');
     my $guard  = $schema->txn_scope_guard();
 
-    $schema->resultset('Profile')->search(
+    my $rs = $schema->resultset('MemberToProfile')->search(
         {
             member_id => $id
         }
-    )->delete;
+    );
+    my $link = $rs->single;
+    if ($link) {
+        $schema->resultset( $link->moniker )->search(
+            {
+                id => $link->profile_id,
+            }
+        )->delete;
+    }
+    $rs->delete;
 
     $next->($self, $id);
 

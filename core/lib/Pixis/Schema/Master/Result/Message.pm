@@ -34,11 +34,13 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->utf8_columns('subject','body');
+=pod
 __PACKAGE__->belongs_to(
     'from_profile',
     'Pixis::Schema::Master::Result::Profile',
     'from_profile_id'
 );
+=cut
 __PACKAGE__->has_many(
     'recipients',
     'Pixis::Schema::Master::Result::MessageRecipient',
