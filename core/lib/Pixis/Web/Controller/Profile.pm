@@ -72,7 +72,7 @@ sub create
 
     # ok, attempt to load the form
     my $form = $self->form;
-    $form->load_config_filestem("root/forms/profile/create_$type");
+    $form->load_config_filestem("profile/create_$type");
     $form->action($c->uri_for('type', $type, 'create'));
     $form->process;
 
