@@ -56,7 +56,7 @@ around create => sub {
     });
 
     # Also a public profile
-    #Pixis::Registry->get(api => 'Profile')->create({ member_id => $member->id, display_name => $member->nickname });
+    Pixis::Registry->get(api => 'Profile')->create_type("private", { member_id => $member->id, display_name => $member->nickname });
 
     $guard->commit;
     return $member;
