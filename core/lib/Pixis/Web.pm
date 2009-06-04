@@ -473,20 +473,14 @@ sub handle_exception {
     my( $c )  = @_;
     my $error = $c->error->[ 0 ];
 
-use Data::Dumper;
-warn Dumper($error);
-
     if( !Scalar::Util::blessed( $error ) || !$error->isa( 'Pixis::Web::Exception' ) ) {
         $error = Pixis::Web::Exception->new( message => "$error" );
     }
 
     # handle debug-mode forced-debug from RenderView
     if( $c->debug && $error->message =~ m{Forced debug}i ) {
-warn "hoge";
         return;
     }
-
-warn "here";
 
     # handle debug-mode forced-debug from RenderView
     $c->clear_errors;
@@ -501,17 +495,12 @@ warn "here";
 
     # log the error
     if ( $error->is_server_error ) {
-warn $c->log;
         $c->log->error( $error->as_string );
     }
     elsif ( $error->is_client_error ) {
         $c->log->warn( join(' ', $c->request->uri, $error->status, $error->as_string ) ) if $error->status =~ /^40[034]$/;
     }
 
-warn $c->log;
-use Data::Dumper;
-warn Dumper($c->log);
-$c->log->_flush();
     if( $error->is_redirect ) {
         # recent Catalyst will give us a default body for redirects
 
