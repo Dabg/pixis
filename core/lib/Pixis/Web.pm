@@ -97,13 +97,12 @@ sub setup_virtual_components {
 
         $comp =~ s/^Pixis::Web/$class/;
 
-
-        $class->log->debug( "Setting up virtual class $comp" )
-            if $class->debug;
         eval { Class::MOP::load_class($comp) };
         if (! $@) {
             next;
         }
+        $class->log->debug( "Setting up virtual class $comp" )
+            if $class->debug;
         my $meta =
             Moose::Meta::Class->create($comp, superclasses => [ $base ]);
         $VIRTUAL_COMPONENTS{$comp}++;
