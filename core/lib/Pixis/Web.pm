@@ -291,7 +291,10 @@ sub setup_config {
             PROVIDERS => [
                 { name => 'Encoding',
                   args => {
-                    INCLUDE_PATH => [ $class->path_to('root') ],
+                    INCLUDE_PATH => [
+                        $class->path_to('root'),
+                        __PACKAGE__->path_to('root'),
+                    ],
                     COMPILE_DIR  => $class->path_to('tt2'),
                   }
                 }
@@ -343,7 +346,7 @@ sub setup_finalize {
     $self->setup_pixis_plugins();
     return;
 };
-sub debug { 1 }
+
 sub setup_pixis_plugins {
     my $self = shift;
 

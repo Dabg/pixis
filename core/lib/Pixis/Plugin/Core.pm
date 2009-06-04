@@ -5,6 +5,10 @@ use Moose;
 use namespace::clean -except => qw(meta);
 with 'Pixis::Plugin';
 
+sub _build_include_path {
+    return []; # Core templates should be read in by the app, not the plugin
+}
+
 before register => sub {
     my ($self, $c) = @_;
 
