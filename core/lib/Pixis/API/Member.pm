@@ -264,11 +264,20 @@ around delete => sub {
     my $schema = Pixis::Registry->get(schema => 'master');
     my $guard  = $schema->txn_scope_guard();
 
-    $schema->resultset('Profile')->search(
+    my $rs = $schema->resultset('MemberToProfile')->search(
         {
             member_id => $id
         }
-    )->delete;
+    );
+    my $link = $rs->single;
+    if ($link) {
+        $schema->resultset( $link->moniker )->search(
+            {
+                id => $link->profile_id,
+            }
+        )->delete;
+    }
+    $rs->delete;
 
     $next->($self, $id);
 
