@@ -70,7 +70,7 @@ sub next_step :Private {
         $p = $self->get_subsession($c, $subsession);
     } else {
         $p = {};
-        $subsession = $self->new_subsession($c);
+        $subsession = $self->new_subsession($c, $p);
     }
 
     my $step;
