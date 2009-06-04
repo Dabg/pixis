@@ -14,12 +14,6 @@ my %TT_ARGS            = ();
 my @PLUGINS            = ();
 my %VIRTUAL_COMPONENTS = ();
 
-# if you have Log4perl installed, you get colored messages. Yey!
-use constant HAVE_LOG4PERL => eval {
-    require Catalyst::Log::Log4perl;
-    1;
-};
-
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
 use Module::Pluggable::Object;
@@ -35,6 +29,7 @@ BEGIN {
     extends 'Catalyst';
 }
 
+sub debug { 1 }
 sub setup {
     my ($class, %plugin_config) = @_;
 
@@ -322,22 +317,6 @@ sub registry { ## no critic
     return $REGISTRY->get(@_);
 }
 
-sub setup_log {
-    my $self = shift;
-    my $file = $self->path_to('Log4perl.conf');
-    if (! HAVE_LOG4PERL || ! -f $file) {
-        $self->SUPER::setup_log(@_);
-    } else {
-        $self->log(
-            Catalyst::Log::Log4perl->new(
-                $file->stringify,
-                (autoflush => 1, watch_delay => 5, override_cspecs => 1)
-            )
-        );
-    }
-    return();
-}
-
 sub setup_finalize {
     my ($self, @args) = @_;
 
@@ -490,14 +469,20 @@ sub handle_exception {
     my( $c )  = @_;
     my $error = $c->error->[ 0 ];
 
+use Data::Dumper;
+warn Dumper($error);
+
     if( !Scalar::Util::blessed( $error ) || !$error->isa( 'Pixis::Web::Exception' ) ) {
         $error = Pixis::Web::Exception->new( message => "$error" );
     }
 
     # handle debug-mode forced-debug from RenderView
     if( $c->debug && $error->message =~ m{Forced debug}i ) {
+warn "hoge";
         return;
     }
+
+warn "here";
 
     # handle debug-mode forced-debug from RenderView
     $c->clear_errors;
@@ -512,12 +497,17 @@ sub handle_exception {
 
     # log the error
     if ( $error->is_server_error ) {
+warn $c->log;
         $c->log->error( $error->as_string );
     }
     elsif ( $error->is_client_error ) {
         $c->log->warn( join(' ', $c->request->uri, $error->status, $error->as_string ) ) if $error->status =~ /^40[034]$/;
     }
 
+warn $c->log;
+use Data::Dumper;
+warn Dumper($c->log);
+$c->log->_flush();
     if( $error->is_redirect ) {
         # recent Catalyst will give us a default body for redirects
 
