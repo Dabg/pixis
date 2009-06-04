@@ -138,3 +138,10 @@ msgstr "メッセージ"
 
 msgid "Profile"
 msgstr "プロフィール"
+
+msgid "Are you sure you want to delete [_1]?"
+msgstr "本当に%1を削除しますか？"
+
+msgid "this profile"
+msgstr "このプロフィール"
+
