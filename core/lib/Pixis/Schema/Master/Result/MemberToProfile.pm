@@ -30,7 +30,7 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key('member_id', 'profile_id');
-#__PACKAGE__->has_many(profiles => 'Pixis::Schema::Master::Result::Profile' => 'profile_type_id');
+__PACKAGE__->add_unique_constraint(['profile_id']);
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
