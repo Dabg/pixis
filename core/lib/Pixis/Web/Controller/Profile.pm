@@ -146,17 +146,24 @@ sub edit
     :Chained('load_profile')
     :PathPart('edit')
     :Args(0)
-    :FormConfig
+#    :FormConfig
 {
     my ( $self, $c ) = @_;
 
     if (! $self->is_owner($c)) {
         return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
     }
-
-    my $form = $c->stash->{form};
-    $form->model->default_values($c->stash->{profile});
     my $api = $c->registry(api => 'Profile');
+
+    my $type = $api->detect_type($c->stash->{profile})->name;
+    my $form = $self->form;
+    $form->load_config_filestem("profile/create_$type");
+    $form->process;
+    $c->stash->{form} = $form;
+
+    $form->model->default_values($c->stash->{profile});
+
+#    my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
         my $args = $form->params;
         delete $args->{submit};

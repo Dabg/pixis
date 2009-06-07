@@ -7,14 +7,16 @@
 [%#<h2><a href="/member/settings/basic">%][%# loc("Basic Settings") %][%#</a></h2>%]
 <h2>[% loc("Profiles") %]</h2>
 
+[% SET papi = c.registry('api', 'Profile') %]
+
 <ul>
 [% FOREACH profile IN profiles %]
 <li>
-    <a href="[% c.uri_for('/profile', profile.id, 'edit') %]">[% profile.display_name | html %]</a>
+    <a href="[% c.uri_for('/profile', profile.id, 'edit') %]">[% papi.detect_type(profile).name | html %]</a>
 </li>
 [% END %]
 
-[% FOREACH profile IN c.registry('api', 'Profile').all_profile_types %]
+[% FOREACH profile IN papi.all_profile_types %]
 <li>
     <a href="[% c.uri_for('/profile/type', profile.name, 'create' ) %]">[% loc("Create [_1] Profile", profile.name) %]</a>
 </li>

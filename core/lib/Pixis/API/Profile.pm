@@ -192,6 +192,12 @@ sub delete {
     $guard->commit;
 }
 
+sub detect_type {
+    my ($self, $profile) = @_;
+    my $moniker = [ split('::', ref $profile) ]->[-1];
+    return [grep {$_->moniker eq $moniker} $self->all_profile_types]->[0];
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
