@@ -376,7 +376,7 @@ sub setup_pixis_plugins {
 
     foreach my $plugin (@plugins) {
         my $pkg = $plugin;
-        my $args = $self->config->{plugins}->{config}->{$plugin} || {} ;
+        my $args = $self->config->{$plugin} || {} ;
         $self->log->debug("[Pixis Plugin]: Loading plugin $pkg")
             if $self->debug;
         eval {
