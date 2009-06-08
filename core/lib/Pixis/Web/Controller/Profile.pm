@@ -95,7 +95,8 @@ sub create_confirm
     my ($self, $c, $subsession) = @_;
 
     my $type = $c->stash->{profile_type};
-    $c->stash->{template} = "profile/confirm_$type.tt";
+    $c->stash->{next_url} = $c->uri_for('type', $type, 'create', 'commit', $subsession);
+    $c->stash->{template} = "profile/confirm.tt";
     $c->stash->{subsession} = $subsession;
     $c->stash->{profile}  = $self->get_subsession($c, $subsession);
 }
@@ -146,7 +147,6 @@ sub edit
     :Chained('load_profile')
     :PathPart('edit')
     :Args(0)
-#    :FormConfig
 {
     my ( $self, $c ) = @_;
 
@@ -163,18 +163,46 @@ sub edit
 
     $form->model->default_values($c->stash->{profile});
 
-#    my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
         my $args = $form->params;
         delete $args->{submit};
-        my $profile = $api->update( {
-            %$args,
-            member_id => $c->user->id,
-            profile_id => $c->stash->{profile}->id
-        } );
-        $c->res->redirect($c->uri_for($c->stash->{profile}->id));
+        my $subsession = $self->new_subsession($c, $args);
+        $c->res->redirect($c->uri_for($c->stash->{profile}->id, 'edit', 'confirm', $subsession) );
     }
     return ();
+}
+
+sub edit_confirm
+    :Chained('load_profile')
+    :PathPart('edit/confirm')
+    :Args(1)
+{
+    my ($self, $c, $subsession) = @_;
+
+    $c->stash->{template} = "profile/confirm.tt";
+    $c->stash->{next_url} = $c->uri_for($c->stash->{profile}->id, 'edit', 'commit', $subsession);
+    $c->stash->{subsession} = $subsession;
+    $c->stash->{profile_type} = $c->registry(api => 'Profile')
+        ->detect_type($c->stash->{profile})->name;
+    $c->stash->{profile}  = $self->get_subsession($c, $subsession);
+}
+
+sub edit_commit
+    :Chained('load_profile')
+    :PathPart('edit/commit')
+    :Args(1)
+{
+    my ($self, $c, $subsession) = @_;
+
+    my $api = $c->registry(api => 'Profile');
+    my $hash = $self->get_subsession($c, $subsession);
+    $hash->{member_id} = $c->user->id;
+    $hash->{profile_id} = $c->stash->{profile}->id;
+
+    my $profile = $api->update( $hash );
+    $self->delete_subsession($c, $subsession);
+
+    return $c->res->redirect($c->uri_for($profile->id));
 }
 
 sub delete
