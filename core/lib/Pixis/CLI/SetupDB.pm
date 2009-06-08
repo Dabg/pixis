@@ -53,9 +53,7 @@ sub run {
         add_drop_table => $self->drop
     });
 
-    my @sources = $schema->sources;
-
-    foreach my $source (@sources) {
+    foreach my $source ($schema->sources) {
         my $class = $schema->class($source);
         if (my $code = $class->can('populate_initial_data')) {
             eval {
