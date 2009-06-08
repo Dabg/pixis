@@ -92,6 +92,10 @@ sub settings
 {
     my ($self, $c) = @_;
 
+    $c->stash(
+        widgets => [ 'Member::BasicSettings', 'Member::AuthSettings' ],
+    );
+=head1
     # Let plugins configure elements that goes in the member settings
     foreach my $element ($self->settings_elements) {
         # XXX FIXME I just randomly chose this method name
@@ -102,6 +106,7 @@ sub settings
             $element->prepare($self, $c);
         }
     }
+=cut
 }
 
 sub prepare_profiles { # XXX Refactor this to profile later
