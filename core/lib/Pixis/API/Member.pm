@@ -55,9 +55,6 @@ around create => sub {
         auth_data => Digest::SHA1::sha1_hex(delete $args->{password}),
     });
 
-    # Also a public profile
-    Pixis::Registry->get(api => 'Profile')->create_type("private", { member_id => $member->id, display_name => $member->nickname });
-
     $guard->commit;
     return $member;
 };
