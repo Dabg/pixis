@@ -16,6 +16,20 @@ has widgets => (
     }
 );
 
+# Model::Widget:
+#    namespaces:
+#       - MyApp::Widget
+#       - Pixi::Widget
+has namespaces => (
+    metaclass => 'Collection::Array',
+    is => 'ro',
+    isa => 'ArrayRef[Str]',
+    default => sub { [ qw(Pixis::Widget) ] },
+    provides => {
+        elements => 'all_namespaces'
+    }
+);
+
 sub load {
     my ($self, $type) = @_;
 
@@ -28,8 +42,17 @@ sub load {
     my $widget = $self->widget_get( $type );
 
     if (! $widget) {
-        my $class = "Pixis::Widget::$type";
-        Class::MOP::load_class($class);
+        my $class;
+        foreach my $namespace ($self->all_namespaces) {
+            $class = "$namespace\::$type";
+            eval {
+                Class::MOP::load_class($class);
+            };
+            last if ! $@;
+        }
+        if (! $class) {
+            confess "Could not find a widget by the name of $type";
+        }
         $widget = $class->new();
         $self->widget_set( $type, $widget );
     }
