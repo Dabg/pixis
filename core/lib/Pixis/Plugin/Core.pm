@@ -45,7 +45,6 @@ before register => sub {
         Payment::Transaction 
         PurchaseItem 
         Profile 
-        ProfileType 
         Message 
         MessageRecipient
     ) {
