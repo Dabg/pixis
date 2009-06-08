@@ -1,0 +1,13 @@
+<div class="section">
+<h2>[% loc("Profile") %]</h2>
+[%# By default, we only allow public profile %]
+
+<ul>
+    [% IF (args.profile) %]
+        <li><a href="[% c.uri_for("/profile", args.profile.id, "edit") %]">プロフィールを編集する</a></li>
+    [% ELSE %]
+        <li><a href="[% c.uri_for("/profile/type/public/create") %]">プロフィールを作成する</a></li>
+    [% END %]
+</ul>
+
+</div>

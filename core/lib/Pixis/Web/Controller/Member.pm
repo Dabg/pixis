@@ -9,17 +9,6 @@ BEGIN {
     extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
 }
 
-has settings_elements => (
-    is => 'ro',
-    auto_deref => 1,
-    isa => 'ArrayRef',
-    default => sub { +[
-        \&prepare_profiles,
-        \&prepare_basic_settings,
-        \&prepare_auth_settings,
-    ] }
-);
-
 has '+default_auth' => ( default => 1 );
 
 sub _build_auth_info {
@@ -93,20 +82,8 @@ sub settings
     my ($self, $c) = @_;
 
     $c->stash(
-        widgets => [ 'Member::BasicSettings', 'Member::AuthSettings' ],
+        widgets => [ 'Member::BasicSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ],
     );
-=head1
-    # Let plugins configure elements that goes in the member settings
-    foreach my $element ($self->settings_elements) {
-        # XXX FIXME I just randomly chose this method name
-        # need to rethink how this is done.
-        if (ref $element eq 'CODE') {
-            $element->($self, $c);
-        } elsif (blessed $element) {
-            $element->prepare($self, $c);
-        }
-    }
-=cut
 }
 
 sub prepare_profiles { # XXX Refactor this to profile later
@@ -116,25 +93,6 @@ sub prepare_profiles { # XXX Refactor this to profile later
         ->load_from_member({ member_id => $c->user->id });
 
     $c->stash->{"profiles"} = [ @profiles ];
-    return ();
-}
-
-sub prepare_basic_settings {
-    my ($self, $c) = @_;
-
-    my $form = $self->form;
-    $form->load_config_filestem('member/settings_basic');
-    my $user = $c->registry(api => 'Member')->find($c->user->id);
-    $form->model->default_values($user);
-    $c->stash->{form} = $form;
-    return ();
-}
-
-sub prepare_auth_settings {
-    my ($self, $c) = @_;
-    my $form = $self->form();
-    $form->load_config_filestem('member/settings_auth');
-    $c->stash->{form_password} = $form;
     return ();
 }
 
