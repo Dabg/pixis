@@ -8,6 +8,7 @@ END;
 # Main macro to run widgets
 MACRO run_widget(name, args) BLOCK;
     DEFAULT args = {};
+    DEFAULT args.context = c;
     DEFAULT args.user = c.user;
     DEFAULT args.request = c.req;
     DEFAULT args.page    = page;

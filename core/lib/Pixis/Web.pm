@@ -245,6 +245,22 @@ sub setup_config {
                 }
             }
         },
+        'Model::FormFu' => {
+            formfu_config => {
+                render_method => 'tt',
+                config_file_path => [
+                    $class->path_to('root', 'forms')->stringify,
+                    __PACKAGE__->path_to('root', 'forms')->stringify,
+                ],
+                tt_args => {
+                    COMPILE_DIR  => $class->path_to('tt2'),
+                    INCLUDE_PATH => [
+                        $class->path_to('root', 'forms')->stringify,
+                        __PACKAGE__->path_to('root', 'forms')->stringify,
+                    ]
+                }
+            }
+        },
         'Model::Data::Localize' => {
             localizers => \@localizers
         },
@@ -444,6 +460,13 @@ sub add_translation_path {
     return ();
 }
 
+# XXX FIXME - plugins should probably access the model directly
+sub add_formfu_path {
+    my ($self, @paths) = @_;
+    $self->model('FormFu')->add_config_file_path(@paths);
+}
+
+=head1
 sub add_formfu_path {
     my ($self, @paths) = @_;
 
@@ -466,6 +489,7 @@ sub add_formfu_path {
 
     return ();
 }
+=cut
 
 
 sub handle_exception {

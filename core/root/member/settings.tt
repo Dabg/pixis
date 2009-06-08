@@ -3,33 +3,8 @@
     page.heading.content = 'ユーザー設定' %]
 
 <div id="content">
-<div class="form_full section">
-[%#<h2><a href="/member/settings/basic">%][%# loc("Basic Settings") %][%#</a></h2>%]
-<h2>[% loc("Profiles") %]</h2>
-
-[% SET papi = c.registry('api', 'Profile') %]
-
-<ul>
-[% FOREACH profile IN profiles %]
-<li>
-    <a href="[% c.uri_for('/profile', profile.id, 'edit') %]">[% papi.detect_type(profile).name | html %]</a>
-</li>
+[% FOREACH widget IN widgets %]
+[% run_widget(widget, args) %]
 [% END %]
-
-[% FOREACH profile IN papi.all_profile_types %]
-<li>
-    <a href="[% c.uri_for('/profile/type', profile.name, 'create' ) %]">[% loc("Create [_1] Profile", profile.name) %]</a>
-</li>
-[% END %]
-</ul>
-
-<h2>[% loc("Basic Settings") %]</h2>
-[% form %]
-</div><!-- section -->
-
-<div class="form_full section">
-<h2>パスワード</h2>
-[% form_password %]
-</div><!-- section -->
 </div><!-- content -->
 [% END %]
