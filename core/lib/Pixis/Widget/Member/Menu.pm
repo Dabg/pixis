@@ -8,9 +8,4 @@ sub _build_tempalte {
     return Path::Class::File->new("widget", "member", "menu.tt");
 }
 
-sub run {
-    my ($self, $args) = @_;
-
-}
-
 1;
