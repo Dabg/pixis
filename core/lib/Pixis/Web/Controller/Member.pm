@@ -18,7 +18,11 @@ sub _build_auth_info {
     }
 }
 
-sub load_member :Chained :PathPart('member') CaptureArgs(1) {
+sub load_member
+    :Chained
+    :PathPart('member')
+    :CaptureArgs(1)
+{
     my ($self, $c, $id) = @_;
 
     my $api = $c->registry(api => 'Member');
@@ -40,7 +44,11 @@ sub home :Local {
     return $c->res->redirect($c->uri_for($c->user->id));
 }
 
-sub view :Chained('load_member') :PathPart('') Args(0) {
+sub view
+    :Chained('load_member')
+    :PathPart(''):
+    Args(0)
+{
     my ($self, $c) = @_;
 
     {
@@ -56,6 +64,7 @@ sub view :Chained('load_member') :PathPart('') Args(0) {
         $c->stash->{activities} = 
             [ $api->load_recent_activity( { member_id => $c->user->id } ) ];
     }
+
     return ();
 }
 

@@ -1,0 +1,16 @@
+<ul id="member_menu" class="clearfix">
+[% IF (args.target_member.id != args.user.id) %]
+    <li><a href="/member/home">[% loc("Member Home") %]</a></li>
+    <li>[% IF (c.registry('api', 'MemberRelationship').is_following(args.user, member)) -%]
+        <a href="/member/[% member.id %]/unfollow">[% loc("Unfollow") %]</a>
+    [%- ELSE -%]
+        <a href="/member/[% member.id %]/follow">[% loc("Follow") %]</a>
+    [%- END -%]
+    </li>
+[% ELSE %]
+    <li><a href="/member/home">[% loc("Member Home") %]</a></li>
+    <li><a href="/member/settings">[% loc("Member Settings") %]</a></li>
+[% END %]
+    <li><a href="/member/search">[% loc("Member Search") %]</a></li>
+</ul>
+
