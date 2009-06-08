@@ -2,8 +2,19 @@
 
 package Pixis::Plugin::Core;
 use Moose;
+use MooseX::AttributeHelpers;
 use namespace::clean -except => qw(meta);
 with 'Pixis::Plugin';
+
+has namespaces => (
+    metaclass => 'Collection::Array',
+    is => 'ro',
+    isa => 'ArrayRef[Str]',
+    default => sub { +[ qw( Pixis::API ) ] },
+    provides => {
+        elements => 'all_namespaces'
+    }
+);
 
 sub _build_include_path {
     return []; # Core templates should be read in by the app, not the plugin
@@ -39,9 +50,19 @@ before register => sub {
         MessageRecipient
     ) {
         my $api_config = $config->{"API::$name"} || {};
-        my $module     = "Pixis::API::$name";
+        my $module;
+        foreach my $namespace ($self->all_namespaces) {
+            $module = "$namespace\::$name";
+            eval {
+                Class::MOP::load_class($module);
+            };
+            last if !$@;
+        }
+        if (! $module) {
+            confess "Could not find an API by the name $name";
+        }
+
         eval {
-            Class::MOP::load_class($module);
             my $api = $module->new(%$api_config);
             push @list, $api;
         };
