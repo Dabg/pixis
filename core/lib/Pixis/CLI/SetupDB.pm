@@ -53,9 +53,7 @@ sub run {
         add_drop_table => $self->drop
     });
 
-    # remove these known tables, and rearrange them
-    my @sources = grep { !/ProfileType$/ } $schema->sources;
-    unshift @sources, 'ProfileType';
+    my @sources = $schema->sources;
 
     foreach my $source (@sources) {
         my $class = $schema->class($source);
@@ -72,3 +70,4 @@ sub run {
 }
 
 1;
+
