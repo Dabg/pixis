@@ -549,6 +549,50 @@ sub handle_exception {
 
 __END__
 
+=head1 NAME
+
+Pixis::Web - Extensible Catalyst Application Framework
+
+=head1 SYNOPSIS
+
+    package MyApp;
+    use Moose;
+    use Catalyst;
+    use namespace::clean -except => qw(meta);
+
+    BEGIN { extends 'Pixis::Web' }
+
+    __PACKAGE__->setup_config(
+        # Specify any extra config variables here
+    );
+    __PACKAGE__->setup();
+
+    1;
+
+=head1 MODES OF OPERATION
+
+You can either override Pixis::Web as described in the SYNOPSIS, or you can
+write/include a set of plugins. Plugins allows you to add functionality without
+having to change Pixis itself,, while extending Pixis::Web allows you to 
+completely hijack how the application behaves.
+
+=head1 EXTENDING Pixis::Web (OVERRIDING Pixis::Web)
+
+When you extend Pixis::Web, the framework will generate matching components
+from pixis in memory. For example, Pixis::Web::Controller::Auth will cause
+Pixis::Web to automatically generate MyApp::Controller::Auth.
+
+If, however, you provide your own MyApp::Controller::Auth, this will not be
+the case. Pixis will happilly allow you to create a controller of the same name.
+If you would like to extend the original controller, you may do so by
+explicitly extending the original class:
+
+    package MyApp::Controller::Auth;
+    use Moose;
+    use namespace::clean -except => qw(meta);
+
+    BEGIN { extends 'Pixis::Web::Controller::Auth' }
+
 =head1 WRITING PLUGINS
 
 To write a plugin, create an object that implements 'register'. Use the following methods to add the appropriate 'stuff' for your plugin:
@@ -559,25 +603,11 @@ To write a plugin, create an object that implements 'register'. Use the followin
 
 Adds include paths for your templates
 
-=item add_navigation
-
-Add a hash that gets translated into the (global) navigation bar
-
 =item add_translation
 
 Add localization data
 
 =back
-
-=head1 TODO
-
-how to hijack the application?
-
-    package MyApp 
-    use Moose
-    extends Pixis::Web ?
-
-You can't generate controllers in memory?
 
 =cut
 
