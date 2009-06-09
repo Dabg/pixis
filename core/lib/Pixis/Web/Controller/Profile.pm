@@ -76,10 +76,8 @@ sub create
     }
 
     # ok, attempt to load the form
-    my $form = $self->form;
-    $form->load_config_filestem("profile/create_$type");
+    my $form = $self->form($c, "profile/create_$type");
     $form->action($c->uri_for('type', $type, 'create'));
-    $form->process;
 
     $c->stash->{form} = $form;
 
@@ -161,9 +159,7 @@ sub edit
     my $api = $c->registry(api => 'Profile');
 
     my $type = $api->detect_type($c->stash->{profile})->name;
-    my $form = $self->form;
-    $form->load_config_filestem("profile/create_$type");
-    $form->process;
+    my $form = $self->form($c, "profile/create_$type");
     $c->stash->{form} = $form;
 
     $form->model->default_values($c->stash->{profile});
