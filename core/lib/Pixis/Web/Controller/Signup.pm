@@ -27,9 +27,23 @@ has steps => (
     }
 );
 
+has activation_mail_header => (
+    metaclass => 'Collection::Hash',
+    is => 'rw',
+    isa => 'HashRef',
+    lazy_build => 1,
+    required => 1,
+);
 
 sub _build_steps {
     return ['start', 'experience', 'commit', 'send_activate', 'activate' ]
+}
+
+sub _build_activation_mail_header {
+    return {
+        From => 'no-reply@pixis.local',
+        Subject => "登録アクティベーションメール",
+    }
 }
 
 sub index :Index :Args(0) :Path {
@@ -191,8 +205,7 @@ sub send_activate :Local :Args(1) {
     $c->controller('Email')->send($c, {
         header => {
             To   => $p->{email},
-            From => 'no-reply@pixis.local',
-            Subject => "登録アクティベーションメール",
+            %{$self->activation_mail_header},
         },
         body => $body
     });
