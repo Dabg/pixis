@@ -21,7 +21,7 @@ around create => sub {
         from_profile_id => $from->id,
         subject        => $args->{subject},
         body           => $args->{body},
-        is_system_message => $args->{is_system_message},
+        is_system_message => $args->{is_system_message} ? 1 : 0,
     );
 
     my $message = $next->($self, \%args);
@@ -93,31 +93,23 @@ sub load_from_query {
     return $self->load_multi(@ids);
 }
 
-sub opponent {
-    my ( $self, $message, $member ) = @_;
-    my $id;
-    $id = $message->from_profile_id if $self->is_in_message($message, $member);
-#    $id = $message->to_profile_id if $self->is_out_message($message, $member);
-    $id or return;
-    return Pixis::Registry->get(schema => 'master')
-        ->resultset('Profile')
-        ->find($id);
-}
-
-sub is_out_message {
-    my ( $self, $message, $member ) = @_;
-    return $message->from_profile->member->id == $member->id;
-}
-
-sub is_in_message {
-    my ( $self, $message, $member ) = @_;
-    my $found = Pixis::Registry->get(api => 'MessageRecipient')->search_with_member($message, $member);
-    return $found ? 1 : 0;
-}
-
 sub is_viewable {
     my ($self, $message, $member ) = @_;
-    return $self->is_out_message($message, $member) || $self->is_in_message($message, $member);
+
+    my $profile_api = Pixis::Registry->get(api => 'Profile');
+
+    my $from = $profile_api->find($message->from_profile_id);
+    if ($from->member_id eq $member->id) {
+        return 1;
+    }
+
+    foreach my $recipient ($message->recipients) {
+        my $to = $profile_api->find($recipient->to_profile_id);
+        if ($to->member_id eq $member->id) {
+            return 1;
+        }
+    }
+    return ();
 }
 
 __PACKAGE__->meta->make_immutable;
