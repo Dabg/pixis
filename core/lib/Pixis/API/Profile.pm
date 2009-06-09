@@ -85,6 +85,16 @@ sub find {
     return $profile ? $profile : ();
 }
 
+sub search_by_type {
+    my ($self, $type, @args) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+
+    my $profile = $schema->resultset( $type->moniker )->search(@args);
+
+    return $profile;
+}
+
 sub create_type {
     my ($self, $type, $args) = @_;
 
