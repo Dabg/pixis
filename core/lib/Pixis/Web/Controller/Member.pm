@@ -105,7 +105,7 @@ sub prepare_profiles { # XXX Refactor this to profile later
     return ();
 }
 
-sub settings_basic
+sub basic_settings
     :Path('settings/basic')
     :Args(0)
 {
@@ -116,7 +116,12 @@ sub settings_basic
     my $user = $c->registry(api => 'Member')->find($c->user->id);
     $form->model->default_values($user);
     if ($form->submitted_and_valid) {
-        $c->registry(api => 'Member')->update_from_form($user, $form);
+        my $params = $form->params;
+        delete $params->{submit};
+        $c->registry(api => 'Member')->update({
+            %$params,
+            id => $user->id
+        });
         if ($c->user->email ne $user->email) {
             # XXX - Hack to overcome Catalyst::Plugin::Authentication
             $c->session->{__user} = { $user->get_columns };
@@ -126,7 +131,7 @@ sub settings_basic
     return ();
 }
 
-sub settings_auth
+sub auth_settings
     :Path('settings/auth')
     :Args(0)
 {
