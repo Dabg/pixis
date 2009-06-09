@@ -62,13 +62,14 @@ sub ACCEPT_CONTEXT {
 sub load {
     my ($self, $name, $args) = @_;
 
-    my $form = $self->cache_get($name);
+    my $form; # = $self->cache_get($name);
     if (! $form) {
-        $form = HTML::FormFu->new( $self->formfu_config );
+        $form = HTML::FormFu->new( 
+            Catalyst::Utils::merge_hashes( $self->formfu_config, $args ) );
         $form->add_localize_object($self->localizer);
         $form->load_config_filestem($name);
 
-        $self->cache_set($name, $form);
+#        $self->cache_set($name, $form);
     }
     return $form;
 }

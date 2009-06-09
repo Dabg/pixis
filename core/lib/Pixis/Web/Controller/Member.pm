@@ -6,7 +6,7 @@ use utf8;
 use Digest::SHA1 ();
 
 BEGIN {
-    extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
+    extends qw(Pixis::Web::ControllerBase);
 }
 
 has '+default_auth' => ( default => 1 );
@@ -105,10 +105,14 @@ sub prepare_profiles { # XXX Refactor this to profile later
     return ();
 }
 
-sub settings_basic :Path('settings/basic') :Args(0) :FormConfig {
+sub settings_basic
+    :Path('settings/basic')
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     my $user = $c->registry(api => 'Member')->find($c->user->id);
     $form->model->default_values($user);
     if ($form->submitted_and_valid) {
@@ -122,10 +126,14 @@ sub settings_basic :Path('settings/basic') :Args(0) :FormConfig {
     return ();
 }
 
-sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
+sub settings_auth
+    :Path('settings/auth')
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         my ($auth) = $c->registry(api => 'MemberAuth')->load_auth(
             {
@@ -154,12 +162,16 @@ sub settings_auth :Path('settings/auth') :Args(0) :FormConfig {
     return ();
 }
 
-sub forgot_password :Local :Args(0) :FormConfig {
+sub forgot_password
+    :Local
+    :Args(0)
+{
     my ( $self, $c ) = @_;
 
     $c->logout;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         my $api = $c->registry(api => 'Member');
         my $member = $api->forgot_password({email => $form->param_value('email')});
@@ -184,12 +196,16 @@ sub forgot_password :Local :Args(0) :FormConfig {
     return ();
 }
 
-sub reset_password :Local :Args(0) :FormConfig {
+sub reset_password
+    :Local
+    :Args(0)
+{
     my ( $self, $c ) = @_;
 
     $c->logout;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         my $api = $c->registry(api => 'Member');
         my $member = $api->reset_password(
@@ -220,20 +236,28 @@ sub reset_password :Local :Args(0) :FormConfig {
     return ();
 }
 
-sub search :Local :Args(0) :FormConfig {
+sub search
+    :Local
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         $c->stash->{members} = $c->registry(api => 'Member')->search_members($form->params);
     }
     return ();
 }
 
-sub leave :Local :Args(0) :FormConfig {
+sub leave
+    :Local
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         $c->stash->{template} = 'member/leave_confirm.tt';
         $form->action('/member/leave/commit');
@@ -241,10 +265,14 @@ sub leave :Local :Args(0) :FormConfig {
     return ();
 }
 
-sub leave_commit :Path('leave/commit') :Args(0) :FormConfig {
+sub leave_commit
+    :Path('leave/commit')
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         $c->registry(api => 'Member')->soft_delete($c->user->id);
         $c->logout;

@@ -10,9 +10,11 @@ use namespace::clean -except => qw(meta);
 # steps: the sequence of actions to handle signup state
 
 BEGIN {
-    extends 'Catalyst::Controller::HTML::FormFu';
+    extends 'Pixis::Web::ControllerBase';
     with 'Pixis::Web::ControllerBase::WithSubsession';
 }
+
+has '+default_auth' => ( default => 0 );
 
 has steps => (
     metaclass => 'Collection::Array',
@@ -37,10 +39,12 @@ sub index :Index :Args(0) :Path {
 }
 
 # Ask things like name, and email address
-sub start :Local :Args(1) :FormConfig {
+sub start :Local :Args(1)
+{
     my ($self, $c, $subsession) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         # check if this email has already been taken
         my $member_api = $c->registry(api => 'Member');
@@ -101,10 +105,14 @@ sub next_step :Private {
 }
 
 # Ask things like coderepos/github accounts
-sub experience :Local :Args(1) :FormConfig {
+sub experience
+    :Local
+    :Args(1)
+{
     my ($self, $c, $subsession) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         my $p = $self->get_subsession($c, $subsession);
         my $params = Catalyst::Utils::merge_hashes($p, scalar $form->params);
@@ -115,10 +123,14 @@ sub experience :Local :Args(1) :FormConfig {
 }
 
 # All done, save
-sub commit :Local :Args(1) :FormConfig {
+sub commit
+    :Local
+    :Args(1)
+{
     my ($self, $c, $subsession) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         my $p = $self->get_subsession($c, $subsession);
         # submit element will exist... remove
@@ -137,10 +149,14 @@ sub commit :Local :Args(1) :FormConfig {
     return ();
 }
 
-sub activate :Local :Args(0) :FormConfig {
+sub activate
+    :Local
+    :Args(0)
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
         if ($c->registry(api => 'Member')->activate({
                 token => $form->param('token'),

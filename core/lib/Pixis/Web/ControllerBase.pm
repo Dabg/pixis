@@ -64,4 +64,19 @@ sub auto :Private {
     return 1;
 }
 
+sub form {
+    my ($self, $c, $args) = @_;
+
+    $args ||= {};
+    my $filename;
+    if (ref $args ) {
+        $filename = delete $args->{filename};
+    }
+    $filename ||= $c->action . "";
+    my $form = $c->model('FormFu')->load( $filename, $args );
+
+    $form->process($c->request);
+    return $form;
+}
+
 1;

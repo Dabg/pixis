@@ -2,15 +2,21 @@ package Pixis::Web::Controller::Auth;
 use Moose;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends 'Catalyst::Controller::HTML::FormFu' }
+BEGIN { extends 'Pixis::Web::ControllerBase' }
 
-sub fail : Private {
+has '+default_auth' => (default => 0);
+
+sub fail
+    :Private
+{
     my ($self, $c) = @_;
     $c->res->body("You don't have permission to use this resource");
     return ();
 }
 
-sub assert_logged_in :Private {
+sub assert_logged_in
+    :Private
+{
     my ($self, $c) = @_;
     if (! $c->user_exists) {
         $c->session->{next_uri} = $c->req->uri;
@@ -22,7 +28,9 @@ sub assert_logged_in :Private {
     return 1;
 }
 
-sub assert_roles : Private{
+sub assert_roles
+    :Private
+{
     my ($self, $c, @args) = @_;
 
     $self->assert_logged_in($c) or return ();
@@ -33,10 +41,14 @@ sub assert_roles : Private{
     return 1;
 }
 
-sub login :Local :FormConfig {
+sub login
+    :Local
+{
     my ($self, $c) = @_;
 
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
+
     if ($form->submitted_and_valid) {
         my $auth_ok = $c->forward('/auth/authenticate', [ 
             $form->param('email'), $form->param('password')
@@ -90,9 +102,13 @@ sub authenticate :Private {
     return ();
 }
 
-sub openid :Local :FormConfig {
+sub openid
+    :Local
+{
     my ($self, $c) = @_;
 
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ($c->req->param('openid-check')) {
         if ($c->authenticate({}, 'openid')) {
             # here's the tricky bit. OpenID sign-on is a two phase thing.
@@ -116,9 +132,7 @@ sub openid :Local :FormConfig {
             }
         }
     }
-    my $form = $c->stash->{form};
     if ($form->submitted_and_valid) {
-
         if ($c->authenticate({ openid_identifier => $form->param('openid_identifier') }, 'openid')) {
             $c->res->redirect(
                 $c->session->{next_uri} ||

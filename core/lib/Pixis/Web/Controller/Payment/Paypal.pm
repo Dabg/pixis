@@ -3,7 +3,7 @@ package Pixis::Web::Controller::Payment::Paypal;
 use Moose;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase) }
+BEGIN { extends qw(Pixis::Web::ControllerBase) }
 
 has complete_url => (
     is => 'rw',
@@ -22,14 +22,14 @@ has cancel_url => (
 
 has '+default_auth' => (default => 1);
 
-sub initiate_purchase :Private {
+sub initiate_purchase
+    :Private
+{
     my ($self, $c) = @_;
 
     my $order;
-    my $form = $self->form;
-    $form->load_config_file('payment/paypal/purchase.yml');
-    $form->process($c->request);
-
+    my $form = $self->form($c, 'payment/paypal/purchase');
+    $c->stash(form => $form);
     if ($form->submitted_and_valid) {
         ($order) = $c->registry(api => 'Order')->search(
             {
@@ -72,7 +72,9 @@ sub initiate_purchase :Private {
     return ();
 }
 
-sub complete_purchase :Private {
+sub complete_purchase
+    :Private
+{
     my ($self, $c, $args) = @_;
 
     eval {
@@ -89,20 +91,22 @@ sub complete_purchase :Private {
     return ();
 }
 
-sub index :Index :Args(0) {
+sub index
+    :Index
+    :Args(0)
+{
     my ($self, $c) = @_;
     $self->initiate_purchase($c);
     return ();
 }
 
-sub accept :Local {
+sub accept
+    :Local {
     my ($self, $c) = @_;
 
     my $order;
-    my $form = $self->form;
-    $form->load_config_file('payment/paypal/accept.yml');
-    $form->process($c->request);
-
+    my $form = $self->form($c, 'payment/paypal/accept');
+    $c->stash(form => $form);
     if ($form->submitted_and_valid) {
         $c->log->debug("Loading order for paypal_accept: " . $form->param('order')) if $c->log->is_debug;
         $order = $c->registry(api => 'Order')->find($form->param('order'));
@@ -134,7 +138,9 @@ sub accept :Local {
     return ();
 }
 
-sub cancel :Local :FormConfig {
+sub cancel
+    :Local
+{
     my ($self, $c) = @_;
 
     $c->controler('Payment::Paypal')->cancel($c, {
@@ -142,12 +148,14 @@ sub cancel :Local :FormConfig {
     return ();
 }
 
-sub complete :Local :FormConfig{
+sub complete
+    :Local
+{
+
     my ($self, $c) = @_;
 
-    my $form = $self->form;
-    $form->load_config_file('payment/paypal/complete.yml');
-    $form->process($c->request);
+    my $form = $self->form($c, 'payment/paypal/complete');
+    $c->stash(form => $form);
 
     if (! $form->submitted_and_valid) {
         $c->forward('/error', 'unknown order');

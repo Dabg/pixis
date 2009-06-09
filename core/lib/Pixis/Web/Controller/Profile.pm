@@ -6,7 +6,7 @@ use YAML::Syck ();
 use Data::Visitor::Callback;
 
 BEGIN { 
-    extends qw(Catalyst::Controller::HTML::FormFu Pixis::Web::ControllerBase);
+    extends qw(Pixis::Web::ControllerBase);
     with 'Pixis::Web::ControllerBase::WithSubsession';
 }
 
@@ -14,9 +14,14 @@ has '+default_auth' => (
     default => 1
 );
 
-sub index : Local :Path('') :Args(0) :FormConfig {
+sub index
+    :Local
+    :Path('')
+    :Args(0)
+{
     my ( $self, $c ) = @_;
-    my $form = $c->stash->{form};
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
     if ( $form->submitted_and_valid ) {
         my @fields = qw(display_name bio);
 
@@ -209,7 +214,6 @@ sub delete
     :Chained('load_profile')
     :PathPart('delete')
     :Args(0)
-    :FormConfig
 {
     my ( $self, $c ) = @_;
 
@@ -217,6 +221,8 @@ sub delete
         return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
     }
 
+    my $form = $self->form($c);
+    $c->stash( form => $form );
     if ($c->stash->{form}->submitted_and_valid) {
         $c->registry(api => 'Profile')->delete({
             member_id => $c->user->id,
