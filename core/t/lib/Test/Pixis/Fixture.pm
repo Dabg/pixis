@@ -12,6 +12,24 @@ BEGIN {
     Moose::Exporter->setup_import_methods();
 }
 
+# Stash from Catalyst
+has stash => ( is => 'ro', isa => 'HashRef', default => sub { +{} } );
+around stash => sub {
+    my $orig = shift;
+    my $c = shift;
+    my $stash = $orig->($c);
+    if (@_) {
+        my $new_stash = @_ > 1 ? {@_} : $_[0];
+        croak('stash takes a hash or hashref') unless ref $new_stash;
+        foreach my $key ( keys %$new_stash ) {
+          $stash->{$key} = $new_stash->{$key};
+        }
+    }
+
+    return $stash;
+};
+
+
 sub init_meta {
     shift;
     my %options = @_;
