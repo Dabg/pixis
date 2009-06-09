@@ -144,7 +144,7 @@ sub register {
     foreach my $api ($self->extra_api) {
         $c->log->debug("Registering API $api") if $c->debug;
         my $pkg = blessed($api) or confess "API is not blessed?!";
-        $pkg =~ s/^Pixis::API:://;
+        $pkg =~ s/^.+::API:://; # XXX FIXME This is a horrible hack
         $registry->set(api => split(/::/, $pkg), $api);
     }
     return ();

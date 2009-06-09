@@ -16,8 +16,44 @@ has namespaces => (
     }
 );
 
+has apis => (
+    metaclass => 'Collection::Array',
+    is => 'ro',
+    isa => 'ArrayRef[Str]',
+    lazy_build => 1,
+    provides => {
+        elements => 'all_apis',
+        push     => 'api_add',
+    }
+);
+
 sub _build_include_path {
     return []; # Core templates should be read in by the app, not the plugin
+}
+
+sub _build_apis {
+    return [ qw(
+        Member 
+        MemberAuth 
+        MemberRelationship 
+        MemberNotice 
+        Order 
+        Payment::Paypal 
+        Payment::Transaction 
+        PurchaseItem 
+        Profile 
+        Message 
+        MessageRecipient
+  ) ]
+}
+
+sub BUILD {
+    my ($self, $args) = @_;
+
+    if (my $list = $args->{additional_apis}) {
+        $self->api_add($_) for @$list;
+    }
+    return $self;
 }
 
 before register => sub {
@@ -35,27 +71,16 @@ before register => sub {
     }
 
     my @list;
-    foreach my $name qw(
-        Member 
-        MemberAuth 
-        MemberRelationship 
-        MemberNotice 
-        Order 
-        Payment::Paypal 
-        Payment::Transaction 
-        PurchaseItem 
-        Profile 
-        Message 
-        MessageRecipient
-    ) {
+    foreach my $name ($self->all_apis) {
         my $api_config = $config->{"API::$name"} || {};
         my $module;
         foreach my $namespace ($self->all_namespaces) {
-            $module = "$namespace\::$name";
             eval {
-                Class::MOP::load_class($module);
+                my $tmp = "$namespace\::$name";
+                Class::MOP::load_class($tmp);
+                $module = $tmp;
             };
-            last if !$@;
+            last if $module;
         }
         if (! $module) {
             confess "Could not find an API by the name $name";
