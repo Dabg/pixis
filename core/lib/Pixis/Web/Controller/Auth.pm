@@ -10,6 +10,7 @@ sub fail
     :Private
 {
     my ($self, $c) = @_;
+    $c->res->code(403);
     $c->res->body("You don't have permission to use this resource");
     return ();
 }
@@ -161,3 +162,45 @@ sub new { return bless [ $_[1] ], $_[0] } ## no critic
 sub first { return $_[0]->[0] } ## no critic
 
 1;
+
+__END__
+
+=head1 NAME
+
+Pixis::Web::Controller::Auth - Authentication
+
+=head1 SYNOPSIS
+
+    $c->forward('/auth/assert_logged_in');
+    $c->forward('/auth/assert_roles', [ $role1, $role2, ... ]);
+    $c->forward('/auth/authenticate', [ $user, $password ]);
+
+=head1 PUBLIC ACTIONS
+
+=head1 /auth/login
+
+Displays, and handles user login
+
+=head2 /auth/logout
+
+Handles user logout
+
+=head1 PRIVATE ACTIONS
+
+=head2 /auth/assert_logged_in
+
+Makes sure that we have an authenticated user. If not, will automatically 
+redirect to /auth/login, so it is safe to return if this action returns false.
+
+Returns true on success.
+
+=head2 /auth/assert_roles [ @roles ]
+
+Makes sure that we have an authenticated user, and that the user is of a given
+role. If not authenticated, then results in the same effect as calling
+C<assert_logged_in>. If authenticated and the role is not fulfilled, displays
+a 403 error. 
+
+Returns true on success.
+
+=cut
