@@ -2,6 +2,7 @@
 auto_fieldset: 1
 method: POST
 indicator: submit
+action: /member/settings/basic
 
 elements:
     - type: Text
