@@ -24,6 +24,8 @@ elements:
         rows: 10
       constraints:
         - Required
+      filters:
+        - HTMLScrubber
     - type: Submit
       name: submit
       value_loc: Send

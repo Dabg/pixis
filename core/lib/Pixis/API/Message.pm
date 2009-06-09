@@ -21,6 +21,7 @@ around create => sub {
         from_profile_id => $from->id,
         subject        => $args->{subject},
         body           => $args->{body},
+        is_system_message => $args->{is_system_message},
     );
 
     my $message = $next->($self, \%args);

@@ -26,6 +26,12 @@ __PACKAGE__->add_columns(
         data_type => 'TEXT',
         is_nullable => 1,
     },
+    is_system_message => {
+        # Is this message from the system? if so, all security checks are OFF!
+        data_type => 'TINYINT',
+        is_nullable => 0,
+        default_value => 1,
+    },
     created_on => {
         data_type => "DATETIME",
         is_nullable => 0,
