@@ -47,9 +47,59 @@ sub set_subsession {
 }
 
 sub delete_subsession {
-    my ($self, $c, $subsession, $value) = @_;
+    my ($self, $c, $subsession) = @_;
     return delete $c->session->{__subsessions}->{$subsession};
 }
 
 1;
 
+__END__
+
+=head1 NAME
+
+Pixis::Web::ControllerBase::WithSubsession - Role to Give Your Controller Subsession 
+
+=head1 SYNOPSIS
+
+    package MyApp::Controller::Foo;
+    use Moose;
+    use namespace::clean -except => qw(meta);
+
+    BEGIN {
+        extends 'Pixis::Web::ControllerBase';
+        with    'Pixis::Web::ControllerBase::WithSubsession';
+    }
+
+=head1 DECRIPTION
+
+This role gives your controller the ability to manipulate subsessions.
+You typically embed them in the URL:
+
+    sub start_subsession :Local {
+        my ($self, $c) = @_;
+
+        my $data = { .... }; # some data that you want to store in the
+                             # subsession, for later retrieval
+        my $subsession = $self->new_subsession($c, $data);
+        $c->res->redirect(
+            $c->uri_for('/next_step', $subsession) );
+    }
+
+    sub next_step :Local :Args(1) {
+        my ($self, $c, $subsession) = @_;
+
+        my $data = $self->get_subsession($c, $subsession);
+        ....
+    }
+
+=head1 METHODS
+
+=head2 $session_id = new_subsession($c, $data)
+
+=head2 $data = get_subsession($c, $session_id)
+
+=head2 set_subsession($c, $data)
+
+=head2 delete_subsession($c, $session_id)
+
+=cut
