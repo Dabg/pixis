@@ -157,15 +157,11 @@ sub update {
         }
     )->single;
 
-    $schema->resultset( $link->moniker )->search(
-        {
-            id => $id,
-        }
-    )->update(
-        $args
-    );
+    my $profile = $schema->resultset( $link->moniker )->find($id) or return;
+    $profile->update( $args );
 
     $guard->commit;
+    return $profile;
 }
 
 sub delete {
@@ -182,7 +178,7 @@ sub delete {
         }
     )->single;
 
-    $schema->resultset( $link->moniker )->search(
+    my $profile = $schema->resultset( $link->moniker )->search(
         {
             id => $id,
         }
