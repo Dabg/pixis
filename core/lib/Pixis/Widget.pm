@@ -59,7 +59,7 @@ has query_params => (
 sub _build_template {
     my $self = shift;
     my $name = blessed $self;
-    $name =~ s/^Pixis::Widget:://;
+    $name =~ s/^.+::Widget:://;
     my @args = ('widget' , map { lc $_ } split(/::/, $name) );
     if ($self->has_suffix) {
         $args[-1] .= $self->suffix;
