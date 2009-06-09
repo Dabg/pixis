@@ -204,8 +204,8 @@ sub send_activate :Local :Args(1) {
 
     $c->controller('Email')->send($c, {
         header => {
-            To   => $p->{email},
             %{$self->activation_mail_header},
+            To   => $p->{email},
         },
         body => $body
     });
