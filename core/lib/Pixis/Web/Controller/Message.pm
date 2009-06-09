@@ -83,7 +83,7 @@ sub create
                 return $value unless $value->{name};
                 return $value unless $value->{name} eq 'from_profile_id';
 
-                my @profiles = Pixis::Registry->registry(api => 'Profile')->load_from_member( {
+                my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
                     member_id => $member_id
                 } ) ;
 
