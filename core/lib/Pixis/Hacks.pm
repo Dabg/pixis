@@ -138,6 +138,10 @@ if ($HTML::FormFu::VERSION <= 0.03007) {
                 my ( $filename, $filedata ) = %{ $config->[0] };
 
                 _load_file( $self, $data_visitor, $filedata );
+
+                # This is an important hack, as otherwise formfu will
+                # try to load other config files of the same name.
+                last;
             }
             Carp::croak "config file '$file' not found" if !$loaded;
         }
