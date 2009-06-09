@@ -71,6 +71,9 @@ sub form {
     my $filename;
     if (ref $args ) {
         $filename = delete $args->{filename};
+    } else {
+        $filename = $args;
+        $args = {};
     }
     $filename ||= $c->action . "";
     my $form = $c->model('FormFu')->load( $filename, $args );
