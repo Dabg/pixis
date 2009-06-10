@@ -167,3 +167,62 @@ sub delete {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Pixis::API::Base::DBIC - DBIx::Class-Based API Role
+
+=head1 SYNOPSIS
+
+    package MyApp::API::Foo;
+    use Moose;
+
+    with 'Pixis::API::Base::DBIC';
+
+=head1 ATTRIBUTES
+
+=head2 resultset_moniker
+
+Contains the moniker given to $schema->resultset(). By default, the last
+component of the  package name is used to create the default name
+(i.e. "Baz" is used for package name Foo::Bar::Baz )
+
+=head2 resultset_constraints
+
+Contains a hashref of constraints to use when creating a resultset via
+resultset() method. This allows you to filter rows by giving a default
+constraint.
+
+To disable temprarily, use local:
+
+    local $api->{resultset_constraints};
+    $api->resultset()->search(...);
+
+=head2 primary_key
+
+Holds the primary key for the resultset.
+
+=head2 cache_prefix
+
+Holds the prefix to add when caching rows.
+
+=head1 METHODS
+
+=head2 find($pk)
+
+Returns a single based on the primary key.
+
+=head2 resultset()
+
+Returns a DBIx::Class::ResultSet object constructed using C<resultset_moniker>
+and C<resultset_constraints>
+
+=head2 create(\%args)
+
+=head2 update(\%args)
+
+=head2 delete(\%args)
+
+=cut
