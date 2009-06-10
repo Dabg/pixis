@@ -144,6 +144,7 @@ sub create_confirm
             to_profile => $papi->find($hash->{to}),
         }
     );
+    return;
 }
 
 sub create_commit

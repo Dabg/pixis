@@ -93,6 +93,7 @@ sub settings
     $c->stash(
         widgets => [ 'Member::BasicSettings', 'Member::EmailSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ],
     );
+    return;
 }
 
 sub prepare_profiles { # XXX Refactor this to profile later
@@ -162,6 +163,7 @@ sub email_settings
         ]);
         $c->res->redirect('/member/settings/email/confirm');
     }
+    return;
 }
 
 sub email_confirm
@@ -192,6 +194,7 @@ sub email_confirm
         $c->session->{__user} = { $user->get_columns };
         $c->res->redirect($c->uri_for('/member/settings'));
     }
+    return;
 }
 
 sub auth_settings

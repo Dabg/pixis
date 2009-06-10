@@ -32,18 +32,4 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('member_id', 'profile_id');
 __PACKAGE__->add_unique_constraint(['profile_id']);
 
-sub populate_initial_data {
-    my ($self, $schema) = @_;
-=pod
-    $schema->populate(
-        ProfileType => [
-            [qw(name)],
-            ['public'],
-            ['private'],
-        ],
-    );
-    return;
-=cut
-}
-
 1;

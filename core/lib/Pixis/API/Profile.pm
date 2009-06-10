@@ -1,13 +1,5 @@
-package Pixis::API::Profile::Type;
-use Moose;
-use namespace::clean -except => qw(meta);
 
-has moniker => (is => 'ro', isa => 'Str', required => 1);
-has name    => (is => 'ro', isa => 'Str', lazy => 1, default  => sub { $_[0]->moniker } );
-
-__PACKAGE__->meta->make_immutable;
-
-package Pixis::API::Profile;
+package Pixis::API::Profile; 
 use Moose;
 use MooseX::AttributeHelpers;
 use Pixis::Registry;
@@ -196,6 +188,8 @@ sub delete {
     $link->delete;
 
     $guard->commit;
+
+    return ();
 }
 
 sub detect_type {
@@ -203,6 +197,15 @@ sub detect_type {
     my $moniker = [ split('::', ref $profile) ]->[-1];
     return [grep {$_->moniker eq $moniker} $self->all_profile_types]->[0];
 }
+
+__PACKAGE__->meta->make_immutable;
+
+package Pixis::API::Profile::Type; ## no critic
+use Moose;
+use namespace::clean -except => qw(meta);
+
+has moniker => (is => 'ro', isa => 'Str', required => 1);
+has name    => (is => 'ro', isa => 'Str', lazy => 1, default  => sub { $_[0]->moniker } );
 
 __PACKAGE__->meta->make_immutable;
 

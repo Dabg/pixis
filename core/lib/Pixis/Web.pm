@@ -13,6 +13,7 @@ my %REGISTERED_PLUGINS = ();
 my %TT_ARGS            = ();
 my @PLUGINS            = ();
 my %VIRTUAL_COMPONENTS = ();
+my $DEBUG              = exists $ENV{PIXIS_DEBUG} ? $ENV{PIXIS_DEBUG} : 0;
 
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
@@ -29,7 +30,7 @@ BEGIN {
     extends 'Catalyst';
 }
 
-sub debug { 1 }
+sub debug { return $DEBUG }
 sub setup {
     my ($class, %plugin_config) = @_;
 
@@ -463,7 +464,7 @@ sub add_translation_path {
 # XXX FIXME - plugins should probably access the model directly
 sub add_formfu_path {
     my ($self, @paths) = @_;
-    $self->model('FormFu')->add_config_file_path(@paths);
+    return $self->model('FormFu')->add_config_file_path(@paths);
 }
 
 =head1

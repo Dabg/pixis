@@ -27,8 +27,8 @@ sub _build_headers {
 }
 
 sub _build_mime_encoding_map {
-    return {
-        'iso-2022-jp' => 'MIME-Header-ISO_2022_JP',
+    return +{
+        'iso-2022-jp' => 'MIME-Header-ISO_2022_JP', 
     }
 }
 

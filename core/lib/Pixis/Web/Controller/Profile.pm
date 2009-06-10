@@ -50,6 +50,7 @@ sub profile_type
     }
 
     $c->stash->{profile_type} = $type;
+    return;
 }
 
 sub create
@@ -102,6 +103,7 @@ sub create_confirm
     $c->stash->{template} = "profile/confirm.tt";
     $c->stash->{subsession} = $subsession;
     $c->stash->{profile}  = $self->get_subsession($c, $subsession);
+    return;
 }
 
 sub create_commit
@@ -180,12 +182,15 @@ sub edit_confirm
 {
     my ($self, $c, $subsession) = @_;
 
-    $c->stash->{template} = "profile/confirm.tt";
-    $c->stash->{next_url} = $c->uri_for($c->stash->{profile}->id, 'edit', 'commit', $subsession);
-    $c->stash->{subsession} = $subsession;
-    $c->stash->{profile_type} = $c->registry(api => 'Profile')
-        ->detect_type($c->stash->{profile})->name;
-    $c->stash->{profile}  = $self->get_subsession($c, $subsession);
+    $c->stash(
+        next_url     => $c->uri_for($c->stash->{profile}->id, 'edit', 'commit', $subsession),
+        profile      => $self->get_subsession($c, $subsession)
+        profile_type =>
+            $c->registry(api => 'Profile')->detect_type($c->stash->{profile})->name,
+        subsession   => $subsession,
+        template     => "profile/confirm.tt",
+    );
+    return;
 }
 
 sub edit_commit
