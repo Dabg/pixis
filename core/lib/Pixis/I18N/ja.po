@@ -100,6 +100,12 @@ msgstr "メンバー検索"
 msgid "Basic Settings"
 msgstr "基本設定"
 
+msgid "Email Settings"
+msgstr "メール設定"
+
+msgid "Auth Settings"
+msgstr "認証設定"
+
 msgid "CodeRepos ID (If Available)"
 msgstr "CodeRepos ID (任意)"
 
