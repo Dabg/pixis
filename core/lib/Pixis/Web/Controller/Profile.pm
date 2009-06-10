@@ -184,7 +184,7 @@ sub edit_confirm
 
     $c->stash(
         next_url     => $c->uri_for($c->stash->{profile}->id, 'edit', 'commit', $subsession),
-        profile      => $self->get_subsession($c, $subsession)
+        profile      => $self->get_subsession($c, $subsession),
         profile_type =>
             $c->registry(api => 'Profile')->detect_type($c->stash->{profile})->name,
         subsession   => $subsession,
