@@ -77,7 +77,7 @@ Pixis::Web::Controller::Email - Send Emails
 
     $c->forward('/email/send',
         [ {
-            headers => {
+            header => {
                 To => 'somebody@mydomain',
                 Subject => "Hello!",
             },
