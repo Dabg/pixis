@@ -282,6 +282,31 @@ around delete => sub {
     return ();
 };
 
+sub create_email_confirm {
+    my ($self, $args) = @_;
+
+    return Pixis::Registry->get(schema => 'Master')->resultset('MemberEmailConfirm')->find_or_create(
+        {
+            member_id => $args->{member_id},
+            email     => $args->{email},
+        },
+        {
+            key => 'unique_combo',
+        }
+    );
+}
+
+sub load_email_confirm {
+    my ($self, $args) = @_;
+
+    return Pixis::Registry->get(schema => 'Master')->resultset('MemberEmailConfirm')->search(
+        {
+            member_id => $args->{member_id},
+            email     => $args->{email},
+            token     => $args->{token},
+        },
+    )->single;
+}
 
 __PACKAGE__->meta->make_immutable;
 

@@ -6,12 +6,6 @@ action: /member/settings/basic
 
 elements:
     - type: Text
-      name: email
-      label_loc: Email
-      constraints:
-        - Required
-        - Email
-    - type: Text
       name: nickname
       label_loc: Nick Name
     - type: Text

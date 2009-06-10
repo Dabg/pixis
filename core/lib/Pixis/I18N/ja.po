@@ -36,6 +36,12 @@ msgstr "ようこそ %1さん"
 msgid "Email"
 msgstr "メールアドレス"
 
+msgid "New Email"
+msgstr "新メールアドレス"
+
+msgid "Email (again)"
+msgstr "新メールアドレス（確認用)"
+
 msgid "Password"
 msgstr "パスワード"
 

@@ -1,0 +1,18 @@
+---
+auto_fieldset: 1
+action: /member/settings/email
+elements:
+    - type: Text
+      name: email
+      label_loc: New Email
+    - type: Text
+      name: email_confirm
+      label_loc: Email (again)
+      constraints:
+        - Required
+        - Email
+        - type: Equal
+          others: email_confirm
+    - type: Submit
+      value: submit
+      value_loc: Submit

@@ -91,7 +91,7 @@ sub settings
     my ($self, $c) = @_;
 
     $c->stash(
-        widgets => [ 'Member::BasicSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ],
+        widgets => [ 'Member::BasicSettings', 'Member::EmailSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ],
     );
 }
 
@@ -122,13 +122,76 @@ sub basic_settings
             %$params,
             id => $user->id
         });
-        if ($c->user->email ne $user->email) {
-            # XXX - Hack to overcome Catalyst::Plugin::Authentication
-            $c->session->{__user} = { $user->get_columns };
-        }
         $c->res->redirect($c->uri_for('home'));
     }
     return ();
+}
+
+sub email_settings
+    :Path('settings/email')
+    :Args(0)
+{
+    my ($self, $c) = @_;
+
+    my $form = $self->form($c);
+    my $user = $c->registry(api => 'Member')->find($c->user->id);
+    $form->model->default_values($user);
+    $c->stash(form => $form);
+    if ($form->submitted_and_valid ) {
+        # validated, now create a temp entry, and let the user validate the
+        # new email
+        my $confirm = $c->registry(api => 'Member')->create_email_confirm({
+            member_id => $c->user->id,
+            email     => $form->param('email'),
+        });
+
+
+        $c->forward('/email/send', [
+            {
+                header => {
+                    To      => $form->param('email'),
+                    Subject => "メールアドレス変更確認",
+                },
+                body => $c->view('TT')->render($c, 'member/email_confirm_mail.tt', {
+                    confirm_url => $c->uri_for("/member/settings/email/confirm", {
+                        email => $form->param('email'),
+                        token => $confirm->token,
+                    } )
+                } )
+            }
+        ]);
+        $c->res->redirect('/member/settings/email/confirm');
+    }
+}
+
+sub email_confirm
+    :Path('settings/email/confirm')
+    :Args(0)
+{
+    my ($self, $c) = @_;
+
+    my $form = $self->form($c);
+    $c->stash(form => $form);
+    if ($form->submitted_and_valid ) {
+        my $api = $c->registry(api => 'Member');
+        my $confirm = $api->load_email_confirm({ member_id => $c->user->id, email => $form->param('email'), token => $form->param('token') });
+
+        if (! $confirm) {
+            $form->form_error_message("指定されたメールアドレスとトークンが存在しません");
+            $form->force_error_message(1);
+        }
+        $api->update(
+            {
+                id => $c->user->id,
+                email => $form->param('email')
+            }
+        );
+        $confirm->delete;
+        # XXX - Hack to overcome Catalyst::Plugin::Authentication
+        my $user = $api->find($c->user->id);
+        $c->session->{__user} = { $user->get_columns };
+        $c->res->redirect($c->uri_for('/member/settings'));
+    }
 }
 
 sub auth_settings

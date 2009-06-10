@@ -1,0 +1,4 @@
+<div class="form_full section">
+<h2>[% loc("Email Settings") %]</h2>
+[% args.form %]
+</div>

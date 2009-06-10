@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt,
+    page.title => "メールアドレス変更の確認",
+    page.heading.content => "メールアドレス変更の確認",
+%]
+<div id="content">
+<div class="form_full section">
+[% form %]
+</div>
+</div>
+[% END %]
