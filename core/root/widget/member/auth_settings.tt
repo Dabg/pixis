@@ -1,4 +1,4 @@
 <div class="form_full section">
-<h2>[% loc("Basic Settings") %]</h2>
+<h2>[% loc("Auth Settings") %]</h2>
 [% args.form %]
 </div>
