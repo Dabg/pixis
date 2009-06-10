@@ -11,11 +11,11 @@ around create => sub {
     my ($from, $to) = ( $args->{from}, $args->{to} );
     if (! blessed $to) {
         $to = Pixis::Registry->get(api => 'Profile')->find($to) or
-            confess "Could not find Profile by ID $to";
+            confess "Could not find recipient by ID '$to";
     }
     if (! blessed $from) {
         $from = Pixis::Registry->get(api => 'Profile')->find($from) or
-            confess "Could not find Profile by ID $from";
+            confess "Could not find sender by ID $from";
     }
 
     my %args = (
