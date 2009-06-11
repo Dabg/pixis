@@ -166,3 +166,12 @@ msgstr "受信箱"
 msgid "Sent"
 msgstr "送信箱"
 
+msgid "Current Password"
+msgstr "現行パスワード"
+
+msgid "New Password"
+msgstr "新パスワード"
+
+msgid "New Password (re-type)"
+msgstr "新パスワード（確認用)"
+

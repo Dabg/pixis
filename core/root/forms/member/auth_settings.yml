@@ -4,10 +4,10 @@ action: /member/settings/auth
 elements:
     - type: Password
       name: password
-      label_loc: Password
+      label_loc: Current Password
     - type: Password
       name: password_new
-      label_loc: Password (new)
+      label_loc: New Password
       constraints:
         - Required
         - ASCII
@@ -16,7 +16,7 @@ elements:
           max: 24
     - type: Password
       name: password_check
-      label_loc: Password (re-type)
+      label_loc: New Password (re-type)
       constraints:
         - Required
         - type: Equal
