@@ -148,6 +148,9 @@ msgstr "メッセージを送る"
 msgid "Message"
 msgstr "メッセージ"
 
+msgid "Messages"
+msgstr "メッセージ"
+
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -156,4 +159,10 @@ msgstr "本当に%1を削除しますか？"
 
 msgid "this profile"
 msgstr "このプロフィール"
+
+msgid "Inbox"
+msgstr "受信箱"
+
+msgid "Sent"
+msgstr "送信箱"
 

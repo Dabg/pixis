@@ -1,13 +1,13 @@
 [% WRAPPER wrapper.tt,
-    page.title = 'メッセージ', 
-    page.heading.enabled = 0 %]
+    page.title = loc("Messages"),
+    page.heading.content = loc("Messages") %]
 [% INCLUDE 'message/menu.tt' %]
 [% SET api = c.registry('api', 'Message') %]
 <div id="content">
 
 [% form %]
 
-<h2>[% mailbox || 'INBOX' %]</h2>
+<h2>[% loc(mailbox) %]</h2>
 <ul class="clearfix">
 [% FOR m IN messages %]
 [% SET is_in_message = api.is_in_message(m, c.user) %]

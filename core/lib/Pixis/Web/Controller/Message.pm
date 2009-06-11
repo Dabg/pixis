@@ -25,6 +25,7 @@ sub index
     ;
     $c->stash(
         messages => \@messages,
+        mailbox  => 'Inbox',
         form => $self->form($c, 'message/search')
     );
     return;
@@ -40,7 +41,7 @@ sub sent
     ;
     $c->stash(
         messages => \@messages,
-        mailbox => 'SENT',
+        mailbox => 'Sent',
         form => $self->form($c, 'message/search'),
         template => 'message/index.tt', 
     );

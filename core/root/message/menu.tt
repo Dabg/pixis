@@ -1,6 +1,5 @@
 <div id="title" class="clearfix">
 <div id="info">
-<h1>messages</h1>
 <ul id="member_menu" class="clearfix">
 <li><a href="[% c.uri_for('') %]">[% loc("Message Inbox") %]</a></li>
 <li><a href="[% c.uri_for('sent') %]">[% loc("Sent Messages") %]</a></li>
