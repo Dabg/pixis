@@ -1,8 +1,6 @@
 
 package Pixis::Schema::Master::Result::MemberAuth;
 use Moose;
-use DateTime;
-use Digest::SHA1 qw(sha1_hex);
 use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
@@ -58,17 +56,6 @@ sub sqlt_deploy_hook {
     my ($c) = grep { $_->name eq 'unique_auth_per_user' } $sqlt_table->get_constraints();
     $c->fields([ 'member_id', 'auth_type(8)' ]);
     $self->next::method($sqlt_table);
-    return ();
-}
-
-sub populate_initial_data {
-    my ($self, $schema) = @_;
-    $schema->populate(
-        MemberAuth => [
-            [ qw(member_id auth_type auth_data) ],
-            [ qw(1 password), sha1_hex('admin') ],
-        ],
-    );
     return ();
 }
 

@@ -2,6 +2,7 @@
 package Pixis::Schema::Master::Result::Member;
 use Moose;
 use DateTime;
+use Digest::SHA1 ();
 use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
@@ -134,12 +135,20 @@ sub sqlt_deploy_hook {
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
-    $schema->populate(
-        Member => [
-            [ qw(email nickname firstname lastname is_active roles) ],
-            [ qw(me@example.jp admin Admin Admin 1), join('|', qw(admin)) ],
-        ],
-    );
+    $schema->resultset('Member')->create({
+        email     => 'me@example.jp',
+        nickname  => 'admin',
+        firstname => 'Admin',
+        lastname  => 'Admin',
+        is_active => 1,
+        roles     => 'admin'
+    });
+
+    $schema->resultset('MemberAuth')->create({ 
+        member_id => $member->id,
+        auth_type => 1,
+        auth_data => Digest::SHA1::sha1_hex('admin')
+    });
     return ();
 }
 
