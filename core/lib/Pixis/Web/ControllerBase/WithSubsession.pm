@@ -5,6 +5,7 @@ use namespace::clean -except => qw(meta);
 has subsession_expires => (
     is => 'ro',
     isa => 'Int',
+    required => 1,
     default => 900
 );
 
@@ -39,7 +40,7 @@ sub set_subsession {
     }
 
     my $item = {
-        expires => time() + $self->subsession_expires,
+        __subession_expires => time() + $self->subsession_expires,
         data    => $value
     };
 
@@ -48,7 +49,7 @@ sub set_subsession {
 
 sub delete_subsession {
     my ($self, $c, $subsession) = @_;
-    return delete $c->session->{__subsessions}->{$subsession};
+    return delete $c->session->{__subsessions}->{$subsession}->{data};
 }
 
 1;
