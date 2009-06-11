@@ -121,6 +121,7 @@ sub create_commit
     my $profile = $api->create_type( $type, $hash );
     $self->delete_subsession($c, $subsession);
 
+    $c->stash(profile => $profile);
     return $c->res->redirect($c->uri_for($profile->id));
 }
 
