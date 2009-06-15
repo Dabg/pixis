@@ -135,7 +135,7 @@ sub sqlt_deploy_hook {
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
-    $schema->resultset('Member')->create({
+    my $member = $schema->resultset('Member')->create({
         email     => 'me@example.jp',
         nickname  => 'admin',
         firstname => 'Admin',
