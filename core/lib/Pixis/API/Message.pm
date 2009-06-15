@@ -26,7 +26,6 @@ around create => sub {
     }
 
     my %args = (
-        id => Digest::SHA1::sha1_hex($args, {}, time(), $$, rand()),
         from_profile_id => $from->id,
         subject        => $args->{subject},
         body           => $args->{body},
@@ -36,14 +35,23 @@ around create => sub {
     my $schema = Pixis::Registry->get(schema => 'master');
     my $guard  = $schema->txn_scope_guard();
 
+    # XXX We should really cache this
+    my $inbox = $schema->resultset('MessageTag')->find({ tag => 'Inbox' });
+    my $sent  = $schema->resultset('MessageTag')->find({ tag => 'Sent' });
+    my $m2t   = $schema->resultset('MessageToTags');
+
     my $message = $next->($self, \%args);
+    $m2t->create( { profile_id => $from->id, tag_id => $inbox->id });
     foreach my $to_profile (@$to)  {
+        $m2t->create( { profile_id => $to_profile->id, tag_id => $sent->id });
         $message->add_to_recipients(
             {
                 to_profile_id => $to_profile->id
             }
         );
     }
+
+
     $guard->commit;
 
     return $message;

@@ -1,16 +1,20 @@
 package Pixis::Schema::Master::Result::Message;
 use Moose;
+use Digest::SHA1 ();
 use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "TimeStamp", "Core");
+__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "DynamicDefault", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_message");
 __PACKAGE__->add_columns(
     id => {
         data_type => 'CHAR',
         is_nullable => 0,
         size => 40,
+        dynamic_default_on_create => sub {
+            Digest::SHA1::sha1_hex({}, time(), $$, rand());
+        }
     },
     from_profile_id => {
         data_type => 'CHAR',
