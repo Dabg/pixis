@@ -9,10 +9,17 @@ around create => sub {
     my ( $next, $self, $args ) = @_;
 
     my ($from, $to) = ( $args->{from}, $args->{to} );
-    if (! blessed $to) {
-        $to = Pixis::Registry->get(api => 'Profile')->find($to) or
-            confess "Could not find recipient by ID '$to";
+    if (ref $to ne 'ARRAY') {
+       $to = [ $to ];
     }
+
+    foreach my $i (0..$#{$to}) {
+        if (! blessed $to->[$i]) {
+            $to->[$i] = Pixis::Registry->get(api => 'Profile')->find($to->[$i]) or
+                confess "Could not find recipient by ID '$to->[$i]";
+        }
+    }
+
     if (! blessed $from) {
         $from = Pixis::Registry->get(api => 'Profile')->find($from) or
             confess "Could not find sender by ID $from";
@@ -26,12 +33,19 @@ around create => sub {
         is_system_message => $args->{is_system_message} ? 1 : 0,
     );
 
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard();
+
     my $message = $next->($self, \%args);
-    $message->add_to_recipients(
-        {
-            to_profile_id => $to->id
-        }
-    );
+    foreach my $to_profile (@$to)  {
+        $message->add_to_recipients(
+            {
+                to_profile_id => $to_profile->id
+            }
+        );
+    }
+    $guard->commit;
+
     return $message;
 };
 
