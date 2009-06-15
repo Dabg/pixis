@@ -7,7 +7,7 @@ use namespace::clean -except => qw(meta);
 
 extends 'Pixis::Schema::Master::Result';
 
-__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "VirtualColumns", "TimeStamp", "Core");
+__PACKAGE__->load_components("PK::Auto", "UTF8Columns", "DynamicDefault", "VirtualColumns", "TimeStamp", "Core");
 __PACKAGE__->table("pixis_member");
 __PACKAGE__->add_columns(
     "id" => {
@@ -88,6 +88,9 @@ __PACKAGE__->add_columns(
         data_type => "CHAR",
         is_nullable => 1,
         size => 40,
+        dynamic_default_on_create => sub {
+            return Digest::SHA1::sha1_hex($$, rand(), time() {});
+        }
     },
     is_active => {
         data_type => 'TINYINT',
