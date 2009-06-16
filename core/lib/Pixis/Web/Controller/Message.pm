@@ -12,39 +12,43 @@ BEGIN {
 
 has '+default_auth' => (default => 1);
 
+sub tag
+    :Local
+    :Path('tag')
+    :Args(1)
+{
+    my ($self, $c, $tag) = @_;
+    # By default, show messages received
+    my @messages = eval {
+        $c->registry(api => 'Message')->load_from_member(
+            { 
+                member_id => $c->user->id,
+                tag => $tag,
+            }
+        )
+    };
+    if ($@) {
+        $c->detach('/default');
+        return;
+    }
+    
+    $c->stash(
+        messages => \@messages,
+        mailbox  => ucfirst($tag),
+        template => 'message/index.tt', 
+        form => $self->form($c, 'message/search')
+    );
+    return;
+    
+}
+
 sub index
     :Local
     :Path('')
     :Args(0)
 {
     my ( $self, $c ) = @_;
-
-    # By default, show messages received
-    my @messages = $c->registry(api => 'Message')
-        ->load_sent_to_member({ member_id => $c->user->id })
-    ;
-    $c->stash(
-        messages => \@messages,
-        mailbox  => 'Inbox',
-        form => $self->form($c, 'message/search')
-    );
-    return;
-}
-
-sub sent
-    :Local
-    :Args(0)
-{
-    my ( $self, $c ) = @_;
-    my @messages = $c->registry(api => 'Message')
-        ->load_sent_from_member({ member_id => $c->user->id })
-    ;
-    $c->stash(
-        messages => \@messages,
-        mailbox => 'Sent',
-        form => $self->form($c, 'message/search'),
-        template => 'message/index.tt', 
-    );
+    $c->res->redirect($c->uri_for('tag/inbox'));
     return;
 }
 

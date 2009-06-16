@@ -92,33 +92,37 @@ sub load_from_profile {
     return $self->load_multi(@ids);
 }
 
-sub load_sent_from_member {
+sub load_from_member {
     my ( $self, $args ) = @_;
+
+    my $schema = $self->schema;
+    my $tag;
+    if( my $tag_name = delete $args->{tag}) {
+        # XXX We should really cache this
+        $tag = $schema->resultset('MessageTag')->find({ tag => $tag_name });
+    } else {
+        $tag = $schema->resultset('MessageTag')->find($args->{tag_id});
+    }
+
+    if (! $tag) {
+        confess "No tag provided!";
+    }
 
     my @profile_id = map {$_->id } Pixis::Registry->get(api => 'Profile')
         ->load_from_member({member_id => $args->{member_id}});
 
-    my @ids = map { $_->id } $self->resultset()->search(
-        { from_profile_id => \@profile_id },
-        {
-            select => [ qw(id) ],
-            order_by => 'created_on desc',
-        }
-    );
-    return $self->load_multi(@ids);
-}
+    my @ids = map { $_->message_id } 
+        $schema->resultset('MessageToTags')->search(
+            {
+                profile_id => \@profile_id,
+                tag_id => $tag->id,
+            },
+            {
+                select => [ 'message_id' ]
+            }
+        )
+    ;
 
-sub load_sent_to_member {
-    my ( $self, $args ) = @_;
-
-    my @profile_id = map {$_->id} Pixis::Registry->get(api => 'Profile')
-        ->load_from_member({member_id => $args->{member_id}});
-
-    my @ids = map { $_->message_id } Pixis::Registry->get(api => 'MessageRecipient')
-        ->search(
-            {to_profile_id => \@profile_id}, 
-            { order_by => 'id desc' }
-        );
     return $self->load_multi(@ids);
 }
 

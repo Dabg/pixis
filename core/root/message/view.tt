@@ -16,7 +16,7 @@
   # the recipient
 %]
 [% IF (sender.member_id != c.user.id) %]
-<a href="[% c.uri_for('create', {to_member_id => message.from_member_id }) %]">[% loc('reply') %]</a>
+<a href="[% c.uri_for('create', message.from_profile_id ) %]">[% loc('reply') %]</a>
 [% END %]
 </div>
 [% END %]
