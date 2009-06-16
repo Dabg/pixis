@@ -39,10 +39,11 @@ __PACKAGE__->utf8_columns('tag');
 sub populate_initial_data {
     my ($self, $schema) = @_;
 
-    $schema->create({
+    my $rs = $schema->resultset('MessageTag');
+    $rs->create({
         tag => "Inbox",
     });
-    $schema->create({
+    $rs->create({
         tag => "Sent"
     });
     return;
