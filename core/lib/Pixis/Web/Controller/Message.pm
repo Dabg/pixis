@@ -74,7 +74,14 @@ sub create
 {
     my ( $self, $c, $to_profile_id ) = @_;
 
-    my $member_id => $c->user->id;
+    my $papi = $c->registry(api => 'Profile');
+    my $recipient = $papi->find($to_profile_id);
+    if (! $recipient) {
+        $c->detach('/default');
+        return;
+    }
+
+    my $member_id = $c->user->id;
     my $form = $self->form($c, {
         filename => 'message/edit',
         config_callback => {
@@ -106,9 +113,6 @@ sub create
         });
         return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) );
     }
-
-    my $papi = $c->registry(api => 'Profile');
-    my $recipient = $papi->find($to_profile_id);
 
     my $from_field = $form->get_all_element({ name => 'from_profile_id' } );
     $from_field->parent->insert_before(
