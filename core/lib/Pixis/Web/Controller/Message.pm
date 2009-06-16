@@ -89,15 +89,21 @@ sub create
                 my ( $visitor, $value ) = @_;
 
                 return $value unless $value->{name};
-                return $value unless $value->{name} eq 'from_profile_id';
+                if ( $value->{name} eq 'from_profile_id' ) {
 
-                my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
-                    member_id => $member_id
-                } ) ;
+                    my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
+                            member_id => $member_id
+                        } ) ;
 
-                $value->{options} = [
+                    $value->{options} = [
                     map { [ $_->id, $_->display_name, ] } @profiles
-                ];
+                    ];
+                }
+                if ( $value->{name} eq 'to_profile_id' ) {
+                    $value->{options} = [
+                        [ $recipient->id, $recipient->display_name ]
+                    ];
+                }
                 return $value;
             }
         }
@@ -113,17 +119,6 @@ sub create
         });
         return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) );
     }
-
-    my $from_field = $form->get_all_element({ name => 'from_profile_id' } );
-    $from_field->parent->insert_before(
-        $form->element({ 
-            type => 'Text',
-            label_loc => "Recipient",
-            attrs => { readonly => 'readonly' },
-            value => $recipient->display_name
-        }),
-        $from_field
-    );
 
     return;
 }
