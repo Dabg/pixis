@@ -55,10 +55,10 @@ sub check_mailbox :Test :Plan(2) {
     lives_ok {
         my @message = $api->load_from_tag({
             profile_id => $profile->id,
-            tag        => 'Inbox',
+            tag        => $tag,
         });
 
-        is( scalar @message, $args->{count}, "I have " . scalar @message . " messages (wanted: $args->{count})" );
+        is( scalar @message, $args->{count}, "I have " . scalar @message . " messages in $tag (wanted: $args->{count})" );
     } "message retrieval lives ok";
 }
 
