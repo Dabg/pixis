@@ -13,9 +13,14 @@ __PACKAGE__->add_columns(
         size => 40,
         is_nullable => 0,
     },
-    tag_id => {
+    profile_id => {
         data_type => 'CHAR',
         size => 10,
+        is_nullable => 0,
+    },
+    tag_id => {
+        data_type => 'CHAR',
+        size => 40,
         is_nullable => 0,
     },
     created_on => {
@@ -24,7 +29,7 @@ __PACKAGE__->add_columns(
         set_on_create => 1,
     }
 );
-__PACKAGE__->set_primary_key('message_id', 'tag_id');
+__PACKAGE__->set_primary_key('message_id', 'profile_id', 'tag_id');
 
 sub sqlt_deploy_hook {
     my ($self, $sqlt) = @_;

@@ -12,29 +12,6 @@ BEGIN {
     ;
 }
 
-has members => (
-    is => 'rw',
-    isa => 'ArrayRef[HashRef]',
-    default => sub { +[
-        +{
-            email     => 'taro-test@perlassociation.org',
-            nickname  => 'testtaro',
-            firstname => '太郎',
-            lastname  => 'テスト',
-            password  => 'testing',
-            activation_token => Digest::SHA1::sha1_hex($$, rand(), time()),
-        },
-        +{
-            email     => 'hanako-test@perlassociation.org',
-            nickname  => 'testhanako',
-            firstname => '花子',
-            lastname  => 'テスト',
-            password  => '#$FSOkdi23-$1~',
-            activation_token => Digest::SHA1::sha1_hex($$, rand(), time()),
-        }
-    ] }
-);
-
 sub setup :Test :Plan(3) {
     my $self = shift;
 
@@ -91,11 +68,20 @@ sub create_member :Test :Plan(8) {
 
     lives_ok {
         my $api = Pixis::Registry->get(api => 'member');
-        my $data = $self->members->[$which];
+        my $data = { %{$self->members->[$which]} }; # copy
+        my $profiles = delete $data->{profiles} || [];
         my $member = $api->create($data);
         ok($member, "member creation returns something");
         isa_ok($member, "Pixis::Schema::Master::Result::Member", "object is a proper DBIx::Class object");
         $data->{id} = $member->id;
+
+        # now create profiles
+        my $profile_api = Pixis::Registry->get(api => 'Profile');
+        foreach my $profile (@$profiles) {
+            my %args = %$profile;
+            $args{member_id} = $member->id;
+            $profile_api->create_type(delete $args{type}, \%args);
+        }
     } "member creation lives";
 
     # first time around is_active is false, so all these tests should fail
@@ -180,28 +166,15 @@ sub delete_member :Test :Plan(3) {
 
     lives_ok {
         my $api = Pixis::Registry->get(api => 'member');
-        my $data = $self->members->[$which];
-        $api->delete($data->{id});
+        my $member = $self->get_member($which);
+        $api->delete($member->id);
 
-        my $found = $api->find($data->{id});
+        my $found = $api->find($member->id);
         ok( !$found);
 
-        $found = $api->load_from_email($data->{email});
+        $found = $api->load_from_email($member->email);
         ok( ! $found);
     } "member deletion (at the end)";
-}
-
-sub DEMOLISH {
-    my $self = shift;
-    my $api = Pixis::Registry->get(api => 'member');
-    eval {
-        $api->delete($self->members->[0]->{id});
-    };
-    print STDERR "# Error at cleanup: $@\n" if $@;
-    eval {
-        $api->delete($self->members->[1]->{id});
-    };
-    print STDERR "# Error at cleanup: $@\n" if $@;
 }
 
 __PACKAGE__->meta->make_immutable();

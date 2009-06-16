@@ -14,6 +14,7 @@ has profile_types => (
     provides => {
         exists => 'is_supported',
         values => 'all_profile_types',
+        keys   => 'profile_type_keys',
         get    => 'profile_type_get',
     }
 );
@@ -91,6 +92,10 @@ sub create_type {
     my ($self, $type, $args) = @_;
 
     my $p = $self->profile_type_get($type);
+    if (! $p) {
+        confess "No such profile $type. Available profiles are: " . (
+            join(", ", $self->profile_type_keys) );
+    }
     my $schema = Pixis::Registry->get(schema => 'master');
 
     my $guard = $schema->txn_scope_guard();

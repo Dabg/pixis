@@ -41,9 +41,9 @@ around create => sub {
     my $m2t   = $schema->resultset('MessageToTags');
 
     my $message = $next->($self, \%args);
-    $m2t->create( { profile_id => $from->id, tag_id => $inbox->id });
+    $m2t->create( { profile_id => $from->id, message_id => $message->id, tag_id => $inbox->id });
     foreach my $to_profile (@$to)  {
-        $m2t->create( { profile_id => $to_profile->id, tag_id => $sent->id });
+        $m2t->create( { profile_id => $to_profile->id, message_id => $message->id, tag_id => $sent->id });
         $message->add_to_recipients(
             {
                 to_profile_id => $to_profile->id
