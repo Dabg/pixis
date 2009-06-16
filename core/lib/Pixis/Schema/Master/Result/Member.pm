@@ -89,7 +89,7 @@ __PACKAGE__->add_columns(
         is_nullable => 1,
         size => 40,
         dynamic_default_on_create => sub {
-            return Digest::SHA1::sha1_hex($$, rand(), time() {});
+            return Digest::SHA1::sha1_hex($$, rand(), time(), {});
         }
     },
     is_active => {
