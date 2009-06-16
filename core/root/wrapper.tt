@@ -20,3 +20,5 @@
 [% run_widget('LeftNavigation') %]
 </div><!--  container -->
 [% run_widget('Footer') %]
+</body>
+</html>
