@@ -59,7 +59,7 @@ around create => sub {
 
 *send = \&create;
 
-sub load_from_tag {
+sub load_from_profile {
     my ($self, $args) = @_;
 
     my $schema = $self->schema;

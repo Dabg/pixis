@@ -53,7 +53,7 @@ sub check_mailbox :Test :Plan(2) {
 
     my $tag = $args->{tag} || 'Inbox';
     lives_ok {
-        my @message = $api->load_from_tag({
+        my @message = $api->load_from_profile({
             profile_id => $profile->id,
             tag        => $tag,
         });
