@@ -44,9 +44,15 @@ sub _build_cache_prefix {
     return join('.', split(/\./, ref $self));
 }
 
+sub schema {
+    my ($self, $name) = @_;
+    $name ||= 'master';
+    return Pixis::Registry->get(schema => $name);
+}
+
 sub resultset {
     my $self = shift;
-    my $schema = Pixis::Registry->get('schema' => 'master');
+    my $schema = $self->schema;
     my $rs     = $schema
         ->resultset($self->resultset_moniker)
         ->search($self->resultset_constraints)

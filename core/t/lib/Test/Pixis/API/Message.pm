@@ -2,6 +2,7 @@
 package Test::Pixis::API::Message;
 use Moose;
 use Test::Exception;
+use Test::More;
 
 BEGIN {
     extends 'Test::Pixis::Fixture';
@@ -19,9 +20,11 @@ sub setup {
 }
 
 sub send_message :Test :Plan(1) {
-    my ($self, $from, $to) = @_;
+    my ($self, $args) = @_;
     my $api = Pixis::Registry->get(api => 'message');
 
+    my $from = $args->{from};
+    my $to   = $args->{to};
     if (! blessed $from) {
         $from = $self->get_profile($from);
     }
@@ -39,7 +42,25 @@ sub send_message :Test :Plan(1) {
     } "message creation lives ok";
 }
 
-sub check_inbox {}
+sub check_mailbox :Test :Plan(2) {
+    my ($self, $args) = @_;
+    my $api = Pixis::Registry->get(api => 'message');
+
+    my $profile = $args->{profile};
+    if (! blessed $profile) {
+        $profile = $self->get_profile($profile);
+    }
+
+    my $tag = $args->{tag} || 'Inbox';
+    lives_ok {
+        my @message = $api->load_from_tag({
+            profile_id => $profile->id,
+            tag        => 'Inbox',
+        });
+
+        is( scalar @message, $args->{count}, "I have " . scalar @message . " messages (wanted: $args->{count})" );
+    } "message retrieval lives ok";
+}
 
 __PACKAGE__->meta->make_immutable();
 

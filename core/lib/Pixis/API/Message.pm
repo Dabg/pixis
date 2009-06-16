@@ -41,9 +41,9 @@ around create => sub {
     my $m2t   = $schema->resultset('MessageToTags');
 
     my $message = $next->($self, \%args);
-    $m2t->create( { profile_id => $from->id, message_id => $message->id, tag_id => $inbox->id });
+    $m2t->create( { profile_id => $from->id, message_id => $message->id, tag_id => $sent->id });
     foreach my $to_profile (@$to)  {
-        $m2t->create( { profile_id => $to_profile->id, message_id => $message->id, tag_id => $sent->id });
+        $m2t->create( { profile_id => $to_profile->id, message_id => $message->id, tag_id => $inbox->id });
         $message->add_to_recipients(
             {
                 to_profile_id => $to_profile->id
@@ -58,6 +58,39 @@ around create => sub {
 };
 
 *send = \&create;
+
+sub load_from_tag {
+    my ($self, $args) = @_;
+
+    my $schema = $self->schema;
+    my $tag;
+    if( my $tag_name = delete $args->{tag}) {
+        # XXX We should really cache this
+        $tag = $schema->resultset('MessageTag')->find({ tag => $tag_name });
+    } else {
+        $tag = $schema->resultset('MessageTag')->find($args->{tag_id});
+    }
+
+    if (! $tag) {
+        confess "No tag provided!";
+    }
+
+    my $profile = Pixis::Registry->get(api => 'Profile')->find( $args->{profile_id} );
+
+    my @ids = map { $_->message_id } 
+        $schema->resultset('MessageToTags')->search(
+            {
+                profile_id => $profile->id,
+                tag_id => $tag->id,
+            },
+            {
+                select => [ 'message_id' ]
+            }
+        )
+    ;
+
+    return $self->load_multi(@ids);
+}
 
 sub load_sent_from_member {
     my ( $self, $args ) = @_;
