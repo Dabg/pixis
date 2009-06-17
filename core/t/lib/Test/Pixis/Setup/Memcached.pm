@@ -11,7 +11,7 @@ has memcached_servers => (
     metaclass => 'Collection::Array',
     is => 'rw',
     isa => 'ArrayRef[Str]',
-    default => sub { +[ '127.0.0.:11211' ] },
+    default => sub { +[ '127.0.0.1:11211' ] },
     provides => {
         elements => 'all_memcached_servers'
     },
