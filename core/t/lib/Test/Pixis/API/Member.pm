@@ -45,7 +45,7 @@ sub expected_load_failure {
     my $api = Pixis::Registry->get(api => 'member');
     my $data = $self->members->[$which];
 
-    my $found = $api->find($data->{id});
+    my $found = $api->find($data->{id} or confess "No id?!");
     ok(! $found, "$suite non active member should not be loaded by pk");
     $found = undef;
     $found = $api->load_from_email($data->{email});
@@ -73,7 +73,7 @@ sub create_member :Test :Plan(8) {
         my $member = $api->create($data);
         ok($member, "member creation returns something");
         isa_ok($member, "Pixis::Schema::Master::Result::Member", "object is a proper DBIx::Class object");
-        $data->{id} = $member->id;
+        $self->members->[$which]->{id} = $member->id;
 
         # now create profiles
         my $profile_api = Pixis::Registry->get(api => 'Profile');
