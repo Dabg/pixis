@@ -81,6 +81,7 @@ sub get_member {
     my $api = Pixis::Registry->get(api => 'member');
     my $member;
 
+    confess unless defined $idx;
     if ( $self->members->[$idx]->{id} ) {
         $member = $api->find( $self->members->[$idx]->{id} );
     } else {
@@ -145,8 +146,9 @@ sub api {
     Class::MOP::load_class($class);
 
     my $api_config = $config->{$config_key} || {};
-    if ($self->can('memcached') && $self->has_memcached) {
+    if ($self->can('memcached') && $self->check_memcached) {
         $api_config->{cache} = $self->memcached;
+        $api_config->{cache_key_generator} = $self->memcached_key_generator;
     }
     return $class->new(%$api_config);
 }

@@ -9,12 +9,19 @@ use namespace::clean -except => qw(meta);
 
 has memcached_servers => (
     metaclass => 'Collection::Array',
-    is => 'rw',
+    is => 'ro',
     isa => 'ArrayRef[Str]',
     default => sub { +[ '127.0.0.1:11211' ] },
     provides => {
         elements => 'all_memcached_servers'
     },
+);
+
+has memcached_key_generator => (
+    is => 'ro',
+    does => 'MooseX::WithCache::KeyGenerator',
+    required => 1,
+    lazy_build => 1,
 );
 
 has memcached_namespace => (
@@ -28,10 +35,15 @@ class_type 'Cache::Memcached::Fast';
 class_type 'Cache::Memcached::libmemcached';
 
 has memcached => (
-    is => 'rw',
+    is => 'ro',
     isa => 'Cache::Memcached | Cache::Memcached::Fast | Cache::Memcached::libmemcached',
     lazy_build => 1
 );
+
+sub _build_memcached_key_generator {
+    require MooseX::WithCache::KeyGenerator::DumpChecksum;
+    return MooseX::WithCache::KeyGenerator::DumpChecksum->new();
+}
 
 sub _build_memcached {
     my $self = shift;
@@ -59,9 +71,7 @@ sub check_memcached {
         }
     }
 
-    if (! $server_ok) {
-        fail("No memcached servers available");
-    }
+    return $server_ok;
 }
 
 1;
