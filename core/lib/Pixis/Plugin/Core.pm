@@ -43,6 +43,7 @@ sub _build_apis {
         PurchaseItem 
         Profile 
         Message 
+        MessageTag
         MessageRecipient
   ) ]
 }

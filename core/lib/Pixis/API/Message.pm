@@ -36,8 +36,9 @@ around create => sub {
     my $guard  = $schema->txn_scope_guard();
 
     # XXX We should really cache this
-    my $inbox = $schema->resultset('MessageTag')->find({ tag => 'Inbox' });
-    my $sent  = $schema->resultset('MessageTag')->find({ tag => 'Sent' });
+    my $tag_api = Pixis::Registry->get(api => 'MessageTag');
+    my $inbox   = $tag_api->find_tag('Inbox');
+    my $sent    = $tag_api->find_tag('Sent');
     my $m2t   = $schema->resultset('MessageToTags');
 
     my $message = $next->($self, \%args);
@@ -62,13 +63,12 @@ around create => sub {
 sub load_from_profile {
     my ($self, $args) = @_;
 
-    my $schema = $self->schema;
     my $tag;
     if( my $tag_name = delete $args->{tag}) {
         # XXX We should really cache this
-        $tag = $schema->resultset('MessageTag')->find({ tag => $tag_name });
+        $tag = Pixis::Registry->get(api => 'MessageTag')->find_tag($tag_name);
     } else {
-        $tag = $schema->resultset('MessageTag')->find($args->{tag_id});
+        $tag = Pixis::Registry->get(api => 'MessageTag')->find($args->{tag_id});
     }
 
     if (! $tag) {
@@ -77,6 +77,7 @@ sub load_from_profile {
 
     my $profile = Pixis::Registry->get(api => 'Profile')->find( $args->{profile_id} );
 
+    my $schema = $self->schema;
     my @ids = map { $_->message_id } 
         $schema->resultset('MessageToTags')->search(
             {
@@ -95,26 +96,26 @@ sub load_from_profile {
 sub load_from_member {
     my ( $self, $args ) = @_;
 
-    my $schema = $self->schema;
     my $tag;
     if( my $tag_name = delete $args->{tag}) {
         # XXX We should really cache this
-        $tag = $schema->resultset('MessageTag')->find({ tag => $tag_name });
+        $tag = Pixis::Registry->get(api => 'MessageTag')->find_tag($tag_name);
     } else {
-        $tag = $schema->resultset('MessageTag')->find($args->{tag_id});
+        $tag = Pixis::Registry->get(api => 'MessageTag')->find($args->{tag_id});
     }
 
     if (! $tag) {
         confess "No tag provided!";
     }
 
-    my @profile_id = map {$_->id } Pixis::Registry->get(api => 'Profile')
+    my @profile_id = map { $_->id } Pixis::Registry->get(api => 'Profile')
         ->load_from_member({member_id => $args->{member_id}});
 
+    my $schema = $self->schema;
     my @ids = map { $_->message_id } 
         $schema->resultset('MessageToTags')->search(
             {
-                profile_id => \@profile_id,
+                profile_id => { -in => \@profile_id },
                 tag_id => $tag->id,
             },
             {
