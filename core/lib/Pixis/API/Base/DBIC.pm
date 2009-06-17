@@ -63,12 +63,15 @@ sub resultset {
 sub find {
     my ($self, $id) = @_;
 
+    my $schema    = $self->schema;
     my $cache_key = [$self->cache_prefix, $id ];
-    my $obj = $self->cache_get($cache_key);
-    if (! $obj) {
-        $obj   = $self->resultset->find($id);
+    my $obj       = $self->cache_get($cache_key);
+    if ($obj) {
+        $obj = $schema->thaw($obj);
+    } else {
+        $obj = $self->resultset->find($id);
         if ($obj) {
-            $self->cache_set($cache_key, $obj);
+            $self->cache_set($cache_key, $schema->freeze($obj));
         }
     }
     return $obj;
@@ -81,8 +84,9 @@ sub load_multi {
     # keys is a bit of a hassle
     my $rs = $self->resultset();
     my $h = $self->cache_get_multi(map { [ $self->cache_prefix, $_ ] } @ids);
-    my @ret = $h ? values %{$h->{results}} : ();
-    foreach my $id ($h ? (map { $_->[2] } @{$h->{missing}}) : @ids) {
+    my @ret = map { $schema->thaw($_) } ($h ? values %{$h->{results}} : ());
+    my @missing = $h ? (map { $_->[1] } @{$h->{missing}}) : @ids;
+    foreach my $id (@missing) {
         my $conf = $self->find($id);
         push @ret, $conf if $conf;
     }
