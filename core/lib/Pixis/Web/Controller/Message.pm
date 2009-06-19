@@ -121,7 +121,7 @@ sub create
             subject => $form->param_value('subject'),
             body    => $form->param_value('body'),
         });
-        return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) );
+        return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) ) if $subsession;
     }
 
     return;
