@@ -44,10 +44,18 @@ sub setup {
         Session::Store::File
         Session::State::Cookie
         Static::Simple
-        /;
+    /;
 
-    $plugin_config{plugins} and
-        push @plugins, $_ foreach @{$plugin_config{plugins}};
+    if (my $plugins = $plugin_config{plugins}) {
+        foreach my $plugin (@$plugins) {
+            push @plugins, $plugin;
+        }
+    }
+
+    if (my $plugins = $plugin_config{disable}) {
+        my %disabled = map { ($_ => 1) } @$plugins;
+        @plugins = grep { ! $disabled{ $_ } } @plugins;
+    }
 
     $class->SUPER::setup(@plugins);
 
