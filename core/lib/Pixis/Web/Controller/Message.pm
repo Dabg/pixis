@@ -89,26 +89,14 @@ sub create
     my $form = $self->form($c, {
         filename => 'message/edit',
         config_callback => {
-            hash => sub {
-                my ( $visitor, $value ) = @_;
-
-                return $value unless $value->{name};
-                if ( $value->{name} eq 'from_profile_id' ) {
-
-                    my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
-                            member_id => $member_id
-                        } ) ;
-
-                    $value->{options} = [
-                    map { [ $_->id, $_->display_name, ] } @profiles
-                    ];
-                }
-                if ( $value->{name} eq 'to_profile_id' ) {
-                    $value->{options} = [
-                        [ $recipient->id, $recipient->display_name ]
-                    ];
-                }
-                return $value;
+            hash => sub { 
+                return $self->_create_form_callback(
+                    @_, 
+                    {
+                        member_id => $member_id, 
+                        recipient => $recipient,
+                    }
+                ) 
             }
         }
      } );
@@ -196,6 +184,29 @@ sub view
     }
     $c->registry(api => 'MessageRecipient')->set_read($c->stash->{message}, $c->user);
     return;
+}
+
+sub _create_form_callback {
+    my ($self, $visitor, $value, $args) = @_;
+
+    return $value unless $value->{name};
+    if ( $value->{name} eq 'from_profile_id' ) {
+        my $member_id = $args->{member_id};
+        my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
+                member_id => $member_id
+            } ) ;
+
+        $value->{options} = [
+        map { [ $_->id, $_->display_name, ] } @profiles
+        ];
+    }
+    if ( $value->{name} eq 'to_profile_id' ) {
+        my $recipient = $args->{recipient};
+        $value->{options} = [
+        [ $recipient->id, $recipient->display_name ]
+        ];
+    }
+    return $value;
 }
 
 1;
