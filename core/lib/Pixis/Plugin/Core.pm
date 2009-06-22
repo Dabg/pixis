@@ -75,16 +75,18 @@ before register => sub {
     foreach my $name ($self->all_apis) {
         my $api_config = $config->{"API::$name"} || {};
         my $module;
+        my @tried;
         foreach my $namespace ($self->all_namespaces) {
             eval {
                 my $tmp = "$namespace\::$name";
+                push @tried, $tmp;
                 Class::MOP::load_class($tmp);
                 $module = $tmp;
             };
             last if $module;
         }
         if (! $module) {
-            confess "Could not find an API by the name $name";
+            confess "Could not find an API by the name $name (tried @tried)";
         }
 
         eval {
