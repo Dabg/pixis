@@ -7,8 +7,8 @@ use Data::Visitor::Callback;
 
 BEGIN {
     extends qw(Pixis::Web::ControllerBase);
-    with 'Pixis::Web::ControllerBase::WithSubsession';
 }
+with 'Pixis::Web::ControllerBase::WithSubsession';
 
 has '+default_auth' => (default => 1);
 
