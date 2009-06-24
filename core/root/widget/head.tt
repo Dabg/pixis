@@ -1,6 +1,5 @@
 <title>[% page.title | html %]</title>
-[% FOREACH meta IN page.metas -%]<meta[% FOREACH pair IN meta.pairs %] [% pair.key | html %]="[% pair.value | htm
-l %]"[% END %] />
+[% FOREACH meta IN page.metas -%]<meta[% FOREACH pair IN meta.pairs %] [% pair.key | html %]="[% pair.value | html %]"[% END %] />
 [%- END %]
 [% FOREACH script IN page.base_scripts %]
     <script src="[% script %]" type="text/javascript"></script>
