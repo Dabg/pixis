@@ -1,0 +1,556 @@
+.error_message {
+    margin: 3px 0;
+    padding-left: 0.5em;
+    color: #f00;
+    font-weight: bold;
+/*    float: right;*/
+    clear: both;
+}
+
+/* This is my first designs using CSS, Please visit me at http://www.studio7designs.com or email aran@studio7designs.com if you have any questions. Thanks, and have fun!
+CSS layout: */
+
+body {
+margin: 0 auto;
+padding: 0;
+font: 12px "ＭＳ Ｐゴシック", 'メイリオ',Meiryo,"ヒラギノ角ゴ Pro W3", Osaka, Arial, Halvetica, sans-serif;
+background: #f4f4f4 url(/static/img/backround.gif) top center repeat-y;
+text-align: center;
+}
+
+ul,ol {
+margin: 0;
+padding-left: 20px;
+}
+
+h1 {
+margin: 0 0 1.5em 0;
+padding: 0.5em 0 0 0;
+    line-height: 1.4;
+}
+
+h2 {
+    line-height: 1.4;
+}
+
+table {
+    border-top: 1px solid #f0f0f0;
+    border-left: 1px solid #f0f0f0;
+    border-collapse: collapse;
+}
+caption {
+    font-weight: bold;
+    caption-side: top;
+    display: block;
+}
+th {
+    font-weight: bold;
+    white-space: nowrap;
+}
+th,td {
+    padding: 3px 10px;
+    border-right: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.box_right {
+position:relative;
+float:right;
+clear:both;
+width:200px;
+margin:0 0 5px 10px;
+padding:0 10px 0 10px;
+background:#F7F9F7;
+color:#000000;
+font-size:.9em;
+}
+
+.box_right p {
+margin:5px 5px;
+}
+
+.box_cnr_top {
+background:url(/static/img/cnr_tr.gif) no-repeat top right;
+margin:0 -10px 0 -10px;
+}
+
+.box_cnr_bottom {
+background:url(/static/img/cnr_br.gif) no-repeat top right;
+margin:0 -10px 0 -10px;
+}
+
+img.cnr {
+width:8px;
+height:8px;
+border:none;
+display: block !important;
+}
+
+#container {
+background: #ffffff;
+color: #303030;
+margin: 0 auto;
+width: 760px;
+text-align: left;
+}
+
+#header {
+margin: 0 0 8px 0;
+padding-top:10px;
+padding-right:30px;
+border: 0;
+background: #86C32A url(/static/img/header.jpg) top center no-repeat;
+width: 730px;
+height: 25px;
+text-align: right;
+}
+
+#header {color: #FFF;}
+#header a {color: #FFF;}
+
+#left {
+    float: left;
+    width: 160px;
+}
+/*
+#topleft {
+clear: left;
+float: left;
+width: 150px;
+height: 84px;
+margin: 0 0 10px 0;
+padding: 0;
+font-size: 0.9em;
+}
+*/
+
+#menu {
+clear: left;
+float: left;
+width: 150px;
+margin: 0 0 0px 0;
+padding: 0;
+font-size: 0.9em;
+}
+
+#menu ul {  
+list-style: none;
+width: 150px;
+margin: 10px 0;
+padding: 0;
+font-size: 1.1em;
+}   
+
+#menu li {
+margin-bottom: 4px;
+}
+
+#menu li a {
+font-weight: bold;
+height: 20px;
+text-decoration: none;
+color: #86C32A;
+display: block;
+padding: 5px 0 0 8px;
+background: #ffffff;
+border-left: 5px solid #86C32A;
+}   
+    
+#menu li a:hover {
+background: #86C32A;
+color: #ffffff;
+border-left: 5px solid #86C32A;
+}
+
+.leftnews {
+margin: 1px 0;
+padding: 10px;
+width: 130px;
+color: #505050;
+background-color: #F7F9F7;
+line-height: 1.3em;
+}
+
+.leftnews div {
+margin: 3px 0;
+}
+
+.leftnews div img {
+vertical-align: middle;
+}
+
+#right {
+    float: left;
+    width: 94px;
+}
+/*
+.rightnews {
+float: right;
+width: 94px;
+background-color: #F7F9F7;
+margin: 0 0 10px 10px;
+padding: 5px;
+font-size: 0.9em;
+line-height: 1.5em;
+}
+
+#rightnews p {
+margin: 0 0 1.5em 0;
+}
+*/
+
+#content {
+/*margin: 0 110px 20px 160px;*/
+float: left;
+width: 458px;
+border-left: 1px solid #f0f0f0;
+border-right: 1px solid #f0f0f0;
+padding: 0 10px 0 10px;
+line-height: 1.6em;
+text-align: left;
+margin-bottom: 20px;
+}
+
+#content h2 {
+font-size: 1.5em;
+margin: 2em 0 0.5em 0;
+}
+
+#content img {
+    padding: 0px;
+    display:inline;
+    border: thin none #CCCCCC;
+    background-color: #FFFFFF;
+}
+
+.greenbox {
+background-color: #F7F9F7;
+border: 1px solid #94BD53;
+color: inherit;
+padding: 5px;
+margin: 0px;
+}
+
+.bluebox {
+background-color: #EDF3FE;
+border: 1px solid #74A8F5;
+color: inherit;
+padding: 5px;
+margin: 0px;
+}
+
+.splitright {
+background-color: #ffffff;
+width: 49%;
+float: right;
+overflow: hidden;
+}
+
+.splitleft {
+background-color: #ffffff;
+width: 49%;
+float: left;
+overflow: hidden;
+}
+
+h3 {
+font-size: 1.3em;
+margin: 0 0 10px 0;
+}
+
+a {
+text-decoration: none;
+color: #74A8F5;
+}
+
+a:hover {
+text-decoration: underline;
+color: #86C32A;
+}
+
+a img {
+border: 0;
+}
+
+#footer {
+clear: both;
+margin: 20px auto 0 auto;
+padding: 10px 0 20px 0;
+border-top: 3px solid #86C32A;
+width: 760px;
+text-align: center;
+color: #86C32A;
+font-size: 0.9em;
+}
+
+#footer a {
+color: #86C32A;
+text-decoration: none;
+}
+
+#footer a:hover {
+text-decoration: underline;
+color: #74A8F5;
+}
+
+.left {
+margin: 10px 10px 5px 0;
+float: left;
+}
+
+.right {
+margin: 10px 0 5px 10px;
+float: right;
+}
+
+.textright {
+text-align: right;
+}
+
+.center {
+text-align: center;
+}
+
+.small {
+font-size: 0.9em;
+}
+
+.bold {
+font-weight: bold;
+}
+
+.hide {
+display: none;
+}
+
+.style3 {color: #666666}
+.style4 {color: #999999}
+.style5 {color: #FF9933}
+.style6 {color: #86C32A}
+.style7 {color: #74A8F5}
+
+/* workarounds and hacks */
+.clearfix:after {
+content: "."; 
+display: block; 
+height: 0; 
+clear: both; 
+visibility: hidden;
+}
+
+.clearfix {display: inline-table;}
+
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */
+
+h1 {color: #86C32A;}
+h2 {color: #FF9933;}
+h3 {color: #999999;}
+
+.loginbox form,
+.formbox form {
+    margin:0;
+    padding:0;
+}
+.loginbox fieldset,
+.formbox fieldset {
+    margin:0;
+    border:none;
+    text-align: center;
+}
+.loginbox .submit input,
+.formbox .submit input {
+    margin-top: 10px;
+    width:100px;
+}
+
+.greenbox form {padding:0; margin:0;}
+.greenbox fieldset {
+    margin:0;
+    border:none;
+    text-align: center;
+}
+.greenbox .submit input {margin-top:10px; width:100px;}
+div.greenbox div.label {
+    margin-top:10px;
+    float: left;
+    width: 140px;
+    text-align: right;
+    write-space: nowrap;
+}
+body div.loginbox div.text,
+body div.formbox div.text,
+body div.greenbox div.text,
+body div.loginbox div.password,
+body div.formbox div.password,
+body div.greenbox div.password,
+body div.greenbox div.select,
+body div.formbox div.textarea,
+body div.greenbox div.textarea,
+body div.greenbox div.checkbox {
+    float: left;
+    width: 280px;
+    text-align: left;
+}
+div.loginbox div.text input,
+div.formbox div.text input,
+div.greenbox div.text input {
+    width: 260px;
+    vertical-align: top;
+}
+
+form {padding:0; margin:0;}
+fieldset {
+    margin:0;
+    border:none;
+    text-align: center;
+}
+div.label {
+    margin-top:10px;
+    float: left;
+    width: 120px;
+    text-align: right;
+}
+body div.text,
+body div.password,
+body div.select,
+body div.checkbox {
+    float: left;
+    width: 310px;
+    text-align: left;
+}
+div.text input {
+    width: 300px;
+    vertical-align: top;
+}
+.label  textarea {
+    width:70%;
+    vertical-align: top;
+}
+div.submit {
+    text-align: center;
+}
+.submit input {margin-top:10px; width:100px;}
+
+div#confirm {
+    margin: 10px 0;
+}
+div#confirm table {
+    margin: 0 auto;
+}
+div#confirm table th,
+div#confirm table td {
+    width: 200px;
+    text-align: left;
+}
+
+
+td {font-size:100%;}
+
+
+
+/* member */
+
+ul#member_menu {
+    margin-bottom: 20px;
+    padding: 0;
+    border-left: 1px solid #f0f0f0;
+}
+ul#member_menu li {
+    padding: 0 10px;
+    border-right: 1px solid #f0f0f0;
+    float: left;
+    width: auto;
+    list-style-type: none;
+}
+
+p#gravatar {
+    margin-right: 18px;
+    float: left;
+    width: 80px;
+}
+div#info {
+    float: left;
+    width: 360px;
+}
+dl#following,
+dl#followers {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+dl#following dd,
+dl#followers dd {
+    padding-right: 10px;
+    display: inline;
+}
+
+
+
+/* sponsors */
+div#platinum li,
+div#gold li,
+div#silver li,
+div#bronze li {
+    line-height: 1.6;
+}
+
+div#platinum li {
+    font-size: 18px;
+}
+
+div#gold li {
+    font-size: 16px;
+}
+
+div#silver li {
+    font-size: 14px;
+}
+
+div#bronze li {
+    font-size: 12px;
+}
+
+
+
+/* event ------------- */
+
+/* event-view */
+
+h1 span {
+    font-weight: normal;
+    font-size: 12px;
+    color: #303030;
+}
+
+
+
+/* session-add */
+
+div#schedule_container {
+    float: right;
+    width: 150px;
+}
+div#sessionbox {
+    float: left;
+    width: 295px;
+}
+
+div#sessionbox div.label {
+    margin-right: 10px;
+    float: left;
+    width: 70px;
+}
+div#sessionbox div.text,
+div#sessionbox div.textarea {
+    width: 180px;
+}
+div#sessionbox div.text input {
+    width: 170px;
+}
+div#sessionbox div.textarea textarea {
+    width: 170px;
+}
+
+/* session-view */
