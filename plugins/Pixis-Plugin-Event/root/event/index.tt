@@ -13,7 +13,7 @@
 <h2>開催予定のイベント</h2>
 <ul>
 [% FOREACH event IN events %]
-    <li><a href="[% c.uri_for("/event", event.id) %]">[% event.title | html %]</a></li>
+    <li><a href="[% c.uri_for("/event", event.id) %]">([% event.start_on.strftime('%Y-%m-%d') %]) [% event.title | html %]</a></li>
 [% END %]
 </ul>
 [% END %]
