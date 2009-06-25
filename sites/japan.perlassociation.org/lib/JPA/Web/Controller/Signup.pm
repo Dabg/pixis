@@ -115,6 +115,7 @@ sub commit_basic :Local :Args(1) {
         return;
     }
     # commit this basic information.
+    delete $params->{item_prices};
     $params->{member_id} = $c->user->id;
     my ($jpa_member, $order) = $c->registry(api => 'JPAMember')->create($params);
 
