@@ -546,7 +546,10 @@ sub handle_exception {
     $c->response->status( $error->status );
     $c->response->content_type( 'text/html; charset=utf-8' );
     $c->response->body(
-        $c->view( 'TT' )->render( $c, 'error.tt', { error => $error } )
+        $c->view( 'TT' )->render( $c, 'error.tt', {
+            page  => $c->controller('Root')->page,
+            error => $error,
+        } )
     );
 
     # processing the error has bombed. just send it back plainly.
