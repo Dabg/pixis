@@ -133,14 +133,20 @@ msgstr "送信済みメッセージ"
 msgid "Create Message"
 msgstr "メッセージ作成"
 
+msgid "To"
+msgstr "宛先"
+
 msgid "From"
-msgstr "送信者"
+msgstr "差出人"
 
 msgid "Subject"
 msgstr "件名"
 
 msgid "Body"
 msgstr "本文"
+
+msgid "Send"
+msgstr "送信"
 
 msgid "Send Message"
 msgstr "メッセージを送る"
