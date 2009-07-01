@@ -154,7 +154,12 @@ sub create_commit
     my $message = $c->registry(api => 'Message')->send( $hash );
     $self->delete_subsession( $c, $subsession );
 
-    return $c->res->redirect( $c->uri_for( $message->id ) );
+    return $c->res->redirect( $c->uri_for( 'create', 'done') );
+}
+
+sub create_done
+    :Path('create/done')
+{
 }
 
 sub load_message

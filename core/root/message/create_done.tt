@@ -1,0 +1,12 @@
+[% WRAPPER wrapper.tt,
+    page.title => "メッセージの送信",
+    page.heading.content => "メッセージの送信",
+    page.metas => [
+        { 'http-equiv' => 'Refresh', content => '5; ' _ c.uri_for('/message') }
+    ]
+%]
+
+<p>送信しました。5秒後に<a href="[% c.uri_for('/message') %]">メッセージページ</a>に移動したします。</p>
+
+[% END %]
+
