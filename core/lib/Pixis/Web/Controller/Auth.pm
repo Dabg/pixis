@@ -5,6 +5,7 @@ use namespace::clean -except => qw(meta);
 BEGIN { extends 'Pixis::Web::ControllerBase' }
 
 has '+default_auth' => (default => 0);
+has 'default_redirect' => (is => 'ro', isa => 'Str');
 
 sub fail
     :Private
@@ -65,7 +66,13 @@ sub login
                 $next->port(undef);
             }
 
-            $c->res->redirect($c->uri_for("$next" || ('/member', $c->user->id)));
+            $c->res->redirect(
+                $c->uri_for(
+                    "$next" || 
+                    $self->default_redirect() ||
+                    ('/member', $c->user->id)
+                )
+            );
             return;
         }
 
