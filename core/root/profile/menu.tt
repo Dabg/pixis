@@ -2,7 +2,6 @@
 <div id="info">
 <h1><a href="[% c.uri_for(profile.id) %]">[% profile.display_name %]</a></h1>
 <ul id="member_menu" class="clearfix">
-<li>this is [% c.registry('api', 'Profile').detect_type(profile).name %] profile.</li>
 [% IF c.user.id == profile.member_id %]
 <li><a href="[% c.uri_for(profile.id, 'edit') %]">[% loc('edit') %]</a></li>
 <li><a href="[% c.uri_for(profile.id, 'delete') %]">[% loc('delete') %]</a></li>
