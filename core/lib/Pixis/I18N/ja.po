@@ -124,6 +124,9 @@ msgstr "Github ID (任意)"
 msgid "Pixis Member Signup"
 msgstr "メンバー登録"
 
+msgid "Signup"
+msgstr "新規登録"
+
 msgid "Message Inbox"
 msgstr "メッセージ受信箱"
 
