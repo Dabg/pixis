@@ -70,11 +70,11 @@ sub start :Local :Args(1)
                 return;
             }
         }
-
+        my $p = $self->get_subsession($c, $subsession);
         my $params = $form->params;
+        $p->{$_} = $params->{$_} for keys %$params;
         delete $params->{password_check}; # no need to include it here
         $params->{current_step} = 'start';
-        $self->set_subsession($c, $subsession, $params);
         return $self->next_step($c, $subsession);
     }
     return ();
@@ -145,8 +145,8 @@ sub commit
 
     my $form = $self->form($c);
     $c->stash->{form} = $form;
+    my $p = $self->get_subsession($c, $subsession);
     if ($form->submitted_and_valid) {
-        my $p = $self->get_subsession($c, $subsession);
         # submit element will exist... remove
         delete $p->{submit};
         delete $p->{current_step};
@@ -155,11 +155,11 @@ sub commit
         if ($member) {
             $p->{current_step} = 'commit';
             $p->{activation_token} = $member->activation_token;
-            $self->set_subsession($c, $subsession, $p);
+#            $self->set_subsession($c, $subsession, $p);
             return $c->forward('next_step', [$subsession]);
         } 
     }
-    $c->stash->{confirm} = $self->get_subsession($c, $subsession);
+    $c->stash->{confirm} = $p;
     return ();
 }
 

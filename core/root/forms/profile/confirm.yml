@@ -1,0 +1,11 @@
+---
+auto_fieldset: 1
+method: POST
+
+elements:
+    - name: submit
+      type: Submit
+      value_loc: Submit
+    - name: cancel
+      type: Submit
+      value_loc: Back

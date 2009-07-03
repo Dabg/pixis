@@ -7,8 +7,8 @@ use Data::Visitor::Callback;
 
 BEGIN { 
     extends qw(Pixis::Web::ControllerBase);
-    with 'Pixis::Web::ControllerBase::WithSubsession';
 }
+with 'Pixis::Web::ControllerBase::WithSubsession';
 
 has '+default_auth' => (
     default => 1
@@ -98,11 +98,21 @@ sub create_confirm
 {
     my ($self, $c, $subsession) = @_;
 
+    my $form = $self->form($c, 'profile/confirm');
+    $c->stash->{form} = $form;
     my $type = $c->stash->{profile_type};
     $c->stash->{next_url} = $c->uri_for('type', $type, 'create', 'commit', $subsession);
     $c->stash->{template} = "profile/confirm.tt";
     $c->stash->{subsession} = $subsession;
     $c->stash->{profile}  = $self->get_subsession($c, $subsession);
+    $c->log->_dump($c->stash->{profile});
+    if ($form->submitted_and_valid) {
+        my $type = $c->stash->{profile_type};
+        return $c->res->redirect($c->uri_for('type', $type, 'create', $subsession))
+            if $c->req->param('cancel');
+        return $c->res->redirect($c->uri_for('type', $type, 'create', 'commit', $subsession));
+#            if $form->param_value('submit');
+    }
     return;
 }
 
