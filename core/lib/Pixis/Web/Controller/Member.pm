@@ -11,6 +11,16 @@ BEGIN {
 
 has '+default_auth' => ( default => 1 );
 
+has settings_widget_list => (
+    is => 'ro',
+    isa => 'ArrayRef',
+    lazy_build => 1
+);
+
+sub _build_settings_widget_list {
+    return [ 'Member::BasicSettings', 'Member::EmailSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ];
+}
+
 sub _build_auth_info {
     return {
         forgot_password => 0,
@@ -91,7 +101,7 @@ sub settings
     my ($self, $c) = @_;
 
     $c->stash(
-        widgets => [ 'Member::BasicSettings', 'Member::EmailSettings', 'Member::AuthSettings', 'Member::ProfileSettings' ],
+        widgets => $self->settings_widget_list
     );
     return;
 }
