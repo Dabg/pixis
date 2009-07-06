@@ -55,9 +55,9 @@ sub profile_type
 
 sub create
     :Chained('profile_type')
-    :Args(0)
+    :Args
 {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $subsession ) = @_;
 
     my $type = $c->stash->{profile_type};
 
@@ -78,14 +78,20 @@ sub create
 
     # ok, attempt to load the form
     my $form = $self->form($c, "profile/create_$type");
-    $form->action($c->uri_for('type', $type, 'create'));
+    $form->action($c->uri_for('type', $type, 'create', $subsession || ()));
+    my $subsession_hash = $self->get_subsession($c, $subsession);
+    if ($subsession_hash) {
+        $form->default_values($subsession_hash);
+    }
 
     $c->stash->{form} = $form;
 
     if ($form->submitted_and_valid) {
-        my $p = $form->params;
+        my $p = $subsession_hash || {};
+        my $params = $form->params;
+        $p->{$_} = $params->{$_} for keys %$params;
         delete $p->{submit};
-        my $subsession = $self->new_subsession($c, $p);
+        $subsession = $self->new_subsession($c, $p) unless $subsession;
         $c->res->redirect($c->uri_for('type', $type, 'create', 'confirm', $subsession) );
     }
     return;
@@ -98,20 +104,12 @@ sub create_confirm
 {
     my ($self, $c, $subsession) = @_;
 
-    my $form = $self->form($c, 'profile/confirm');
-    $c->stash->{form} = $form;
     my $type = $c->stash->{profile_type};
     $c->stash->{next_url} = $c->uri_for('type', $type, 'create', 'commit', $subsession);
+    $c->stash->{back_url} = $c->uri_for('type', $type, 'create', $subsession);
     $c->stash->{template} = "profile/confirm.tt";
     $c->stash->{subsession} = $subsession;
     $c->stash->{profile}  = $self->get_subsession($c, $subsession);
-    if ($form->submitted_and_valid) {
-        my $type = $c->stash->{profile_type};
-        return $c->res->redirect($c->uri_for('type', $type, 'create', $subsession))
-            if $c->req->param('cancel');
-        return $c->res->redirect($c->uri_for('type', $type, 'create', 'commit', $subsession));
-#            if $form->param_value('submit');
-    }
     return;
 }
 
@@ -161,9 +159,9 @@ sub is_owner {
 sub edit
     :Chained('load_profile')
     :PathPart('edit')
-    :Args(0)
+    :Args
 {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $subsession ) = @_;
 
     if (! $self->is_owner($c)) {
         return $c->res->redirect($c->uri_for($c->stash->{profile}->id));
@@ -174,12 +172,19 @@ sub edit
     my $form = $self->form($c, "profile/create_$type");
     $c->stash->{form} = $form;
 
-    $form->model->default_values($c->stash->{profile});
+    my $subsession_hash = $self->get_subsession($c, $subsession);
+    if ($subsession_hash) {
+        $form->default_values($subsession_hash);
+    } else {
+        $form->model->default_values($c->stash->{profile});
+    }
 
     if ($form->submitted_and_valid) {
-        my $args = $form->params;
-        delete $args->{submit};
-        my $subsession = $self->new_subsession($c, $args);
+        my $p = $subsession_hash || {};
+        my $params = $form->params;
+        delete $params->{submit};
+        $p->{$_} = $params->{$_} for keys %$params;
+        $subsession = $self->new_subsession($c, $p) unless $subsession;
         $c->res->redirect($c->uri_for($c->stash->{profile}->id, 'edit', 'confirm', $subsession) );
     }
     return ();
@@ -194,6 +199,7 @@ sub edit_confirm
 
     $c->stash(
         next_url     => $c->uri_for($c->stash->{profile}->id, 'edit', 'commit', $subsession),
+        back_url     => $c->uri_for($c->stash->{profile}->id, 'edit', $subsession),
         profile      => $self->get_subsession($c, $subsession),
         profile_type =>
             $c->registry(api => 'Profile')->detect_type($c->stash->{profile})->name,
