@@ -1,0 +1,10 @@
+[% WRAPPER wrapper.tt,
+    page.title => "プロフィール画像のアップロード",
+    page.heading.content => "プロフィール画像のアップロード",
+%]
+
+<img src="[% c.uri_for("/profile", profile.id, "photo") %]">
+[% form %]
+
+[% END %]
+

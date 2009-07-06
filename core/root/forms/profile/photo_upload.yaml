@@ -1,0 +1,15 @@
+---
+auto_fieldset: 1
+elements:
+    - type: File
+      name: file
+      constraints:
+        - Required
+        - type: File::MaxSize
+          max: 64000
+        - type: File::MIME
+          regex: ^image\/(?:jpe?g|gif|png)$
+    - type: Submit
+      name: submit
+      value_loc: Submit
+            

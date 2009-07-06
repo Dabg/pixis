@@ -1,0 +1,21 @@
+<div id="content">
+<div class="table_container">
+<table>
+[% IF profile.id %]
+<tr>
+    <td>[% loc('ID') %]</td>
+    <td>[% profile.id %]</td>
+</tr>
+[% END %]
+<tr>
+    <td>[% loc("Display Name") %]</td>
+    <td>[% profile.display_name | html %]</td>
+</tr>
+<tr>
+    <td>[% loc("Biography") %]</td>
+    <td>[% profile.bio | html %]</td>
+</tr>
+</table>
+</div><!-- table_container -->
+</div><!-- content -->
+

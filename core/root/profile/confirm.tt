@@ -1,0 +1,13 @@
+[%# I think we can factor this template out and make it more generic %]
+[% WRAPPER wrapper.tt,
+    page.heading.content => "プロフィール内容の確認",
+%]
+<div id="content">
+[% INCLUDE "profile/elements_${profile_type}.tt" %]
+<ul class="buttons clearfix">
+[% form %]
+<li><a href="[% next_url %]">[% loc("Create") %]</a></li>
+<li><a href="javascript:void(0)" onclick="history.back(); return false">戻る</a></li>
+</ul>
+</div><!-- content -->
+[% END %]

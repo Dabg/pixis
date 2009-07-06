@@ -149,7 +149,7 @@ sub populate_initial_data {
 
     $schema->resultset('MemberAuth')->create({ 
         member_id => $member->id,
-        auth_type => 1,
+        auth_type => 'password',
         auth_data => Digest::SHA1::sha1_hex('admin')
     });
     return ();

@@ -203,6 +203,42 @@ sub detect_type {
     return [grep {$_->moniker eq $moniker} $self->all_profile_types]->[0];
 }
 
+sub get_photo {
+    my ($self, $profile_id) = @_;
+
+    my $schema = Pixis::Registry->get(schema => 'master');
+    return $schema->resultset('ProfilePhoto')->find( $profile_id );
+}
+    
+sub set_photo {
+    my ($self, $args) = @_;
+
+    my $fh = $args->{handle};
+    my $schema = Pixis::Registry->get(schema => 'master');
+
+    my $content_type = $args->{content_type};
+    my $type;
+    $content_type =~ /\/(.+)$/;
+    $type = $1;
+    require Imager;
+    my $img = Imager->new();
+    $img->read(file => $args->{filename}, type => $type);
+    my $scaled = $img->scale(xpixels => 80) or die $img->errstr;
+
+    $schema->resultset('ProfilePhoto')->update_or_create(
+        {
+            profile_id => $args->{profile_id},
+            content_type => $args->{content_type},
+            data      => do { 
+                my $buf;
+                $scaled->write(data => \$buf, type => $type) or die $img->errstr;
+                $buf
+            }
+        }
+    );
+}
+
+
 __PACKAGE__->meta->make_immutable;
 
 package Pixis::API::Profile::Type; ## no critic

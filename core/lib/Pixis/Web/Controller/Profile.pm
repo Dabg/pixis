@@ -244,5 +244,43 @@ sub delete
     return ();
 }
 
+sub photo
+    :Chained('load_profile')
+{
+    my ($self, $c) = @_;
+
+    my $photo = Pixis::Registry->get(api => 'Profile')->get_photo( $c->stash->{profile}->id );
+    if (! $photo) {
+        Pixis::Web::Exception::FileNotFound->throw();
+    }
+
+    my $res = $c->res;
+    $res->content_type( $photo->content_type );
+    $res->body( $photo->data );
+}
+
+sub photo_upload
+    :Chained('load_profile')
+    :PathPart('photo/upload')
+{
+
+    my ($self, $c) = @_;
+
+    if ($c->stash->{profile}->member_id ne $c->user->id) {
+        Pixis::Web::Exception::AccessDenied->throw();
+    }
+
+    my $form = $self->form($c);
+    $c->stash->{form} = $form;
+    if ($form->submitted_and_valid) {
+        my $file = $form->param('file');
+        $c->registry(api => 'Profile')->set_photo( {
+            profile_id => $c->stash->{profile}->id,
+            filename  => $file->tempname,
+            content_type => $file->type,
+        });
+    }
+}
+
 1;
 
