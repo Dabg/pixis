@@ -105,7 +105,6 @@ sub create_confirm
     $c->stash->{template} = "profile/confirm.tt";
     $c->stash->{subsession} = $subsession;
     $c->stash->{profile}  = $self->get_subsession($c, $subsession);
-    $c->log->_dump($c->stash->{profile});
     if ($form->submitted_and_valid) {
         my $type = $c->stash->{profile_type};
         return $c->res->redirect($c->uri_for('type', $type, 'create', $subsession))
