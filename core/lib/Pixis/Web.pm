@@ -119,6 +119,7 @@ sub setup_virtual_components {
     my %comps = map { $_ => 1 } @comps;
 
     foreach my $comp (@comps) {
+        next if $comp =~ /::SUPER$/; # XXX perl 5.10 seems to pick this up
         my $base = $comp;
         # uh-uh, no no, no controller base
         next if $comp =~ /^Pixis::Web::ControllerBase/;
