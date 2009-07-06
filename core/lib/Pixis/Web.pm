@@ -28,6 +28,11 @@ our $REGISTRY;
 BEGIN {
     $REGISTRY = Pixis::Registry->instance;
     extends 'Catalyst';
+
+    my $config_hack = $ENV{ENABLE_CONFIG_HACK} ? 1 : 0;
+    eval <<EOSUB;
+sub ENABLE_CONFIG_HACK { $config_hack }
+EOSUB
 }
 
 sub debug { return $DEBUG }
@@ -55,6 +60,20 @@ sub setup {
     if (my $plugins = $plugin_config{disable}) {
         my %disabled = map { ($_ => 1) } @$plugins;
         @plugins = grep { ! $disabled{ $_ } } @plugins;
+    }
+
+    # XXX FIXME FIXME FIXME XXX
+    # This is an ungly hack that prevents Catalyst from garbling our output.
+    # This only happens when you have configuration values that are put
+    # directly to the output stream -- like, contents of the header section
+    # together with our utf-8 body. I'm thinking this has something to do
+    # with how YAML::Syck loads unicode + C::P::Unicode's way of handling
+    # output data, but not sure at this point.
+    #
+    # set Pixis::Web::ENABLE_CONFIG_HACK to a false value if you want to
+    # disable this ugliness.
+    if (ENABLE_CONFIG_HACK) {
+        Encode::from_to($class->config->{session}->{cookie_domain}, "iso-8859-1", "utf-8");
     }
 
     $class->SUPER::setup(@plugins);
