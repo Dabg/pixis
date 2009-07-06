@@ -53,6 +53,7 @@ sub ACCEPT_CONTEXT {
             push @paths, $path;
         }
         $config->{config_file_path} = [@paths];
+        $config->{query_type} = 'Catalyst';
         $self->localizer( $c->model('Data::Localize') );
         $self->initialized_with_context(1);
     }
@@ -62,14 +63,14 @@ sub ACCEPT_CONTEXT {
 sub load {
     my ($self, $name, $args) = @_;
 
-    my $form; # = $self->cache_get($name);
+    my $form = $self->cache_get($name);
     if (! $form) {
         $form = HTML::FormFu->new( 
             Catalyst::Utils::merge_hashes( $self->formfu_config, $args ) );
         $form->add_localize_object($self->localizer);
         $form->load_config_filestem($name);
 
-#        $self->cache_set($name, $form);
+        $self->cache_set($name, $form);
     }
     return $form;
 }
