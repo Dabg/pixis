@@ -56,6 +56,7 @@ requires 'MooseX::WithCache';
 requires 'SQL::Translator';
 requires 'Text::CSV_XS';
 requires 'Template::Provider::Encoding';
+requires 'Imager';
 
 recommends 'Catalyst::Engine::FastCGI';
 recommends 'Catalyst::Log::Log4perl';
