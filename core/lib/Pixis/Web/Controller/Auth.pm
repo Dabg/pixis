@@ -57,7 +57,7 @@ sub login
         ] ) && !@{$c->error};
         if ($auth_ok) {
             my $next = URI->new(
-                $c->session->{next_uri} ||
+                delete $c->session->{next_uri} ||
                 $form->param('next') 
             );
             $next->scheme(undef);
