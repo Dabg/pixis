@@ -2,6 +2,13 @@ package Pixis::Web::ControllerBase::WithSubsession;
 use Moose::Role;
 use namespace::clean -except => qw(meta);
 
+has strict_subsession => (
+    is => 'ro',
+    isa => 'Bool'
+    required => 1,
+    default => 1
+);
+
 has subsession_expires => (
     is => 'ro',
     isa => 'Int',
@@ -24,6 +31,9 @@ sub new_subsession {
 sub get_subsession {
     my ($self, $c, $subsession) = @_;
     my $container = $c->session->{__subsessions}->{$subsession};
+    if ($self->strict_subsession) {
+        Pixis::Web::Exception->throw(message => "指定されたサブセッション$subsessionが存在しません");
+    }
     return $container ? $container->{data} : ();
 }
 
