@@ -1,4 +1,5 @@
 [% WRAPPER wrapper.tt,
+    page.title => "エラー " _ error.status,
     page.heading.content => "エラー " _ error.status
 %]
 
