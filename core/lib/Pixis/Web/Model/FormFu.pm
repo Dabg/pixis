@@ -9,6 +9,10 @@ extends 'Catalyst::Model';
 
 with_cache 'cache';
 
+has languages => (
+    is => 'rw',
+);
+
 has config_file_path => (
     metaclass => 'Collection::Array',
     is => 'ro',
@@ -54,9 +58,18 @@ sub ACCEPT_CONTEXT {
         }
         $config->{config_file_path} = [@paths];
         $config->{query_type} = 'Catalyst';
-        $self->localizer( $c->model('Data::Localize') );
+
+        # If we can find FormFu
+        my $localize = $c->model('Data::Localize');
+        $localize->add_localizer(
+            class => "Namespace",
+            namespace => 'HTML::FormFu::I18N'
+        );
+
+        $self->localizer( $localize );
         $self->initialized_with_context(1);
     }
+    $self->languages( $c->languages );
     return $self;
 }
 
@@ -68,6 +81,7 @@ sub load {
         $form = HTML::FormFu->new( 
             Catalyst::Utils::merge_hashes( $self->formfu_config, $args ) );
         $form->add_localize_object($self->localizer);
+        $form->languages( $self->languages );
         $form->load_config_filestem($name);
 
         $self->cache_set($name, $form);
