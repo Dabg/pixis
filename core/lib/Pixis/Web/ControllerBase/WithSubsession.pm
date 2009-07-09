@@ -31,7 +31,7 @@ sub new_subsession {
 sub get_subsession {
     my ($self, $c, $subsession) = @_;
     my $container = $c->session->{__subsessions}->{$subsession};
-    if ($self->strict_subsession) {
+    if (! $container && $self->strict_subsession) {
         Pixis::Web::Exception->throw(message => "指定されたサブセッション$subsessionが存在しません");
     }
     return $container ? $container->{data} : ();
