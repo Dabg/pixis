@@ -79,7 +79,11 @@ sub create
     # ok, attempt to load the form
     my $form = $self->form($c, "profile/create_$type");
     $form->action($c->uri_for('type', $type, 'create', $subsession || ()));
-    my $subsession_hash = $self->get_subsession($c, $subsession);
+    my $subsession_hash;
+    if ($subsession) {
+        $subsession_hash = $self->get_subsession($c, $subsession);
+    }
+
     if ($subsession_hash) {
         $form->default_values($subsession_hash);
     }
