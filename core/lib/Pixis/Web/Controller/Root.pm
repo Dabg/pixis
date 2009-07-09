@@ -59,6 +59,10 @@ sub BUILDARGS {
 sub begin :Private {
     my ($self, $c) = @_;
     $c->stash->{page} = Storable::dclone($self->page); # get a copy
+    if ($c->req->param('lang')) {
+        $c->languages([ $c->req->param('lang') ]);
+    }
+
     return ();
 }
 
