@@ -4,7 +4,7 @@ use namespace::clean -except => qw(meta);
 
 has strict_subsession => (
     is => 'ro',
-    isa => 'Bool'
+    isa => 'Bool',
     required => 1,
     default => 1
 );
