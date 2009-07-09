@@ -1,6 +1,6 @@
 [% WRAPPER wrapper.tt 
     page.title = 'プロフィールの削除', 
-    page.content.enabled = 0 %]
+    page.heading.content = 'プロフィールの削除' %]
 <div id="content">
 
 [% loc("Are you sure you want to delete [_1]?", loc("this profile")) %]
