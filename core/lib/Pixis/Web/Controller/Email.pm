@@ -44,7 +44,8 @@ sub send
         Carp::confess("Missing 'To' header");
     }
 
-    if ($header->{Subject}) {
+    my $subject = "<no subject>";
+    if ($subject = $header->{Subject}) {
         my $encoding = $self->mime_encoding_map->{ $header->{Charset} };
         $header->{Subject} = Encode::encode($encoding, $header->{Subject});
     }
@@ -62,7 +63,7 @@ sub send
     local $c->stash->{email} = \%args;
 
     $c->forward( $c->view('Email') );
-    $c->log->info("Sent email to $header->{To} '$header->{Subject}'");
+    $c->log->info("Sent email to $header->{To} '$subject'");
 
     return ();
 }
