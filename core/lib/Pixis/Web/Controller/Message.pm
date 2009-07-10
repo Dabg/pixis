@@ -72,11 +72,11 @@ sub search
 }
 
 sub create
-    :Local
-    :Path('create')
-    :Args(1)
+:Local
+:Path('create')
+:Args
 {
-    my ( $self, $c, $to_profile_id ) = @_;
+    my ( $self, $c, $to_profile_id, $subsession ) = @_;
 
     my $papi = $c->registry(api => 'Profile');
     my $recipient = $papi->find($to_profile_id);
@@ -87,28 +87,31 @@ sub create
 
     my $member_id = $c->user->id;
     my $form = $self->form($c, {
-        filename => 'message/edit',
-        config_callback => {
-            hash => sub { 
-                return $self->_create_form_callback(
-                    @_, 
-                    {
-                        member_id => $member_id, 
-                        recipient => $recipient,
-                    }
-                ) 
+            filename => 'message/edit',
+            config_callback => {
+                hash => sub { 
+                    return $self->_create_form_callback(
+                        @_, 
+                        {
+                            member_id => $member_id, 
+                            recipient => $recipient,
+                        }
+                    ) 
+                }
             }
         }
-     } );
+    );
+
+    my $p = $self->get_subsession($c, $subsession) || {};
+    $form->default_values($p);
     $c->stash->{form} = $form;
 
     if ($form->submitted_and_valid) {
-        my $subsession = $self->new_subsession($c, {
-            from    => $form->param_value('from_profile_id'),
-            to      => $to_profile_id,
-            subject => $form->param_value('subject'),
-            body    => $form->param_value('body'),
-        });
+        $p->{from}    = $form->param_value('from_profile_id');
+        $p->{to}      = $to_profile_id;
+        $p->{subject} = $form->param_value('subject');
+        $p->{body}    = $form->param_value('body');
+        $subsession = $self->set_subsession($c, $p) unless $subsession;
         return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) ) if $subsession;
     }
 
