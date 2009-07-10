@@ -61,6 +61,8 @@ sub send
     );
     local $c->stash->{email} = \%args;
 
+    $c->log->info("Sending email to $header->{To} '$header->{Subject}'");
+
     $c->forward( $c->view('Email') );
     return ();
 }
