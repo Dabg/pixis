@@ -32,6 +32,8 @@ sub _build_profile_types {
     ) }
 }
 
+sub _build_resultset_constraints { return +{ is_active => 1 } }
+
 sub _get_unique_id {
     my ($self, $schema) = @_;
     my $key;
@@ -72,7 +74,10 @@ sub find {
     my $link  = $schema->resultset('MemberToProfile')->search( { profile_id => $id } )->single;
     my $profile;
     if ($link) {
-        $profile = $schema->resultset( $link->moniker )->find($id);
+        $profile = 
+            $schema->resultset( $link->moniker )
+            ->search( $self->resultset_constraints() )
+            ->find($id);
     }
 
     return $profile ? $profile : ();
@@ -83,7 +88,9 @@ sub search_by_type {
 
     my $schema = Pixis::Registry->get(schema => 'master');
 
-    my $profile = $schema->resultset( $type->moniker )->search(@args);
+    my $profile = $schema->resultset( $type->moniker )
+        ->search( $self->resultset_constraints() )
+        ->search(@args);
 
     return $profile;
 }
@@ -142,9 +149,11 @@ sub load_from_member {
 
     my @list;
     while (my($moniker, $ids) = each %moniker2ids) {
-        my @profiles = $schema->resultset($moniker)->search(
-            { id => { -in => $ids } },
-        )->all;
+        my @profiles = $schema->resultset($moniker)
+            ->search( $self->resultset_constraints() )
+            ->search( { id => { -in => $ids } } )
+            ->all
+        ;
         push @list, @profiles;
     }
     return wantarray ? @list : \@list;
@@ -164,7 +173,7 @@ sub update {
         }
     )->single;
 
-    my $profile = $schema->resultset( $link->moniker )->find($id) or return;
+    my $profile = $self->find($id) or return;
     $profile->update( $args );
 
     $guard->commit;
@@ -189,7 +198,11 @@ sub delete {
         {
             id => $id,
         }
-    )->delete();
+    )->update(
+        {
+            is_active => 0
+        }
+    );
     $link->delete;
 
     $guard->commit;
