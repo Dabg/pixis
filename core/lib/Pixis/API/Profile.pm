@@ -203,7 +203,6 @@ sub delete {
             is_active => 0
         }
     );
-    $link->delete;
 
     $guard->commit;
 
