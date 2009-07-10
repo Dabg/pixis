@@ -25,6 +25,11 @@ __PACKAGE__->add_columns(
         data_type => 'TEXT',
         is_nullable => 1,
     },
+    is_active => {
+        data_type => 'TINYINT',
+        is_nullable => 0,
+        default_value => 1
+    },
     modified_on => {
         data_type => "TIMESTAMP",
         is_nullable => 0,
@@ -40,6 +45,15 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(member => 'Pixis::Schema::Master::Result::Member' => 'member_id');
 __PACKAGE__->utf8_columns(qw(display_name bio));
+
+sub sqlt_deploy_hook {
+    my ($self, $sqlt_table) = @_;
+
+    $sqlt_table->add_index(
+        name => 'is_active_idx',
+        fields => [ 'is_active' ]
+    );
+}
 
 sub populate_initial_data {
     my ($self, $schema) = @_;
