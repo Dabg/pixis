@@ -87,22 +87,21 @@ sub create
 
     my $member_id = $c->user->id;
     my $form = $self->form($c, {
-            filename => 'message/edit',
-            config_callback => {
-                hash => sub { 
-                    return $self->_create_form_callback(
-                        @_, 
-                        {
-                            member_id => $member_id, 
-                            recipient => $recipient,
-                        }
-                    ) 
-                }
+        filename => 'message/edit',
+        config_callback => {
+            hash => sub { 
+                return $self->_create_form_callback(
+                    @_, 
+                    {
+                        member_id => $member_id, 
+                        recipient => $recipient,
+                    }
+                ) 
             }
         }
-    );
+    });
 
-    my $p = $self->get_subsession($c, $subsession) || {};
+    my $p = $subsession ? $self->get_subsession($c, $subsession) : {};
     $form->default_values($p);
     $c->stash->{form} = $form;
 
@@ -111,7 +110,7 @@ sub create
         $p->{to}      = $to_profile_id;
         $p->{subject} = $form->param_value('subject');
         $p->{body}    = $form->param_value('body');
-        $subsession = $self->set_subsession($c, $p) unless $subsession;
+        $subsession = $self->new_subsession($c, $p) unless $subsession;
         return $c->res->redirect( $c->uri_for('/message/create/confirm', $subsession) ) if $subsession;
     }
 
