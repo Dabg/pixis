@@ -95,7 +95,7 @@ before register => sub {
         }
 
         eval {
-            my $api = $module->new(%$api_config);
+            my $api = $module->new(%$api_config, app => $c);
             push @list, $api;
         };
         if ($@) {
