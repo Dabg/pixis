@@ -59,6 +59,7 @@ sub send
         header       => [%$header],
         content_type => $header->{Content_Type},
         body         => $body,
+        parts        => $args->{parts},
     );
     local $c->stash->{email} = \%args;
 
