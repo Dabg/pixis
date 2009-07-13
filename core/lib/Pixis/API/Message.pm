@@ -58,8 +58,6 @@ around create => sub {
     return $message;
 };
 
-*send = \&create;
-
 sub load_from_profile {
     my ($self, $args) = @_;
 

@@ -153,7 +153,7 @@ sub create_commit
         return ();
     }
 
-    my $message = $c->registry(api => 'Message')->send( $hash );
+    my $message = $c->registry(api => 'Message')->create( $hash );
     $self->delete_subsession( $c, $subsession );
 
     return $c->res->redirect( $c->uri_for( 'create', 'done') );
@@ -200,11 +200,11 @@ sub _create_form_callback {
     if ( $value->{name} eq 'from_profile_id' ) {
         my $member_id = $args->{member_id};
         my @profiles = Pixis::Registry->get(api => 'Profile')->load_from_member( {
-                member_id => $member_id
-            } ) ;
+            member_id => $member_id
+        } ) ;
 
         $value->{options} = [
-        map { [ $_->id, $_->display_name, ] } @profiles
+            map { [ $_->id, $_->display_name, ] } @profiles
         ];
     }
     if ( $value->{name} eq 'to_profile_id' ) {
