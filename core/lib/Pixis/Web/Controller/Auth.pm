@@ -67,11 +67,13 @@ sub login
             }
 
             $c->res->redirect(
-                $c->uri_for(
-                    "$next" || 
-                    $self->default_redirect() ||
-                    ('/member', $c->user->id)
-                )
+                $next ? 
+                    $c->uri_for($next->path, {$next->query_form})
+                :
+                    $c->uri_for(
+                        $self->default_redirect() ||
+                        ('/member', $c->user->id)
+                    )
             );
             return;
         }
