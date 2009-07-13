@@ -83,6 +83,11 @@ before register => sub {
                 Class::MOP::load_class($tmp);
                 $module = $tmp;
             };
+            if (my $e = $@) {
+                if ($e !~ /Could not load class \($namespace\::$name\) because : Can't locate /) {
+                    confess "Error was '$e'";
+                }
+            }
             last if $module;
         }
         if (! $module) {
