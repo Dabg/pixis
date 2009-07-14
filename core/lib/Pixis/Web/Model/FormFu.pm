@@ -13,6 +13,10 @@ has languages => (
     is => 'rw',
 );
 
+has context => (
+    is => 'rw',
+);
+
 has config_file_path => (
     metaclass => 'Collection::Array',
     is => 'ro',
@@ -69,6 +73,7 @@ sub ACCEPT_CONTEXT {
         $self->localizer( $localize );
         $self->initialized_with_context(1);
     }
+    $self->context( $c );
     $self->languages( $c->languages );
     return $self;
 }
@@ -78,6 +83,15 @@ sub load {
 
     my $form = $self->cache_get($name);
     if (! $form) {
+        $args->{config_callback} ||= {};
+        $args->{config_callback}->{plain_value} = sub {
+            return unless defined $_;
+
+            my $c = $self->context;
+            s{__loc\(([^\)]+)\)__}{ $c->loc($1) }eg;
+        };
+        
+
         $form = HTML::FormFu->new( 
             Catalyst::Utils::merge_hashes( $self->formfu_config, $args ) );
         $form->add_localize_object($self->localizer);
