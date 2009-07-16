@@ -4,19 +4,19 @@
 <div id="content">
 [% SET api = c.registry('api', 'Profile') %]
 [% SET sender = api.find(message.from_profile_id) %]
-<p>From: [% sender.display_name %]</p>
-<p>To: [% FOR r IN message.recipients %]
+<p>[% loc("From") %]: [% sender.display_name %]</p>
+<p>[% loc("To") %]: [% FOR r IN message.recipients %]
 [% api.find(r.to_profile_id).display_name %]
 [% END %]</p>
-<p>Subject: [% message.subject %]</p>
-<p>Date: [% message.created_on.strftime('%F %R') %]</p>
-<p>Body: [% IF (message.is_system_message) %][% message.body | html_line_break %][% ELSE %][% message.body | html | html_line_break %][% END %]</p>
+<p>[% loc("Subject") %]: [% message.subject %]</p>
+<p>[% loc("Receive Date") %]: [% message.created_on.strftime('%F %R') %]</p>
+<p>[% loc("Body") %]: [% IF (message.is_system_message) %][% message.body | html_line_break %][% ELSE %][% message.body | html | html_line_break %][% END %]</p>
 
 [%# if I'm allowed to see this, and I'm not the sender, then I'm definitely
   # the recipient
 %]
 [% IF (sender.member_id != c.user.id) %]
-<a href="[% c.uri_for('create', message.from_profile_id ) %]">[% loc('reply') %]</a>
+<a href="[% c.uri_for('create', message.from_profile_id ) %]">[% loc('Reply') %]</a>
 [% END %]
 </div>
 [% END %]
