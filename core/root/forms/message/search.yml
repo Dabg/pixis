@@ -8,4 +8,4 @@ elements:
       name: q
     - type: Submit
       name: search
-      value: search
+      value_loc: Search

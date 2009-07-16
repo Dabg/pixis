@@ -88,6 +88,9 @@ msgstr "作成"
 msgid "Edit"
 msgstr "編集"
 
+msgid "Delete"
+msgstr "削除"
+
 msgid "Login Now!"
 msgstr "ログイン"
 
@@ -147,6 +150,12 @@ msgstr "件名"
 
 msgid "Body"
 msgstr "本文"
+
+msgid "Receive Date"
+msgstr "受信日"
+
+msgid "Reply"
+msgstr "返信"
 
 msgid "Send"
 msgstr "送信"
