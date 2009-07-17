@@ -8,11 +8,10 @@
     <script src="[% script %]" type="text/javascript"></script>
 [% END %]
 [% FOREACH style IN page.base_styles %]
-    <link rel="stylesheet" type="text/css" href="[% style %]">
+    <link rel="stylesheet" type="text/css" href="[% style %]" />
 [% END %]
 [% FOREACH style IN page.styles %]
-    <link rel="stylesheet" type="text/css" href="[% style %]">
+    <link rel="stylesheet" type="text/css" href="[% style %]" />
 [% END %]
-[% FOREACH feed IN page.feeds %]    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml
-[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]">
+[% FOREACH feed IN page.feeds %]    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]" />
 [% END %]
