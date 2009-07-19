@@ -24,8 +24,7 @@ sub BUILDARGS {
     my $class = shift;
     my $args = $class->SUPER::BUILDARGS(@_);
 
-    my $given = $args->{page} || {};
-    my $h = Catalyst::Utils::merge_hashes( {
+    my %defaults = (
         title => "Pixis - Default Installation",
         base_scripts => [
             '/static/js/jquery-1.3.1.js',
@@ -34,7 +33,6 @@ sub BUILDARGS {
         ],
         heading => {
             tag => "h1",
-            content => "Pixis - Default Installation",
             enabled => 1,
             id => "pagetitle",
         },
@@ -50,8 +48,9 @@ sub BUILDARGS {
 #        -
 #    feeds:
 #        -
-    }, $given);
-
+    );
+    my $given = $args->{page} || {};
+    my $h = Catalyst::Utils::merge_hashes(\%defaults, $given);
     $args->{page} = $h;
     return $args;
 }
