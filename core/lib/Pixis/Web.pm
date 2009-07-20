@@ -90,6 +90,14 @@ sub setup {
 
 sub setup_components {
     my $class = shift;
+
+    # add these directories to include path
+    my $dirs = $class->config->{ setup_components }->{ include } || [];
+    if ( ref $dirs ne 'ARRAY' ) {
+        $dirs = [ $dirs ];
+    }
+    unshift @INC, @$dirs;
+
     if ($class eq 'Pixis::Web') {
         return $class->SUPER::setup_components(@_);
     }
