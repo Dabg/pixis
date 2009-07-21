@@ -2,6 +2,7 @@
 auto_fieldset: 1
 method: POST
 indicator: submit
+action: /auth/login
 
 elements:
     - type: Text
