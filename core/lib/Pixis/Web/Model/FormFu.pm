@@ -98,6 +98,10 @@ sub load {
         $form->languages( $self->languages );
         $form->load_config_filestem($name);
 
+        if (! $form->action ) {
+            $form->action( $self->context->req->uri );
+        }
+
         $self->cache_set($name, $form);
     }
     return $form;
