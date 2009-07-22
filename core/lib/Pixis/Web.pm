@@ -357,7 +357,7 @@ sub setup_config {
     %plugin_config and
         $config = Catalyst::Utils::merge_hashes($config, \%plugin_config);
 
-    return $class->SUPER::config($config);
+    return $class->config($config);
 }
 
 my $caller = caller();
@@ -464,7 +464,7 @@ sub add_tt_include_path {
     @paths = grep { defined && length } @paths;
     return unless @paths;
 
-    my $view = $self->view('TT');
+    my $view = $self->view();
     my $providers = $view->template->{SERVICE}->{CONTEXT}->{CONFIG}->{LOAD_TEMPLATES};
     if ($providers) {
         foreach my $provider (@$providers) {
@@ -574,7 +574,7 @@ sub handle_exception {
     $c->response->status( $error->status );
     $c->response->content_type( 'text/html; charset=utf-8' );
     $c->response->body(
-        $c->view( 'TT' )->render( $c, 'error.tt', {
+        $c->view()->render( $c, 'error.tt', {
             page  => $c->controller('Root')->page,
             error => $error,
         } )
