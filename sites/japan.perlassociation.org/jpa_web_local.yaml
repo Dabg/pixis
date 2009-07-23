@@ -1,12 +1,28 @@
+name: JPA::Web
+
 Controller::Root:
     page:
         title: Japan Perl Association
+
 Schema::Master:
     table_prefix: jpa
     connect_info:
-        - dbi:mysql:dbname=pixis 
+        - dbi:mysql:dbname=jpa
         - root
         -
         - RaiseError: 1
           AutoCommit: 1
+          on_connect_od:
+            - 'SET NAMES utf8'
+            - 'SET sql_mode = "STRICT_TRANS_TABLE"'
+
+Mode::Widget:
+    namespaces:
+        - JPA::Web::Widget
+        - Pixis::Widget
+
+Pixis::Plugin::Core:
+    namespaces:
+        - JPA::API
+        - Pixis::API
 
