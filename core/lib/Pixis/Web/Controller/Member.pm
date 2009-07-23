@@ -124,7 +124,8 @@ sub basic_settings
 
     my $form = $self->form($c);
     $c->stash->{form} = $form;
-    my $user = $c->registry(api => 'Member')->find($c->user->id);
+    my $api = $c->resgistry(api => 'Member');
+    my $user = $api->find($c->user->id);
     $form->model->default_values($user);
     if ($form->submitted_and_valid) {
         my $params = $form->params;
