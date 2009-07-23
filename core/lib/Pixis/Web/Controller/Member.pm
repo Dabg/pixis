@@ -133,6 +133,8 @@ sub basic_settings
             %$params,
             id => $user->id
         });
+        my $user = $api->find($c->user->id);
+        $c->session->{__user} = { $user->get_columns };
         $c->res->redirect($c->uri_for('home'));
     }
     return ();
