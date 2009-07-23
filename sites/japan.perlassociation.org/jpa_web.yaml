@@ -1,5 +1,12 @@
 name: JPA::Web
 
+setup_components:
+    include:
+        - '/Users/daisuke/git/pixis/plugins/Pixis-Plugin-Event/lib'
+#    search_dirs:
+#       - path/to/plugin/lib
+#       - path/to/another/lib
+
 Controller::Root:
     page:
         title: Japan Perl Association
