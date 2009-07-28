@@ -193,3 +193,5 @@ msgstr "新パスワード"
 msgid "New Password (re-type)"
 msgstr "新パスワード（確認用)"
 
+msgid "Authentication failed"
+msgstr "認証に失敗しました"
