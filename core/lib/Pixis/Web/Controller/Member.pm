@@ -265,7 +265,6 @@ sub forgot_password
             $c->controller('Email')->send($c, {
                     header => {
                         To => $member->email,
-                        From => 'no-reply@pixis.local',
                         Subject => 'パスワード再設定メール',
                     },
                     body => $body,
