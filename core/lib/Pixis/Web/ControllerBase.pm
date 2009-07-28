@@ -32,6 +32,10 @@ has auth_info => (
 
 sub _build_auth_info { return {} }
 
+sub api {
+    return Pixis::Registry->get(api => $_[1]);
+}
+
 sub requires_auth {
     my ($self, $name) = @_;
 
