@@ -128,28 +128,44 @@ sub load_from_member {
 sub load_from_query {
     my ( $self, $args ) = @_;
 
-    my $member_id = $args->{member_id};
-    my $q = $args->{query};
+    my $q = $args->{query} or confess "no query";
+    my $tag = $args->{tag} or confess "no tag";
+    my $member_id = $args->{member_id} or confess "no member_id";
+
+    my @profiles = map { $_->id } Pixis::Registry->get(api => 'Profile')->load_from_member(
+        {
+            member_id => $member_id
+        }
+    );
+    my $tag_id;
+    $tag = Pixis::Registry->get(api => 'MessageTag')->find_tag($tag);
+    if ($tag) {
+        $tag_id = $tag->id;
+    }
+    
 
     my @ids = map { $_->id } $self->resultset()->search(
         {
             '-and' => [
                 '-or' => [
-                    { from_member_id => $member_id },
-                    { to_member_id => $member_id },
+                    { from_profile_id => { -in => \@profiles } },
+                    { 'recipients.to_profile_id' => { -in => \@profiles } },
                 ],
                 # XXX - yawza! in the future, we should implement real
                 # full text search for this.
                 '-or' => [
-                    { body => { -like => '%'.$q.'%' } },
-                    { subject => { -like => '%'.$q.'%' } },
+                    { body      => { -like => '%'.$q.'%' } },
+                    { subject   => { -like => '%'.$q.'%' } },
                 ],
+                { 'message_to_tags.tag_id' => $tag_id }
             ],
         },
         {
-            select => [ qw(id) ],
+            select => [ qw(me.id) ],
+            join   => [ 'recipients', 'message_to_tags' ],
         }
     );
+
     return $self->load_multi(@ids);
 }
 

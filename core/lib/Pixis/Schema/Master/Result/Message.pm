@@ -49,5 +49,11 @@ __PACKAGE__->has_many(
     'Pixis::Schema::Master::Result::MessageRecipient',
     'message_id',
 );
+__PACKAGE__->has_many(
+    'message_to_tags',
+    'Pixis::Schema::Master::Result::MessageToTags',
+    'message_id',
+);
+__PACKAGE__->many_to_many( 'tags' => 'message_to_tags' => 'message_id' );
 
 1;

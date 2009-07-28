@@ -30,6 +30,17 @@ __PACKAGE__->add_columns(
     }
 );
 __PACKAGE__->set_primary_key('message_id', 'profile_id', 'tag_id');
+__PACKAGE__->belongs_to(
+    'message',
+    'Pixis::Schema::Master::Result::Message',
+    { 'foreign.id' => 'self.message_id' },
+);
+
+__PACKAGE__->belongs_to(
+    'tag',
+    'Pixis::Schema::Master::Result::MessageTag',
+    { 'foreign.id' => 'self.tag_id' },
+);
 
 sub sqlt_deploy_hook {
     my ($self, $sqlt) = @_;
