@@ -211,3 +211,5 @@ msgstr "トークンの値を確認するか"
 msgid "Re-apply for a password reset"
 msgstr "パスワードの再設定をしてください"
 
+msgid "An email with your password reset settings has been sent"
+msgstr "パスワード再設定用情報を載せたメールが送信されました"

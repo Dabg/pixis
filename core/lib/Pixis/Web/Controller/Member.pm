@@ -262,7 +262,8 @@ sub forgot_password
         if ($member) {
             $c->stash->{member} = $member; 
             my $body = $c->view('TT')->render($c, 'member/forgot_password_email.tt');
-            $c->controller('Email')->send($c, {
+            $c->controller('Email')->send($c,
+                {
                     header => {
                         To => $member->email,
                         Subject => 'パスワード再設定メール',
@@ -270,7 +271,8 @@ sub forgot_password
                     body => $body,
                 }
             );
-            $c->stash->{message} = 'email sent';
+
+            $c->stash->{message} = $c->loc('An email with your password reset settings has been sent');
         } else {
             $form->form_error_message( $c->loc("Your email address was not found.") );
             $form->force_error_message(1);
