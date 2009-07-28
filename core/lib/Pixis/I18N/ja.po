@@ -198,3 +198,13 @@ msgstr "認証に失敗しました"
 
 msgid "Reset Password"
 msgstr "パスワード再設定"
+
+msgid "Your email reset token is invalid."
+msgstr "パスワード再設定用トークンの値が不正です。"
+
+msgid "Please recheck your token, or "
+msgstr "トークンの値を確認するか"
+
+msgid "Re-apply for a password reset"
+msgstr "パスワードの再設定をしてください"
+

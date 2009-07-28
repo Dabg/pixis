@@ -272,7 +272,7 @@ sub forgot_password
             );
             $c->stash->{message} = 'email sent';
         } else {
-            $form->form_error_message("your mail address not found.");
+            $form->form_error_message( $c->loc("Your email address was not found.") );
             $form->force_error_message(1);
         }
     }
@@ -298,8 +298,13 @@ sub reset_password
             }
         );
         unless ($member) {
+            # ugh, what a colossal hack
             $form->form_error_message_xml(
-                sprintf('your reset password url is invalid. <a href="%s">try again</a>', $c->uri_for('forgot_password'))
+                $c->loc( 'Your email reset token is invalid.' ) .
+                $c->loc( 'Please recheck your token, or ' ) .
+                '<a href="/member/forgot_password">' .
+                $c->loc( 'Re-apply for a password reset' ) .
+                '</a>'
             );
             $form->force_error_message(1);
             return;
