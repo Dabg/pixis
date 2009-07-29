@@ -6,6 +6,8 @@ indicator: submit
 elements:
     - type: Text
       name: q
+      constraints:
+        - Required
     - type: Submit
-      name: search
+      name: submit
       value_loc: Search

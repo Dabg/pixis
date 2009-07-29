@@ -38,6 +38,17 @@ sub load_from_email {
     return $member ? $self->find($member->id) : ();
 }
 
+sub load_from_profile {
+    my( $self, $profile_id ) = @_;
+
+    my $profile = Pixis::Registry->get( api => 'Profile' )
+        ->find($profile_id);
+
+    return unless $profile;
+
+    return $self->find( $profile->member_id );
+}
+
 around create => sub {
     my ($next, $self, $args) = @_;
 

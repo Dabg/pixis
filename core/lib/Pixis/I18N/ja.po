@@ -193,3 +193,23 @@ msgstr "新パスワード"
 msgid "New Password (re-type)"
 msgstr "新パスワード（確認用)"
 
+msgid "Authentication failed"
+msgstr "認証に失敗しました"
+
+msgid "Reset Password"
+msgstr "パスワード再設定"
+
+msgid "Forgot Password"
+msgstr "パスワード再設定"
+
+msgid "Your email reset token is invalid."
+msgstr "パスワード再設定用トークンの値が不正です。"
+
+msgid "Please recheck your token, or "
+msgstr "トークンの値を確認するか"
+
+msgid "Re-apply for a password reset"
+msgstr "パスワードの再設定をしてください"
+
+msgid "An email with your password reset settings has been sent"
+msgstr "パスワード再設定用情報を載せたメールが送信されました"

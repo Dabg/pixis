@@ -18,25 +18,34 @@ sub tag
     :Args(1)
 {
     my ($self, $c, $tag) = @_;
+
     # By default, show messages received
-    my @messages = eval {
-        $c->registry(api => 'Message')->load_from_member(
+    my @messages;
+    my $api = $c->registry(api => 'Message');
+    my $form = $self->form($c, 'message/search');
+    if ($form->submitted_and_valid) {
+        # search messages in this tag
+        @messages = $api->load_from_query(
+            {
+                member_id => $c->user->id, 
+                query => $form->param_value('q'),
+                tag => $tag,
+            }
+        );
+    } else {
+        @messages = $c->registry(api => 'Message')->load_from_member(
             { 
                 member_id => $c->user->id,
                 tag => $tag,
             }
         )
-    };
-    if ($@) {
-        $c->detach('/default');
-        return;
     }
-    
+
     $c->stash(
         messages => \@messages,
         mailbox  => ucfirst($tag),
         template => 'message/index.tt', 
-        form => $self->form($c, 'message/search')
+        form => $form,
     );
     return;
     

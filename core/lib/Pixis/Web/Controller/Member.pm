@@ -262,18 +262,19 @@ sub forgot_password
         if ($member) {
             $c->stash->{member} = $member; 
             my $body = $c->view('TT')->render($c, 'member/forgot_password_email.tt');
-            $c->controller('Email')->send($c, {
+            $c->controller('Email')->send($c,
+                {
                     header => {
                         To => $member->email,
-                        From => 'no-reply@pixis.local',
                         Subject => 'パスワード再設定メール',
                     },
                     body => $body,
                 }
             );
-            $c->stash->{message} = 'email sent';
+
+            $c->stash->{message} = $c->loc('An email with your password reset settings has been sent');
         } else {
-            $form->form_error_message("your mail address not found.");
+            $form->form_error_message( $c->loc("Your email address was not found.") );
             $form->force_error_message(1);
         }
     }
@@ -299,8 +300,13 @@ sub reset_password
             }
         );
         unless ($member) {
+            # ugh, what a colossal hack
             $form->form_error_message_xml(
-                sprintf('your reset password url is invalid. <a href="%s">try again</a>', $c->uri_for('forgot_password'))
+                $c->loc( 'Your email reset token is invalid.' ) .
+                $c->loc( 'Please recheck your token, or ' ) .
+                '<a href="/member/forgot_password">' .
+                $c->loc( 'Re-apply for a password reset' ) .
+                '</a>'
             );
             $form->force_error_message(1);
             return;

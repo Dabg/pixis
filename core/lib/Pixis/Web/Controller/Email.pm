@@ -23,6 +23,7 @@ sub _build_headers {
         Charset          => 'iso-2022-jp',
         Content_Type     => 'text/plain',
         Content_Encoding => '7bit',
+        From             => 'noreply@from.nobody',
     }
 }
 
