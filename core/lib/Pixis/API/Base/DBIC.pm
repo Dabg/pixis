@@ -50,6 +50,11 @@ sub schema {
     return Pixis::Registry->get(schema => $name);
 }
 
+sub txn_guard {
+    my ($self, $name) = @_;
+    return $self->schema($name)->txn_scope_guard();
+}
+
 sub resultset {
     my $self = shift;
     my $schema = $self->schema;
