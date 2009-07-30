@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Carp qw(croak);
 use HTML::FormFu;
-use Catalyst::Controller::HTML::FormFu;
 use namespace::clean;
 
 BEGIN {
