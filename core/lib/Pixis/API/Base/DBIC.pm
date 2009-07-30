@@ -66,15 +66,15 @@ sub resultset {
 }
 
 sub find {
-    my ($self, $id) = @_;
+    my ($self, @id) = @_;
 
     my $schema    = $self->schema;
-    my $cache_key = [$self->cache_prefix, $id ];
+    my $cache_key = [$self->cache_prefix, @id ];
     my $obj       = $self->cache_get($cache_key);
     if ($obj) {
         $obj = $schema->thaw($obj);
     } else {
-        $obj = $self->resultset->find($id);
+        $obj = $self->resultset->find(@id);
         if ($obj) {
             $self->cache_set($cache_key, $schema->freeze($obj));
         }
@@ -88,11 +88,11 @@ sub load_multi {
 
     # keys is a bit of a hassle
     my $rs = $self->resultset();
-    my $h = $self->cache_get_multi(map { [ $self->cache_prefix, $_ ] } @ids);
+    my $h = $self->cache_get_multi(map { [ $self->cache_prefix, ref $_ ? @$_ : $_ ] } @ids);
     my @ret = map { $schema->thaw($_) } ($h ? values %{$h->{results}} : ());
     my @missing = $h ? (map { $_->[1] } @{$h->{missing}}) : @ids;
     foreach my $id (@missing) {
-        my $conf = $self->find($id);
+        my $conf = $self->find(ref $id ? @$id : $id);
         push @ret, $conf if $conf;
     }
     return wantarray ? @ret : \@ret;
@@ -105,11 +105,7 @@ sub _build_primary_key {
     my $rs = $self->resultset();
 
     my @pk = $rs->result_source->primary_columns;
-    if (@pk != 1) {
-        confess "vanilla Pixis::API::Base::DBIC only supports tables with exactly 1 primary key (" . $self->resultset_moniker . " contains @pk)";
-    }
-
-    return $pk[0];
+    return [ @pk ];
 }
 
 sub search {
@@ -120,8 +116,18 @@ sub search {
     my $rs = $self->resultset();
     my $pk = $self->primary_key();
 
-    $attrs->{select} ||= [ $pk ];
-    my @keys = map { $_->$pk } $rs->search($where, $attrs);
+    my $multi = scalar @$pk > 1;
+    $attrs->{select} ||= $pk;
+
+    my @rows = $rs->search($where, $attrs);
+    my @keys = $multi ?
+        map {
+            my $row = $_;
+            [ map { $row->$_ } @$pk ]
+        } @rows :
+        map { $_->$pk } @rows
+    ;
+            
     return $self->load_multi(@keys);
 }
 
@@ -146,13 +152,16 @@ sub update {
 
     my $pk = $self->primary_key();
     my $rs = $self->resultset();
-    my $key = delete $args->{$pk};
+    my $key = [ map { delete $args->{$_} } @$pk ];
 
     my $guard = $schema->txn_scope_guard;
 
-    my $row = $self->find($key);
+    my $row = $self->find(@$key);
     if ($row) {
         while (my ($field, $value) = each %$args) {
+            if (! $row->can($field)) {
+                confess blessed $self . ": Attempt to update unknown column: $field";
+            }
             $row->$field( $value );
         }
         $row->update;
