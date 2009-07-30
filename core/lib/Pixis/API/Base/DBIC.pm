@@ -164,18 +164,20 @@ sub update {
 }
 
 sub delete {
-    my ($self, $id) = @_;
+    my ($self, @id) = @_;
 
     my $schema = Pixis::Registry->get('schema' => 'master');
 
     my $guard = $schema->txn_scope_guard;
-    my $obj = $schema->resultset($self->resultset_moniker)->find($id);
-    if ($obj) {
-        $obj->delete;
-    }
+    foreach my $id (@id) {
+        my $obj = $schema->resultset($self->resultset_moniker)->find($id);
+        if ($obj) {
+            $obj->delete;
+        }
 
-    my $cache_key = [$self->cache_prefix, $id ];
-    $self->cache_del($cache_key);
+        my $cache_key = [$self->cache_prefix, $id ];
+        $self->cache_del($cache_key);
+    }
     
     $guard->commit;
     return ();
