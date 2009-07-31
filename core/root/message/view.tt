@@ -9,7 +9,10 @@
 [% api.find(r.to_profile_id).display_name %]
 [% END %]</p>
 <p>[% loc("Subject") %]: [% message.subject %]</p>
-<p>[% loc("Receive Date") %]: [% message.created_on.strftime('%F %R') %]</p>
+<p>[% loc("Receive Date") %]: [% 
+    SET created_on = message.created_on.clone;
+    CALL created_on.set_time_zone('local');
+    GET created_on.strftime('%F %R') %]</p>
 <p>[% loc("Body") %]: [% IF (message.is_system_message) %][% message.body | html_line_break %][% ELSE %][% message.body | html | html_line_break %][% END %]</p>
 
 [%# if I'm allowed to see this, and I'm not the sender, then I'm definitely

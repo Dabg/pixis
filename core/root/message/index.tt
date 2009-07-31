@@ -23,7 +23,10 @@
             [% r.to_profile.display_name %],
         [% END %]
     [% END %]
-    [% m.created_on.ymd %]
+    [%
+        SET created_on = m.created_on.clone;
+        CALL created_on.set_time_zone('local');
+        GET created_on.ymd %]
 </li>
 [% END %]
 </ul>
