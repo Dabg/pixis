@@ -25,7 +25,7 @@ MACRO run_widget(name, args) BLOCK;
         END;
     CATCH;
         GET "There was an error while processing a widget: ";
-        GET error.info;
+        GET error.info | html;
     END;
 END;
 
