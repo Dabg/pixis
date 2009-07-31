@@ -1,4 +1,5 @@
 package Pixis::Schema::Master::Result::PublicProfile;
+use utf8;
 use Moose;
 use namespace::clean -except => qw(meta);
 
@@ -53,6 +54,7 @@ sub sqlt_deploy_hook {
         name => 'is_active_idx',
         fields => [ 'is_active' ]
     );
+    $self->next::method($sqlt_table);
 }
 
 sub populate_initial_data {
