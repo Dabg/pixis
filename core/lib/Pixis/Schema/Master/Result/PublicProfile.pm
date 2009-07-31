@@ -1,7 +1,7 @@
 package Pixis::Schema::Master::Result::PublicProfile;
+use utf8;
 use Moose;
 use namespace::clean -except => qw(meta);
-use utf8;
 
 extends 'Pixis::Schema::Master::Result';
 
@@ -54,17 +54,18 @@ sub sqlt_deploy_hook {
         name => 'is_active_idx',
         fields => [ 'is_active' ]
     );
+    $self->next::method($sqlt_table);
 }
 
-#sub populate_initial_data {
-#    my ($self, $schema) = @_;
-#    $schema->populate(
-#        PublicProfile => [
-#            [ qw(id member_id display_name bio created_on) ],
-#            [ qw(4649464900 1 管理者 システム管理者 0000-00-00) ],
-#        ],
-#    );
-#    return ();
-#}
+sub populate_initial_data {
+    my ($self, $schema) = @_;
+    $schema->populate(
+        PublicProfile => [
+            [ qw(id member_id display_name bio created_on) ],
+            [ qw(4649464900 1 管理者 システム管理者 0000-00-00) ],
+        ],
+    );
+    return ();
+}
 
 1;
