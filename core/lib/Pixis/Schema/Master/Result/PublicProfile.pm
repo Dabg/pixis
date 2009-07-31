@@ -65,6 +65,12 @@ sub populate_initial_data {
             [ qw(4649464900 1 管理者 システム管理者 0000-00-00) ],
         ],
     );
+    $schema->populate(
+        MemberToProfile => [
+            [ qw(member_id profile_id moniker created_on) ],
+            [ qw(1         4649464900 PublicProfile 0000-00-00) ],
+        ]
+    );
     return ();
 }
 
