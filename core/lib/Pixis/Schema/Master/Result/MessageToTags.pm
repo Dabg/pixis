@@ -50,6 +50,7 @@ sub sqlt_deploy_hook {
         fields => [ 'tag_id' ],
         type   => 'normal',
     );
+    $self->next::method($sqlt);
 }
 
 1;
