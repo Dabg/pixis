@@ -88,13 +88,23 @@ sub load_multi {
 
     # keys is a bit of a hassle
     my $rs = $self->resultset();
-    my $h = $self->cache_get_multi(map { [ $self->cache_prefix, ref $_ ? @$_ : $_ ] } @ids);
-    my @ret = map { $schema->thaw($_) } ($h ? values %{$h->{results}} : ());
-    my @missing = $h ? (map { $_->[1] } @{$h->{missing}}) : @ids;
-    foreach my $id (@missing) {
-        my $conf = $self->find(ref $id ? @$id : $id);
-        push @ret, $conf if $conf;
+    my @keys = map { [ $self->cache_prefix, ref $_ ? @$_ : $_ ] } @ids;
+    my $h = $self->cache_get_multi(@keys);
+
+    my @ret;
+    if ($h) {
+        my $results = $h->{results};
+        foreach my $key (@keys) {
+            if (my $got = $results->{$key}) {
+                push @ret, $schema->thaw($got);
+            } else {
+                push @ret, $self->find( ref $key->[1] ? @{$key->[1]} : $key->[1]);
+            }
+        }
+    } else {
+        @ret = map { $self->find($_) } @ids;
     }
+
     return wantarray ? @ret : \@ret;
 }
 
