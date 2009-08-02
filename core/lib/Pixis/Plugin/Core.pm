@@ -62,6 +62,13 @@ before register => sub {
 
     my $config = $c->config();
 
+    my $cache;
+    if ($cache = $config->{'Pixis::Plugin::Core'}{cache}) {
+        my $class = delete $cache->{class} or confess "no cache class provided";
+        Class::MOP::load_class($class);
+        $cache = $class->new($cache);
+    }
+
     my $registry = Pixis::Registry->instance;
     foreach my $name qw(Master) {
         my $schema_config = $config->{"Schema::$name"};
@@ -95,6 +102,11 @@ before register => sub {
         }
 
         eval {
+            if ($cache) {
+                Class::MOP::load_class("MooseX::WithCache::KeyGenerator::DumpChecksum");
+                $api_config->{cache} = $cache;
+                $api_config->{cache_key_generator} = MooseX::WithCache::KeyGenerator::DumpChecksum->new();
+            }
             my $api = $module->new(%$api_config, app => $c);
             push @list, $api;
         };
