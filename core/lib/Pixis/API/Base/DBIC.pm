@@ -165,6 +165,7 @@ sub update {
             $row->$field( $value );
         }
         $row->update;
+        $self->cache_del([ $self->cache_prefix, @$key ]);
     }
 
     $guard->commit;
