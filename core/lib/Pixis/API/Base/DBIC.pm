@@ -98,7 +98,7 @@ sub load_multi {
         @ret = map { $self->find($_) } @ids;
     }
  
-
+    return wantarray ? @ret : \@ret;
 }
 
 sub _build_primary_key {
