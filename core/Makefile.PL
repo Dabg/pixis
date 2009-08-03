@@ -7,6 +7,7 @@ all_from 'lib/Pixis/Web.pm';
 
 requires 'namespace::clean';
 requires 'Catalyst::Runtime' => '5.8';
+requires 'Catalyst::Controller::HTML::FormFu';
 requires 'Catalyst::Authentication::Credential::Password';
 requires 'Catalyst::Authentication::Store::DBIx::Class';
 requires 'Catalyst::Model::Data::Localize', '0.00005';

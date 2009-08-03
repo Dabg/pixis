@@ -49,7 +49,6 @@ sub load {
                 Class::MOP::load_class($class);
             };
             last if ! $@;
-            $class = undef;
         }
         if (! $class) {
             confess "Could not find a widget by the name of $type";

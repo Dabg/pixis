@@ -13,10 +13,8 @@ has subsession_expires => (
     is => 'ro',
     isa => 'Int',
     required => 1,
-    lazy_build => 1,
+    default => 900
 );
-
-sub _build_subsession_expires { 900 }
 
 sub new_subsession {
     my ($self, $c, $value) = @_;
@@ -26,7 +24,6 @@ sub new_subsession {
     }
 
     my $subsession = $c->generate_session_id;
-    $c->log->debug("generating new subession $subsession") if $c->debug;
     $self->set_subsession($c, $subsession, $value);
     return $subsession;
 }
@@ -37,7 +34,6 @@ sub get_subsession {
     if (! $container && $self->strict_subsession) {
         Pixis::Web::Exception->throw(message => "指定されたサブセッション$subsessionが存在しません");
     }
-    $c->log->debug("restored new subession $subsession") if $c->debug;
     return $container ? $container->{data} : ();
 }
 
