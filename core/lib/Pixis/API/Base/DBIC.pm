@@ -98,7 +98,6 @@ sub load_multi {
     } else {
         @ret = map { $self->find($_) } @ids;
     }
-
     return wantarray ? @ret : \@ret;
 }
 
