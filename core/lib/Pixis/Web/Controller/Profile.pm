@@ -283,7 +283,7 @@ sub photo_upload
     my $form = $self->form($c);
     $c->stash->{form} = $form;
     if ($form->submitted_and_valid) {
-        my $file = $form->param('file');
+        my $file = $form->param_value('file');
         $c->registry(api => 'Profile')->set_photo( {
             profile_id => $c->stash->{profile}->id,
             filename  => $file->tempname,

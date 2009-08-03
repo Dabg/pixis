@@ -8,7 +8,7 @@ elements:
         - type: File::MaxSize
           max: 64000
         - type: File::MIME
-          regex: ^image\/(?:jpe?g|gif|png)$
+          regex: ^image\/(?:p?jpe?g|gif|(?:x-)?png)$
     - type: Submit
       name: submit
       value_loc: Submit

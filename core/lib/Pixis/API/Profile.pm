@@ -230,7 +230,7 @@ sub set_photo {
 
     my $content_type = $args->{content_type};
     my $type;
-    $content_type =~ /\/(.+)$/;
+    $content_type =~ /\/(?:p|x-)?(jpeg|gif|png)$/;
     $type = $1;
     require Imager;
     my $img = Imager->new();
