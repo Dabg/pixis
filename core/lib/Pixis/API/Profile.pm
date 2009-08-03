@@ -144,7 +144,7 @@ sub load_from_member {
     my %moniker2ids;
     foreach my $link (@links) {
         $moniker2ids{ $link->moniker } ||= [];
-        push @{ $moniker2ids{ $link->moniker } }, sprintf('%010d', $link->profile_id);
+        push @{ $moniker2ids{ $link->moniker } }, sprintf('%010s', $link->profile_id);
     }
 
     my @list;
