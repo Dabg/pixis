@@ -78,7 +78,7 @@ sub setup {
 
     $class->SUPER::setup(@plugins);
 
-    # Apply hooks AFTER!
+    # Apply hooks AFTER the application has been initialized
     $class->meta->add_before_method_modifier(finalize => sub {
         my $c = shift;
         $c->handle_exception if @{ $c->error };
@@ -87,7 +87,7 @@ sub setup {
     return ();
 }
 
-sub search_components {
+sub _search_components {
     my ($class, $namespace) = @_;
 
     my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
@@ -123,20 +123,20 @@ sub setup_components {
         return $class->SUPER::setup_components(@_);
     }
 
-    $class->setup_virtual_components();
-    $class->setup_concrete_components();
+    $class->_setup_virtual_components();
+    $class->_setup_concrete_components();
 
     return ();
 }
 
-sub setup_virtual_components {
+sub _setup_virtual_components {
     my $class   = shift;
 
     %VIRTUAL_COMPONENTS = ();
 
     # First, search for pixis components so we can try to generate
     # virtual classes
-    my @comps = $class->search_components( 'Pixis::Web' );
+    my @comps = $class->_search_components( 'Pixis::Web' );
     my %comps = map { $_ => 1 } @comps;
 
     foreach my $comp (@comps) {
@@ -182,11 +182,11 @@ sub setup_virtual_components {
     return ();
 }
 
-sub setup_concrete_components {
+sub _setup_concrete_components {
     my $class = shift;
 
     my @comps = grep { ! $VIRTUAL_COMPONENTS{$_} }
-        $class->search_components( $class );
+        $class->_search_components( $class );
     my %comps = map { $_ => 1 } @comps;
 
     my $deprecated_component_names = grep { /::[CMV]::/ } @comps;
@@ -507,32 +507,6 @@ sub add_formfu_path {
     my ($self, @paths) = @_;
     return $self->model('FormFu')->add_config_file_path(@paths);
 }
-
-=head1
-sub add_formfu_path {
-    my ($self, @paths) = @_;
-
-    @paths = map { File::Spec->canonpath($_) } @paths;
-    foreach my $controller (map { $self->controller($_) } $self->controllers) {
-        my $code = $controller->can('_html_formfu_config');
-        next unless $code;
-
-        my $orig   = $code->($controller)->{constructor}{config_file_path};
-        if (defined $orig && ref($orig) ne 'ARRAY') {
-            $orig = [$orig];
-            $code->($controller)->{constructor}{config_file_path} = $orig;
-        }
-        my %seen = map { ($_ => 1) } @$orig;
-        foreach my $path (@paths) {
-            next if $seen{$path};
-            push @$orig, $path;
-        }
-    }
-
-    return ();
-}
-=cut
-
 
 sub handle_exception {
     my( $c )  = @_;
