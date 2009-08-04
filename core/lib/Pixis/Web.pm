@@ -87,6 +87,27 @@ sub setup {
     return ();
 }
 
+sub search_components {
+    my ($class, $namespace) = @_;
+
+    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
+    my $config  = $class->config->{ setup_components };
+    my $extra   = delete $config->{ search_extra } || [];
+
+    my @search_path = map {
+        s/^(?=::)/$namespace/;
+        $_;
+    } @paths;
+    push @search_path, @$extra;
+
+    my $locator = Module::Pluggable::Object->new(
+        search_path => [ @search_path ],
+        %$config
+    );
+
+    my @comps = sort { length $a <=> length $b } $locator->plugins;
+    return @comps;
+}
 
 sub setup_components {
     my $class = shift;
@@ -112,34 +133,35 @@ sub setup_virtual_components {
     my $class   = shift;
 
     %VIRTUAL_COMPONENTS = ();
-    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
-    my $config  = $class->config->{ setup_components };
-    my $extra   = delete $config->{ search_extra } || [];
 
-    push @paths, @$extra;
-
-    my $locator = Module::Pluggable::Object->new(
-        search_path => [ 'Pixis::Web' ],
-        %$config
-    );
-
-    my @comps = sort { length $a <=> length $b } $locator->plugins;
+    # First, search for pixis components so we can try to generate
+    # virtual classes
+    my @comps = $class->search_components( 'Pixis::Web' );
     my %comps = map { $_ => 1 } @comps;
 
     foreach my $comp (@comps) {
-        next if $comp =~ /::SUPER$/; # XXX perl 5.10 seems to pick this up
-        my $base = $comp;
+        # XXX perl 5.10 seems to pick this up
+        next if $comp =~ /::SUPER$/;
         # uh-uh, no no, no controller base
         next if $comp =~ /^Pixis::Web::ControllerBase/;
 
+        # save this component name so we can use this as the base class
+        my $base = $comp;
+
+        # now try to create a new class name
         $comp =~ s/^Pixis::Web/$class/;
 
+        # try to load this new class. If it exists, then we don't have to
+        # create a new virtual class
         eval { Class::MOP::load_class($comp) };
         if (! $@) {
             next;
         }
         $class->log->debug( "Setting up virtual class $comp" )
             if $class->debug;
+
+        # if we got here, then there's no class named $comp.
+        # Create it!
         my $meta =
             Moose::Meta::Class->create($comp, superclasses => [ $base ]);
         $VIRTUAL_COMPONENTS{$comp}++;
@@ -163,25 +185,8 @@ sub setup_virtual_components {
 sub setup_concrete_components {
     my $class = shift;
 
-    my @paths   = qw( ::Controller ::C ::Model ::M ::View ::V );
-    my $config  = $class->config->{ setup_components };
-    my $extra   = delete $config->{ search_extra } || [];
-
-    push @paths, @$extra;
-
-    my $locator = Module::Pluggable::Object->new(
-        search_path => [ map { 
-            my $x = $_;
-            $x =~ s/^(?=::)/$class/;
-            $x;
-        } @paths ],
-        %$config
-    );
-
-    my @comps =
-        sort { length $a <=> length $b } 
-        grep { ! $VIRTUAL_COMPONENTS{$_} }
-        $locator->plugins;
+    my @comps = grep { ! $VIRTUAL_COMPONENTS{$_} }
+        $class->search_components( $class );
     my %comps = map { $_ => 1 } @comps;
 
     my $deprecated_component_names = grep { /::[CMV]::/ } @comps;
