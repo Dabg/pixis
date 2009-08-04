@@ -3,7 +3,11 @@ use Moose;
 use MooseX::AttributeHelpers;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN {
+    extends 'Catalyst::Controller';
+    with 'Pixis::Hub';
+}
+
 
 # Controller::Foo:
 #   default_auth: 0 # No auth, allow anybody
@@ -31,10 +35,6 @@ has auth_info => (
 );
 
 sub _build_auth_info { return {} }
-
-sub api {
-    return Pixis::Registry->get(api => $_[1]);
-}
 
 sub requires_auth {
     my ($self, $name) = @_;

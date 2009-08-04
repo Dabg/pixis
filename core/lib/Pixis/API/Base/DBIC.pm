@@ -4,6 +4,8 @@ use Moose::Role;
 use MooseX::WithCache;
 use namespace::clean -except => qw(meta);
 
+with 'Pixis::Hub';
+
 has 'resultset_moniker' => (
     is => 'rw',
     isa => 'Str',
@@ -42,12 +44,6 @@ sub _build_resultset_constraints { return +{} }
 sub _build_cache_prefix {
     my $self = shift;
     return join('.', split(/\./, ref $self));
-}
-
-sub schema {
-    my ($self, $name) = @_;
-    $name ||= 'master';
-    return Pixis::Registry->get(schema => $name);
 }
 
 sub txn_guard {
