@@ -3,7 +3,11 @@ use Moose;
 use MooseX::AttributeHelpers;
 use namespace::clean -except => qw(meta);
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN {
+    extends 'Catalyst::Controller';
+    with 'Pixis::Hub';
+}
+
 
 # Controller::Foo:
 #   default_auth: 0 # No auth, allow anybody
