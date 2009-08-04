@@ -40,6 +40,10 @@ sub BUILDARGS {
             '/static/css/import.css',
             '/static/js/theme/ui.all.css',
         ],
+        refresh => {
+            use_meta_refresh => 1,
+            use_js_refresh => 1,
+        },
 #    scripts:
 #        -
 #    styles:
