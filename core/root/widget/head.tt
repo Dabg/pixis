@@ -16,7 +16,7 @@
 [% FOREACH feed IN page.feeds %]    <link rel="alternate" type="[% IF feed.type == 'atom' %]application/atom+xml[% ELSE %]application/rss+xml[% END %]" href="[% feed.uri %]" />
 [% END %]
 
-[% IF page.refresh %]
+[% IF page.refresh.uri && page.refresh.time %]
 [% IF page.refresh.use_meta_refresh %]
     <meta http-equiv="refresh" content="[% page.refresh.time %]; [% page.refresh.uri %]" />
 [% END %]
