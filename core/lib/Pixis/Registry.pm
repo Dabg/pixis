@@ -5,7 +5,7 @@ use MooseX::Singleton;
 use MooseX::AttributeHelpers;
 use namespace::clean -except => qw(meta);
 
-use constant DEBUG => $ENV{PIXIS_DEBUG};
+use constant DEBUG => $ENV{PIXIS_DEBUG} || 0;
 
 has '__registry' => (
     metaclass => 'Collection::Hash',
@@ -24,7 +24,7 @@ around 'get' => sub {
         $self = $self->instance;
     }
     my $key = $self->__to_key(@args);
-    if (DEBUG) {
+    if (DEBUG > 5) {
         print STDERR "[REGISTRY] GET $key\n";
     }
     $next->($self, $key);
@@ -37,7 +37,7 @@ around 'set' => sub {
     }
     my $value = pop @args;
     my $key = $self->__to_key(@args);
-    if (DEBUG) {
+    if (DEBUG > 5) {
         print STDERR "[REGISTRY] SET $key => $value\n";
     }
     $next->($self, $key, $value);
