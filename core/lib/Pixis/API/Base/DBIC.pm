@@ -186,12 +186,13 @@ sub delete {
 
     my $guard = $schema->txn_scope_guard;
     foreach my $id (@id) {
-        my $obj = $schema->resultset($self->resultset_moniker)->find($id);
+        my @key = ref $id ? @$id : $id;
+        my $obj = $schema->resultset($self->resultset_moniker)->find(@key);
         if ($obj) {
             $obj->delete;
         }
 
-        my $cache_key = [$self->cache_prefix, $id ];
+        my $cache_key = [$self->cache_prefix, @key ];
         $self->cache_del($cache_key);
     }
     
