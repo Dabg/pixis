@@ -117,7 +117,8 @@ sub load_from_member {
                 tag_id => $tag->id,
             },
             {
-                select => [ 'message_id' ]
+                select => [ 'message_id' ],
+                order_by => 'created_on DESC',
             }
         )
     ;
@@ -142,7 +143,6 @@ sub load_from_query {
     if ($tag) {
         $tag_id = $tag->id;
     }
-    
 
     my @ids = map { $_->id } $self->resultset()->search(
         {
@@ -163,6 +163,7 @@ sub load_from_query {
         {
             select => [ qw(me.id) ],
             join   => [ 'recipients', 'message_to_tags' ],
+            order_by => 'me.created_on DESC',
         }
     );
 
