@@ -38,34 +38,44 @@ sub send
 {
     my ($self, $c, $args) = @_;
 
-    my $header = 
-        Catalyst::Utils::merge_hashes($self->headers, $args->{header} || {});
+    eval {
+        my $header = 
+            Catalyst::Utils::merge_hashes($self->headers, $args->{header} || {});
 
-    if (! $header->{To} ) {
-        Carp::confess("Missing 'To' header");
+        if (! $header->{To} ) {
+            Carp::confess("Missing 'To' header");
+        }
+
+        my $subject = "<no subject>";
+        if ($subject = $header->{Subject}) {
+            my $encoding = $self->mime_encoding_map->{ $header->{Charset} };
+            $header->{Subject} = Encode::encode($encoding, $header->{Subject});
+        }
+        my $body = Encode::encode($header->{Charset}, $args->{body});
+
+        if ($header->{Content_Type} !~ /charset=/) {
+            $header->{Content_Type} = "$header->{Content_Type}; charset=$header->{Charset}";
+        }
+
+        my %args = (
+            header       => [%$header],
+            content_type => $header->{Content_Type},
+            body         => $body,
+            parts        => $args->{parts},
+        );
+        local $c->stash->{email} = \%args;
+
+        $c->view('Email')->process($c);
+        $c->log->info("Sent email to $header->{To} '$subject'");
+    };
+    if (my $e = $@) {
+        Pixis::Web::Exception->throw(
+            status => 200,
+            status_message => $c->loc("Failed to send email"),
+            safe_message => 1,
+            message => $e
+        );
     }
-
-    my $subject = "<no subject>";
-    if ($subject = $header->{Subject}) {
-        my $encoding = $self->mime_encoding_map->{ $header->{Charset} };
-        $header->{Subject} = Encode::encode($encoding, $header->{Subject});
-    }
-    my $body = Encode::encode($header->{Charset}, $args->{body});
-
-    if ($header->{Content_Type} !~ /charset=/) {
-        $header->{Content_Type} = "$header->{Content_Type}; charset=$header->{Charset}";
-    }
-
-    my %args = (
-        header       => [%$header],
-        content_type => $header->{Content_Type},
-        body         => $body,
-        parts        => $args->{parts},
-    );
-    local $c->stash->{email} = \%args;
-
-    $c->forward( $c->view('Email') );
-    $c->log->info("Sent email to $header->{To} '$subject'");
 
     return ();
 }
