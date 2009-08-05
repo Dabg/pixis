@@ -6,6 +6,8 @@ use MooseX::Types::Path::Class;
 use namespace::clean -except => qw(meta);
 use URI;
 
+with 'Pixis::Hub';
+
 # if running in stand alone mode
 has view => ( is => 'ro', isa => 'Catalyst::View' );
 
