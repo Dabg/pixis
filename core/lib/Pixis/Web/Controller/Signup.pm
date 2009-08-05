@@ -73,8 +73,8 @@ sub start :Local :Args(1)
         my $p = $self->get_subsession($c, $subsession);
         my $params = $form->params;
         $p->{$_} = $params->{$_} for keys %$params;
-        delete $params->{password_check}; # no need to include it here
-        $params->{current_step} = 'start';
+        delete $p->{password_check}; # no need to include it here
+        $p->{current_step} = 'start';
         return $self->next_step($c, $subsession);
     }
     return ();
@@ -151,7 +151,26 @@ sub commit
         delete $p->{submit};
         delete $p->{current_step};
         $p->{activation_token} = $c->generate_session_id;
-        my $member = $c->registry(api => 'Member')->create($p);
+        my $member;
+        eval {
+            $member = $c->registry(api => 'Member')->create($p);
+        };
+        if (my $e = $@) {
+            if ($e =~ /Duplicate.+unique_email/) {
+                Pixis::Web::Exception->throw(
+                    status => 200,
+                    status_message => $c->loc("Signup failed"),
+                    safe_message => 1,
+                    message => $c->loc("Email address %1 is already registered", $p->{email}),
+                );
+            }
+            Pixis::Web::Exception->throw(
+                status => 200,
+                status_message => $c->loc("Signup failed"),
+                safe_message => 1,
+                message => $e
+            );
+        }
         if ($member) {
             $p->{current_step} = 'commit';
             $p->{activation_token} = $member->activation_token;

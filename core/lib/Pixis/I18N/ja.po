@@ -213,3 +213,9 @@ msgstr "パスワードの再設定をしてください"
 
 msgid "An email with your password reset settings has been sent"
 msgstr "パスワード再設定用情報を載せたメールが送信されました"
+
+msgid "Signup failed"
+msgstr "ユーザー登録失敗"
+
+msgid "Email address %1 is already registered"
+msgstr "メールアドレス %1 はすでに登録されています"
