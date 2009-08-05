@@ -176,7 +176,11 @@ sub edit
     my $form = $self->form($c, "profile/create_$type");
     $c->stash->{form} = $form;
 
-    my $subsession_hash = $self->get_subsession($c, $subsession);
+    my $subsession_hash;
+    if ($subsession) {
+        $subsession_hash = $self->get_subsession($c, $subsession);
+    }
+
     if ($subsession_hash) {
         $form->default_values($subsession_hash);
     } else {
