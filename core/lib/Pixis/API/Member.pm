@@ -7,10 +7,31 @@ use namespace::clean -except => qw(meta);
 
 with 'Pixis::API::Base::DBIC';
 
-around 'delete' => sub {
+around delete => sub {
     my ($next, $self, $id) = @_;
 
-    my $obj = $self->find($id);
+    my $schema = Pixis::Registry->get(schema => 'master');
+    my $guard  = $schema->txn_scope_guard();
+    my $rs = $schema->resultset('MemberToProfile')->search(
+        {
+            member_id => $id
+        }
+    );
+    my $link = $rs->single;
+    if ($link) {
+        $schema->resultset( $link->moniker )->search(
+            {
+                id => $link->profile_id,
+            }
+        )->delete;
+    }
+    $rs->delete;
+
+    my $obj;
+    {
+        local $self->{resultset_constraints} = {};
+        $obj = $self->find($id);
+    }
     if ($obj) {
         my $email = $obj->email;
         $next->($self, $id);
@@ -23,6 +44,7 @@ around 'delete' => sub {
         )->delete;
         Pixis::Registry->get(api => 'MemberRelationship')->break_all($id);
     }
+    $guard->commit;
 };
 
 sub _build_resultset_constraints {
@@ -265,33 +287,6 @@ sub load_recent_activity {
     );
     return wantarray ? @list : [@list];
 }
-
-around delete => sub {
-    my ($next, $self, $id) = @_;
-
-    my $schema = Pixis::Registry->get(schema => 'master');
-    my $guard  = $schema->txn_scope_guard();
-
-    my $rs = $schema->resultset('MemberToProfile')->search(
-        {
-            member_id => $id
-        }
-    );
-    my $link = $rs->single;
-    if ($link) {
-        $schema->resultset( $link->moniker )->search(
-            {
-                id => $link->profile_id,
-            }
-        )->delete;
-    }
-    $rs->delete;
-
-    $next->($self, $id);
-
-    $guard->commit();
-    return ();
-};
 
 sub create_email_confirm {
     my ($self, $args) = @_;
