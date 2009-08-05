@@ -5,7 +5,7 @@
 %]
 
 <div id="content">
-<p>[% IF (error.safe_message) %][% loc(error.message) %][% ELSE %][% loc(error.public_message) %][% END %]</p>
+<p>[% IF (error.safe_message) %][% loc(error.message) || error.message %][% ELSE %][% loc(error.public_message) %][% END %]</p>
 </div>
 
 [% END %]
