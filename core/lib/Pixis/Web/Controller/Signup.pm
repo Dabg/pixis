@@ -173,6 +173,7 @@ sub commit
         }
         if ($member) {
             $p->{current_step} = 'commit';
+            $p->{member_id} = $member->id;
             $p->{activation_token} = $member->activation_token;
 #            $self->set_subsession($c, $subsession, $p);
             return $c->forward('next_step', [$subsession]);
@@ -216,18 +217,28 @@ sub send_activate :Local :Args(1) {
 
     my $p = $self->get_subsession($c, $subsession);
 
-    $c->stash->{ activation_token } = $p->{activation_token};
-    $c->stash->{ email } = $p->{email};
+    # if this happens, we better remove the darn entry 
+    eval {
+        $c->stash->{ activation_token } = $p->{activation_token};
+        $c->stash->{ email } = $p->{email};
 
-    my $body = $c->view('TT')->render($c, 'signup/activation_email.tt');
+        my $body = $c->view('TT')->render($c, 'signup/activation_email.tt');
 
-    $c->controller('Email')->send($c, {
-        header => {
-            %{$self->activation_mail_header},
-            To   => $p->{email},
-        },
-        body => $body
-    });
+        $c->controller('Email')->send($c, {
+            header => {
+                %{$self->activation_mail_header},
+                To   => $p->{email},
+            },
+            body => $body
+        });
+    };
+    if ($@) {
+        {
+            local $@;
+            $self->api('Member')->delete( delete $p->{member_id} );
+        }
+        die $@;
+    }
 
     $c->res->redirect($c->uri_for('activate'));
     return ();
