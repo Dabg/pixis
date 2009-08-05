@@ -6,7 +6,7 @@
     { field => "lastname", label => "Last Name" },
     { field => "firstname", label => "First Name" },
     { field => "email", label => "Email" }
-    { field => "nickname", label => "Nickname" },
+    { field => "nickname", label => "Nick Name" },
 ] %]
 
 <div id="content">
