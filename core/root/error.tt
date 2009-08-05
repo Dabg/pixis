@@ -1,6 +1,7 @@
+[% SET title = error.has_status_message ? error.status_message : "エラー " _ error.status %]
 [% WRAPPER wrapper.tt,
-    page.title => "エラー " _ error.status,
-    page.heading.content => "エラー " _ error.status
+    page.title => title,
+    page.heading.content => title,
 %]
 
 <div id="content">
