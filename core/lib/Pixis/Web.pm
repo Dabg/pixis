@@ -48,6 +48,7 @@ sub setup {
         Session
         Session::Store::File
         Session::State::Cookie
+        Session::State::URI
         Static::Simple
     /;
 
