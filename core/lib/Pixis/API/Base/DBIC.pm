@@ -82,6 +82,8 @@ sub load_multi {
     my ($self, @ids) = @_;
     my $schema = Pixis::Registry->get('schema' => 'master');
 
+    # keys is a bit of a hassle
+    my $rs = $self->resultset();
     my @keys = map { [ $self->cache_prefix, ref $_ ? @$_ : $_ ] } @ids;
     my $h = $self->cache_get_multi(@keys);
 
@@ -98,6 +100,7 @@ sub load_multi {
     } else {
         @ret = map { $self->find($_) } @ids;
     }
+
     return wantarray ? @ret : \@ret;
 }
 
