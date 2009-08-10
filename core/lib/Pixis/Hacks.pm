@@ -1,11 +1,8 @@
-# $Id: /mirror/pixis/Pixis-Core/trunk/lib/Pixis/Hacks.pm 101266 2009-02-27T05:47:36.185312Z daisuke  $
-
 package Pixis::Hacks;
 use strict;
 use warnings;
 use Carp qw(croak);
 use HTML::FormFu;
-use Catalyst::Controller::HTML::FormFu;
 use namespace::clean;
 
 BEGIN {

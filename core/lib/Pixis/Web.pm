@@ -270,24 +270,6 @@ sub setup_config {
         static => {
             dirs => [ 'static' ]
         },
-        'Controller::HTML::FormFu' => {
-            languages_from_context  => 1,
-            localize_from_context  => 1,
-            constructor => {
-                render_method => 'tt',
-                config_file_path => [
-                    $class->path_to('root', 'forms')->stringify,
-                    __PACKAGE__->path_to('root', 'forms')->stringify,
-                ],
-                tt_args => {
-                    COMPILE_DIR  => $class->path_to('tt2'),
-                    INCLUDE_PATH => [
-                        $class->path_to('root', 'forms')->stringify,
-                        __PACKAGE__->path_to('root', 'forms')->stringify,
-                    ]
-                }
-            }
-        },
         'Model::FormFu' => {
             formfu_config => {
                 render_method => 'tt',
