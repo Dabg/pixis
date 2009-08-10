@@ -129,6 +129,8 @@ sub basic_settings
     $form->model->default_values($user);
     if ($form->submitted_and_valid) {
         my $params = $form->params;
+use Data::Dumper;
+die Dumper($params);
         delete $params->{submit};
         $c->registry(api => 'Member')->update({
             %$params,
