@@ -4,7 +4,7 @@ site:
 Schema::Master:
     connect_info:
         - dbi:mysql:dbname=pixis_test
-        - pixis
+        - root
         -
         - RaiseError: 1
           AutoCommit: 1
