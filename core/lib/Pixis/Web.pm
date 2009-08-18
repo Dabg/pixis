@@ -15,6 +15,7 @@ my @PLUGINS            = ();
 my %VIRTUAL_COMPONENTS = ();
 my $DEBUG              = exists $ENV{PIXIS_DEBUG} ? $ENV{PIXIS_DEBUG} : 0;
 
+use Storable;
 use Template::Provider::Encoding;
 use Template::Stash::ForceUTF8;
 use Module::Pluggable::Object;
@@ -537,7 +538,7 @@ sub handle_exception {
     $c->response->content_type( 'text/html; charset=utf-8' );
     $c->response->body(
         $c->view()->render( $c, 'error.tt', {
-            page  => $c->controller('Root')->page,
+            page  => Storable::dclone( $c->controller('Root')->page ),
             error => $error,
         } )
     );
