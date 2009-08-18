@@ -129,10 +129,7 @@ sub _build_translation_path {
 }
 
 sub register {
-    my $self = shift;
-
-    my $registry = Pixis::Registry->instance;
-    my $c = $registry->get(pixis => 'web');
+    my ($self, $c) = @_;
 
     $c->add_tt_include_path($self->include_path);
     $c->add_static_include_path($self->static_path);
@@ -145,7 +142,7 @@ sub register {
         $c->log->debug("Registering API $api") if $c->debug;
         my $pkg = blessed($api) or confess "API is not blessed?!";
         $pkg =~ s/^.+::API:://; # XXX FIXME This is a horrible hack
-        $registry->set(api => split(/::/, $pkg), $api);
+        $c->registry->set(api => split(/::/, $pkg), $api);
     }
     return ();
 }
