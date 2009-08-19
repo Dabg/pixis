@@ -1,6 +1,7 @@
 package Pixis::Catalyst::HandleException;
 use Moose::Role;
 use Pixis::Web::Exception;
+use Storable ();
 use namespace::clean -except => qw(meta);
 
 after finalize => sub {
@@ -54,7 +55,7 @@ sub handle_exception {
     $c->response->content_type( 'text/html; charset=utf-8' );
     $c->response->body(
         $c->view()->render( $c, 'error.tt', {
-            page  => dclone( $c->controller('Root')->page ),
+            page  => Storable::dclone( $c->controller('Root')->page ),
             error => $error,
         } )
     );
