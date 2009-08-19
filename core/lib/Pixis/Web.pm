@@ -59,7 +59,6 @@ sub import {
 
 my $caller = caller();
 if ($caller eq 'main' || $ENV{HARNESS_ACTIVE}) {
-    __PACKAGE__->setup_config();
     __PACKAGE__->setup() ;
 }
     
