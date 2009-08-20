@@ -15,7 +15,7 @@ sub register_virtual_component {
     $VIRTUAL_COMPONENTS{ $comp }++;
 }
 
-sub setup_components {
+override setup_components => sub {
     my $class = shift;
 
     # add these directories to include path
@@ -33,7 +33,7 @@ sub setup_components {
     $class->_setup_concrete_components();
 
     return ();
-}
+};
 
 sub _setup_virtual_components {
     my $class   = shift;
@@ -42,6 +42,12 @@ sub _setup_virtual_components {
     # virtual classes
     my @comps = $class->_search_components( 'Pixis::Web' );
     my %comps = map { $_ => 1 } @comps;
+
+    my $t;
+    if ($class->debug) {
+        my $column_width = Catalyst::Utils::term_width() - 6 - 11;
+        $t = Text::SimpleTable->new([ $column_width, 'Component' ], [ 8, 'Type' ]);
+    }
 
     foreach my $comp (@comps) {
         # XXX perl 5.10 seems to pick this up
@@ -59,10 +65,11 @@ sub _setup_virtual_components {
         # create a new virtual class
         eval { Class::MOP::load_class($comp) };
         if (! $@) {
+            $t->row( $comp, 'concrete' );
             next;
+        } else {
+            $t->row( $comp, 'virtual' );
         }
-        $class->log->debug( "Setting up virtual class $comp" )
-            if $class->debug;
 
         # if we got here, then there's no class named $comp.
         # Create it!
@@ -83,6 +90,11 @@ sub _setup_virtual_components {
             $class->components->{ $key } = $modules{ $key };
         }
     }
+
+    if ($class->debug) {
+        $class->log->debug( "Virtual Components:\n" . $t->draw );
+    }
+
     return ();
 }
 
