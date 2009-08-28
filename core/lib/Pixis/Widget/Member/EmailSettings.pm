@@ -11,12 +11,18 @@ sub _build_template {
 around run => sub {
     my ($next, $self, $args) = @_;
 
-    my $h = $next->($self, $args);
+    my $h;
 
-    my $form = $args->{context}->model('FormFu')->load('member/email_settings');
-    $form->model->default_values( 
-        Pixis::Registry->get(api => 'Member')->find($args->{user}->id) );
-    $h->{form} = $form;
+    if ($args->{user}->email =~ /oauth\.dummy$/) {
+        $h = { widget_disabled => 1 };
+    } else {
+        $h = $next->($self, $args);
+
+        my $form = $args->{context}->model('FormFu')->load('member/email_settings');
+        $form->model->default_values( 
+            Pixis::Registry->get(api => 'Member')->find($args->{user}->id) );
+        $h->{form} = $form;
+    }
 
     return $h;
 };
