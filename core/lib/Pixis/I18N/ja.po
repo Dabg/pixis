@@ -222,3 +222,6 @@ msgstr "メールアドレス %1 はすでに登録されています"
 
 msgid "Failed to send email"
 msgstr "メール送信失敗"
+
+msgid "Login via Twitter!"
+msgstr "Twitterアカウントでログイン！"
