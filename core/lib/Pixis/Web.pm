@@ -308,6 +308,20 @@ sub setup_config {
                         user_class => 'DBIC::Member',
                     }
                 },
+                oauth => {
+                    credential => {
+                        class => 'OAuth',
+                        providers => {
+                            'twitter.com' => {
+                                consumer_key => 'vvQOCtHvvauM3XdLEtNkA',
+                                consumer_secret => 'jcwTSUQOEixN7KmoxjURNRJoB2pbAOwbvPaJx5BbBNM',
+                                request_token_endpoint => 'http://twitter.com/oauth/request_token',
+                                access_token_endpoint => 'http://twitter.com/oauth/access_token',
+                                user_auth_endpoint => 'http://twitter.com/oauth/authorize',
+                            }
+                        }
+                    }
+                },
                 members_internal => {
                     credential => {
                         class => 'Password',

@@ -1,5 +1,6 @@
 package Pixis::Web::Controller::Auth;
 use Moose;
+use Moose::Util::TypeConstraints;
 use namespace::clean -except => qw(meta);
 
 BEGIN { extends 'Pixis::Web::ControllerBase' }
@@ -110,6 +111,16 @@ sub authenticate :Private {
         }
     }
     return ();
+}
+
+sub oauth
+    :Path('/auth/oauth')
+    :Args
+{
+    my ($self, $c, $provider) = @_;
+
+    if ($c->authenticate( { provider => 'twitter.com' }, 'oauth' )) {
+    }
 }
 
 sub openid
