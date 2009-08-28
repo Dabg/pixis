@@ -4,10 +4,18 @@
 %]
 
 <div id="content">
+[% IF (auth_methods.twitter) %]
+<div>
+    <a href="/auth/oath/twitter.com">[% loc("Login via Twitter!") %]</a>
+</div>
+[% END %]
+[% IF (auth_methods.password) %]
 <div id="login" class="form_full section">
 [% form %]
 <p class="link"><a href="[% c.uri_for('/signup') %]">[% loc("No Account? Sign up now!") %]</a> </p>
 <p class="link"><a href="[% c.uri_for('/member/forgot_password') %]">[% loc("Forgot password?") %]</a> </p>
 </div><!-- login -->
+[% END %]
+
 </div><!-- content -->
 [% END # WRAPPER %]

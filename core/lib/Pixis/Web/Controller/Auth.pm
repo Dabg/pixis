@@ -7,6 +7,18 @@ BEGIN { extends 'Pixis::Web::ControllerBase' }
 
 has '+default_auth' => (default => 0);
 has 'default_redirect' => (is => 'ro', isa => 'Str');
+has auth_methods => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy_build => 1
+);
+
+sub _build_auth_methods {
+    return {
+        password => 1,
+        twitter => 1
+    }
+}
 
 sub fail
     :Private
@@ -69,7 +81,10 @@ sub login
     my ($self, $c) = @_;
 
     my $form = $self->form($c);
-    $c->stash->{form} = $form;
+    $c->stash(
+        form => $form,
+        auth_methods => $self->auth_methods
+    );
 
     if ($form->submitted_and_valid) {
         my $auth_ok = $c->forward('/auth/authenticate', [ 
