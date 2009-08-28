@@ -44,6 +44,25 @@ sub assert_roles
     return 1;
 }
 
+sub _redirect_on_auth_success {
+    my ($self, $c, $next) = @_;
+    $next->scheme(undef);
+    if ($next->can('host_port')) {
+        $next->host(undef);
+        $next->port(undef);
+    }
+
+    $c->res->redirect(
+        $next ? 
+            $c->uri_for($next->path, {$next->query_form})
+        :
+            $c->uri_for(
+                $self->default_redirect() ||
+                ('/member', $c->user->id)
+            )
+    );
+}
+
 sub login
     :Local
 {
@@ -57,24 +76,12 @@ sub login
             $form->param('email'), $form->param('password')
         ] ) && !@{$c->error};
         if ($auth_ok) {
-            my $next = URI->new(
-                delete $c->session->{next_uri} ||
-                $form->param('next') 
-            );
-            $next->scheme(undef);
-            if ($next->can('host_port')) {
-                $next->host(undef);
-                $next->port(undef);
-            }
-
-            $c->res->redirect(
-                $next ? 
-                    $c->uri_for($next->path, {$next->query_form})
-                :
-                    $c->uri_for(
-                        $self->default_redirect() ||
-                        ('/member', $c->user->id)
-                    )
+            $self->_redirect_on_auth_success(
+                $c,
+                URI->new(
+                    delete $c->session->{next_uri} ||
+                    $form->param('next') 
+                )
             );
             return;
         }
@@ -106,7 +113,7 @@ sub authenticate :Private {
             $member->password($auth->auth_data);
             my $dummy = Pixis::AuthWorkAround->new($member);
 
-            $c->log->debug("Authenticating against user $member") if $c->debug;
+            $c->log->debug("Authenticating against user $member (password = $password, auth_data = " . $auth->auth_data . ")") if $c->debug;
             return $c->authenticate({ password => $password, dbix_class => { resultset => $dummy } }, $realm);
         }
     }
@@ -115,11 +122,31 @@ sub authenticate :Private {
 
 sub oauth
     :Path('/auth/oauth')
-    :Args
+    :Args(1)
 {
     my ($self, $c, $provider) = @_;
 
-    if ($c->authenticate( { provider => 'twitter.com' }, 'oauth' )) {
+    if ($c->authenticate( { provider => $provider }, 'oauth' )) {
+        # This user logged in via twitter, so we need to check if
+        # the user actuall exists. if not, we need to create the user
+        my $member = Pixis::Registry->get(api => 'Member')->load_from_oauth( {
+            provider => $provider,
+            data     => $c->user
+        } );
+
+        if ($member) {
+            my $password = $c->user->{extra_params}->{user_id} . $provider;
+            if ( $self->authenticate( $c, $member->email, $password ) ) {
+                return $self->_redirect_on_auth_success(
+                    $c,
+                    URI->new(
+                        delete $c->session->{next_uri} ||
+                        '/'
+                    )
+                );
+            }
+        }
+        return;
     }
 }
 

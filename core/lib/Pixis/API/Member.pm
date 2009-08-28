@@ -60,6 +60,40 @@ sub load_from_email {
     return $member ? $self->find($member->id) : ();
 }
 
+# This member is guaranteed to be authenticated via oauth
+sub load_from_oauth {
+    my ($self, $args) = @_;
+
+    my $provider = $args->{provider};
+    if ($provider ne 'twitter.com') {
+        confess "Don't know how to handle $provider";
+    }
+
+    my $user_id = $args->{data}->{extra_params}->{user_id};
+
+    my $guard = $self->txn_guard();
+
+    # since we won't receive an email address, we forge one
+    my $email = join('@', $user_id, join('.', $provider, 'oauth', 'dummy'));
+    my $member = $self->load_from_email($email);
+    if (! $member) {
+        # ah, no such member... create one!
+        $member = $self->create(
+            {
+                email => $email,
+                nickname => $args->{data}->{extra_params}->{screen_name},
+                password => $user_id . $provider,
+                
+            }
+        );
+        $member->is_active(1);
+        $member->update;
+    }
+    $guard->commit;
+
+    return $member;
+}
+
 sub load_from_profile {
     my( $self, $profile_id ) = @_;
 

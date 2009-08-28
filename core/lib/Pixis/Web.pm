@@ -41,10 +41,10 @@ sub setup {
     my ($class, %plugin_config) = @_;
 
     my @plugins = qw/
+        ConfigLoader
         Unicode
         Authentication
         Authorization::Roles
-        ConfigLoader
         Data::Localize
         Session
         Session::Store::File
