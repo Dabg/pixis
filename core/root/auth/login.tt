@@ -6,7 +6,7 @@
 <div id="content">
 [% IF (auth_methods.twitter) %]
 <div>
-    <a href="/auth/oath/twitter.com">[% loc("Login via Twitter!") %]</a>
+    <a href="/auth/oauth/twitter.com">[% loc("Login via Twitter!") %]</a>
 </div>
 [% END %]
 [% IF (auth_methods.password) %]
